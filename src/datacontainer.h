@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <opencv2/opencv.hpp>
+#include <fstream>
 
 #include <QDebug>
 
@@ -18,8 +19,9 @@ public:
 
     void setSequence(std::vector<cv::Mat>);
     void setCloud(std::vector<CloudPoint>);
+    void setCloud(std::string filePath);
 
-    void showCloud();
+    void debugCloud();
     void showSequence();
 
 private:

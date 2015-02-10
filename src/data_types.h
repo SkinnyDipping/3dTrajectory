@@ -18,10 +18,6 @@ public:
         dbg.nospace() << "["<<p.x<<"; "<<p.y<<"; "<<p.z<<"]";
         return dbg.maybeSpace();
     }
-//    std::ostream operator<<(std::ostream os, const CloudPoint& p) {
-//        os << "["<<p.x<<"; "<<p.y<<"; "<<p.z<<"]";
-//        return os;
-//    }
 
 };
 

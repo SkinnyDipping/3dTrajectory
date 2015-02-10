@@ -7,7 +7,8 @@ DataContainer::DataContainer()
 
 DataContainer::~DataContainer()
 {
-
+    sequence.clear();
+    point_cloud.clear();
 }
 
 DataContainer& DataContainer::instance() {
@@ -35,7 +36,29 @@ void DataContainer::setCloud(std::vector<CloudPoint> pc) {
     }
 }
 
-void DataContainer::showCloud() {
+//TODO: erase temp line delimiter
+void DataContainer::setCloud(std::string filePath) {
+    std::ifstream cloudFile(filePath.c_str());
+    if (!cloudFile.is_open()) {
+        qCritical() << "DataContainer: Error opening cloud file";
+        cloudFile.close();
+        return;
+    }
+    std::string line;
+    qDebug() << "DataContainer: start reading file...";
+    int t=0;
+    while(std::getline(cloudFile,line) && t<20000) {
+        t++;
+        std::istringstream iss(line);
+        float a,b,c,d,e,f,g,h;
+        iss >>a>>b>>c>>d>>e>>f>>g>>h;
+        point_cloud.push_back(CloudPoint(c,d,e));
+    }
+    qDebug() << "DataContainer: file read";
+    cloudFile.close();
+}
+
+void DataContainer::debugCloud() {
     for (unsigned int i=0; i<point_cloud.size(); i++) {
         qDebug() << point_cloud[i];
     }

@@ -24,3 +24,7 @@ HEADERS  += ../src/mainwindow.h \
 FORMS    += ../src/mainwindow.ui
 
 LIBS += -lopencv_core
+
+DISTFILES += \
+    ../src/fshader.glsl \
+    ../src/vshader.glsl

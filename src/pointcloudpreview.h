@@ -11,6 +11,7 @@
 #include <QOpenGLTexture>
 #include <QOpenGLBuffer>
 #include <QMouseEvent>
+#include <QWheelEvent>
 
 #include "datacontainer.h"
 
@@ -28,32 +29,29 @@ signals:
 public slots:
 
 protected:
-    void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
-    void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
-    void timerEvent(QTimerEvent *e) Q_DECL_OVERRIDE;
+    void wheelEvent(QWheelEvent *e) Q_DECL_OVERRIDE;
     void initializeGL() Q_DECL_OVERRIDE;
     void resizeGL(int w, int h) Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;
 
     void initShaders();
-    void initTextures();
-    void initCubeGeometry();
-    void drawCubeGeometry(QOpenGLShaderProgram *program);
+    void loadPointCloudBuffer();
+    void drawPointCloud(QOpenGLShaderProgram *program);
+
+    CloudPoint calculateCentroid();
+
 
 private:
-    QBasicTimer timer;
     QOpenGLShaderProgram program;
-    QOpenGLBuffer arrayBuf;
-    QOpenGLBuffer indexBuf;
+    QOpenGLBuffer pointsBuffer;
 
-    QOpenGLTexture *texture;
+    QVector2D mouseCurrentPosition, mousePreviousPosition;
 
     QMatrix4x4 projection;
-
-    QVector2D mousePressPosition;
+    qreal angle;
+    qint64 wheelAngle;
     QVector3D rotationAxis;
-    qreal angularSpeed;
     QQuaternion rotation;
 
 

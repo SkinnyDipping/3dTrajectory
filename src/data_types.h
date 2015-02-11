@@ -7,11 +7,19 @@ class CloudPoint {
 public:
     float x, y, z;
 
+    CloudPoint() : x(0), y(0), z(0) {}
 
     CloudPoint(float x, float y, float z) : x(x),y(y),z(z) {}
 
     CloudPoint operator+(CloudPoint& p) {
         return CloudPoint(this->x+p.x,this->y+p.y,this->z+p.z);
+    }
+
+    CloudPoint operator+=(CloudPoint& p) {
+        this->x += p.x;
+        this->y += p.y;
+        this->z += p.z;
+        return *this;
     }
 
     friend QDebug operator<<(QDebug dbg, const CloudPoint& p) {

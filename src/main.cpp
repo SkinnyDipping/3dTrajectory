@@ -13,17 +13,8 @@
 
 int main(int argc, char *argv[])
 {
-#ifndef OPENGL_TEST
-#ifdef  TEST_CLOUD
-    DataContainer::instance().setCloud("/home/michal/3dTrajectory/data/scan_063.xyz");
-#endif
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
 
-    return a.exec();
-#else
-    DataContainer::instance().setCloud("/home/michal/3dTrajectory/data/chmura.test");
+    DataContainer::instance().setCloud("/home/michal/3dTrajectory/data/triangle.test");
     QApplication app(argc, argv);
 
     QSurfaceFormat format;
@@ -40,5 +31,4 @@ int main(int argc, char *argv[])
     note.show();
 #endif
     return app.exec();
-#endif
 }

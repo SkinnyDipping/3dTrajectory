@@ -2,8 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
-#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QFileDialog>
 #include "pointcloudpreview.h"
+#include "sequencepreview.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,10 +20,16 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void on_loadSequence_clicked();
+    void on_loadPointCloud_clicked();
+
 private:
     Ui::MainWindow *ui;
-    PointCloudPreview *pc;
-    PointCloudPreview *pc2;
+    PointCloudPreview *pointCloudPreview;
+    SequencePreview *sequencePreview;
+
+    QPushButton *loadSequence, *loadPointCloud;
 };
 
 #endif // MAINWINDOW_H

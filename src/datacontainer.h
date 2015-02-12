@@ -14,10 +14,12 @@ class DataContainer
 public:
     static DataContainer& instance();
 
-    std::vector<cv::Mat>& getSequence();
+    cv::VideoCapture& getSequence();
     std::vector<CloudPoint>& getCloud();
 
-    void setSequence(std::vector<cv::Mat>);
+    void loadSequence(std::string filePath);
+    cv::Mat& getNextFrame();
+
     void setCloud(std::vector<CloudPoint>);
     void setCloud(std::string filePath);
 
@@ -30,8 +32,11 @@ private:
     ~DataContainer();
 
 private:
-    std::vector<cv::Mat> sequence;
     std::vector<CloudPoint> point_cloud;
+
+    cv::VideoCapture sequence;
+    cv::Mat sequenceFrame;
+    cv::Mat foregroundFrame;
 
 };
 

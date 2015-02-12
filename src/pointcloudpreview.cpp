@@ -116,6 +116,8 @@ void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program) {
 
     glPointSize(10);
     DataContainer::instance().debugCloud();
+    qDebug() <<DataContainer::instance().getCloud().size();
+    qDebug() << pointsBuffer.size();
     glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
 }
 

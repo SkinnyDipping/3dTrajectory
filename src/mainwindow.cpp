@@ -6,15 +6,26 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QVBoxLayout *l = new QVBoxLayout;
-    pc = new PointCloudPreview(this);
-    pc2 = new PointCloudPreview(this);
-    ui->horizontalLayout->addWidget(pc);
-    ui->horizontalLayout->addWidget(pc2);
+    pointCloudPreview = new PointCloudPreview(this);
+    sequencePreview = new SequencePreview(this);
+    ui->horizontalLayout->addWidget(sequencePreview);
+    ui->horizontalLayout->addWidget(pointCloudPreview);
 
+    ui->horizontalLayout->setSizeConstraint(QLayout::SetMaximumSize);
+
+    loadSequence = ui->loadSequence;
+    loadPointCloud = ui->loadPointCloud;
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_loadSequence_clicked() {
+
+}
+
+void MainWindow::on_loadPointCloud_clicked() {
+
 }

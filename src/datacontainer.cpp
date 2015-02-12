@@ -7,7 +7,6 @@ DataContainer::DataContainer()
 
 DataContainer::~DataContainer()
 {
-    sequence.clear();
     point_cloud.clear();
 }
 
@@ -16,7 +15,7 @@ DataContainer& DataContainer::instance() {
     return container;
 }
 
-std::vector<cv::Mat>& DataContainer::getSequence() {
+cv::VideoCapture& DataContainer::getSequence() {
     return sequence;
 }
 
@@ -24,10 +23,13 @@ std::vector<CloudPoint>& DataContainer::getCloud(){
     return point_cloud;
 }
 
-void DataContainer::setSequence(std::vector<cv::Mat> s) {
-    for (unsigned int i=0; i<s.size(); i++) {
-        sequence.push_back(s[i]);
-    }
+void DataContainer::loadSequence(std::string filePath) {
+    sequence = cv::VideoCapture(filePath);
+}
+
+cv::Mat& DataContainer::getNextFrame() {
+    sequence >> sequenceFrame;
+    return sequenceFrame;
 }
 
 void DataContainer::setCloud(std::vector<CloudPoint> pc) {
@@ -36,7 +38,7 @@ void DataContainer::setCloud(std::vector<CloudPoint> pc) {
     }
 }
 
-//TODO: erase temp line delimiter
+//TODO: erase temp points number delimiter
 void DataContainer::setCloud(std::string filePath) {
     std::ifstream cloudFile(filePath.c_str());
     if (!cloudFile.is_open()) {

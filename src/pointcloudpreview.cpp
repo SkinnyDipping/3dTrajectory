@@ -24,7 +24,6 @@ void PointCloudPreview::mouseMoveEvent(QMouseEvent *e) {
 
 void PointCloudPreview::wheelEvent(QWheelEvent *e) {
     wheelAngle += e->delta()/8;
-    qDebug() << wheelAngle;
     update();
 }
 
@@ -68,11 +67,11 @@ void PointCloudPreview::paintGL()
     // Calculate model view transformation
     QMatrix4x4 matrix;
     matrix.setToIdentity();
-    matrix.translate(0.0, 0.0, 0.0);
-    matrix.rotate(rotation);
+//    matrix.translate(0.0, 0.0, 0.0);
+//    matrix.rotate(rotation);
     QMatrix4x4 proj, view, camera;
-    proj.perspective(45.0f+wheelAngle/15.0f, 4.0f/3.0f, 0.1f, 100.0f);
-    view.lookAt(QVector3D(0,0,5),QVector3D(0,0,0),QVector3D(0,1,0));
+    proj.perspective(45.0f+wheelAngle/15.0f, 4.0f/3.0f, 0.1f, 150.0f);
+    view.lookAt(QVector3D(-2,1,135),QVector3D(0,0,0),QVector3D(0,1,0));
     camera.setToIdentity();
 
 
@@ -87,11 +86,11 @@ void PointCloudPreview::paintGL()
 void PointCloudPreview::initShaders()
 {
     // Compile vertex shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, "/home/michal/3dTrajectory/src/vshader.glsl"))
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, "/home/m.szolucha/Qt_OpenGL/3dTrajectory/src/vshader.glsl"))
         close();
 
     // Compile fragment shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, "/home/michal/3dTrajectory/src/fshader.glsl"))
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, "/home/m.szolucha/Qt_OpenGL/3dTrajectory/src/fshader.glsl"))
         close();
 
     // Link shader pipeline
@@ -116,7 +115,8 @@ void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program) {
     program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, DataContainer::instance().getCloud().size());
 
     glPointSize(10);
-    glDrawArrays(GL_TRIANGLES, 0, DataContainer::instance().getCloud().size());
+    DataContainer::instance().debugCloud();
+    glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
 }
 
 CloudPoint PointCloudPreview::calculateCentroid() {

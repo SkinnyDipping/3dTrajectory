@@ -12,16 +12,21 @@ TARGET = 3dTrajectory
 TEMPLATE = app
 
 SOURCES += ../src/main.cpp \
-        ../src/mainwindow.cpp \
     ../src/pointcloudpreview.cpp \
-    ../src/datacontainer.cpp
+    ../src/datacontainer.cpp \
+    ../src/sequencepreview.cpp \
+    ../src/mainwindow.cpp
 
-HEADERS  += ../src/mainwindow.h \
+HEADERS  += \
     ../src/pointcloudpreview.h \
     ../src/datacontainer.h \
-    ../src/data_types.h
+    ../src/data_types.h \
+    ../src/sequencepreview.h \
+    ../src/mainwindow.h
 
-FORMS    += ../src/mainwindow.ui
+FORMS    += \
+    ../src/sequencepreview.ui \
+    ../src/mainwindow.ui
 
 LIBS += -lopencv_core
 

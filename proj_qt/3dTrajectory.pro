@@ -27,7 +27,6 @@ HEADERS  += \
 FORMS    += \
     ../src/sequencepreview.ui \
     ../src/mainwindow.ui
-
 LIBS += -lopencv_core
 
 DISTFILES += \

@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
+#include <QVBoxLayout>
+#include "pointcloudpreview.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +19,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    PointCloudPreview *pc;
+    PointCloudPreview *pc2;
 };
 
 #endif // MAINWINDOW_H

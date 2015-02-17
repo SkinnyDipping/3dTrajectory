@@ -8,6 +8,8 @@ QT       += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+CONFIG += c++11 static
+
 TARGET = 3dTrajectory
 TEMPLATE = app
 
@@ -16,7 +18,8 @@ SOURCES += ../src/main.cpp \
     ../src/datacontainer.cpp \
     ../src/sequencepreview.cpp \
     ../src/mainwindow.cpp \
-    ../src/QOpenCVWidget.cpp
+    ../src/QOpenCVWidget.cpp \
+    ../src/foregroundextractormog2.cpp
 
 HEADERS  += \
     ../src/pointcloudpreview.h \
@@ -24,15 +27,19 @@ HEADERS  += \
     ../src/data_types.h \
     ../src/sequencepreview.h \
     ../src/mainwindow.h \
-    ../src/QOpenCVWidget.h
+    ../src/QOpenCVWidget.h \
+    ../src/foregroundextractormog2.h
 
 FORMS    += \
     ../src/sequencepreview.ui \
     ../src/mainwindow.ui
 
-LIBS += -L"/usr/local/lib/"
-LIBS += -lopencv_core -lopencv_highgui
-#LIBS += -lopencv_core -lopencv_highgui
+INCLUDEPATH += /usr/local/include
+
+LIBS += -L"/usr/local/lib/" \
+        -lopencv_core -lopencv_highgui -lopencv_video
+LIBS += -L"/usr/lib/x86_64-linux-gnu/"
+#        -lboost_iostreams
 
 DISTFILES += \
     ../src/fshader.glsl \

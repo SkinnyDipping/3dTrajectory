@@ -8,8 +8,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     pointCloudPreview = new PointCloudPreview(this);
     sequencePreview = new SequencePreview(this);
+//    ForegroundExtractorMOG2 foregroundExtractor = ForegroundExtractorMOG2();
     ui->horizontalLayout->addWidget(sequencePreview);
     ui->horizontalLayout->addWidget(pointCloudPreview);
+
+//    cv::Mat frame;
+//    while (DataContainer::instance().getNextFrame(frame)) {
+//        sequencePreview->viewFrame(frame);
+//        char k = cv::waitKey(10);
+//        if (k == 'q') break;
+//    }
+
 
     ui->horizontalLayout->setSizeConstraint(QLayout::SetMaximumSize);
 

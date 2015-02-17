@@ -3,10 +3,27 @@
 
 SequencePreview::SequencePreview(QWidget *parent)
 {
+    playbackOn = false;
+    image = QImage("/home/michal/3dTrajectory/res/cloud_na.png").mirrored();
 }
 
 SequencePreview::~SequencePreview()
 {
+}
+
+void SequencePreview::viewFrame(cv::Mat &frame) {
+    playbackOn = true;
+//    textureBuffer = new QOpenGLTexture(image);
+//    update();
+
+}
+
+void SequencePreview::startPlayback(cv::VideoCapture &video, int fps) {
+    playbackOn = true;
+}
+
+void SequencePreview::stopPlayback() {
+    playbackOn = false;
 }
 
 void SequencePreview::initializeGL() {
@@ -28,6 +45,10 @@ void SequencePreview::initializeGL() {
     rectangleBuffer.create();
     rectangleBuffer.bind();
     rectangleBuffer.allocate(rectangle, 4*3*sizeof(float));
+
+    textureBuffer = new QOpenGLTexture(image);
+//    textureBuffer = new QOpenGLTexture();
+
 }
 
 void SequencePreview::resizeGL() {
@@ -37,6 +58,7 @@ void SequencePreview::resizeGL() {
 void SequencePreview::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    if (playbackOn)
     drawSequencePreview();
 }
 
@@ -45,26 +67,32 @@ void SequencePreview::drawSequencePreview() {
 
     GLint VBOlocation = program.attributeLocation("a_position");
     program.enableAttributeArray(VBOlocation);
-    program.setAttributeBuffer(VBOlocation, GL_FLOAT, 0, 4);
+    program.setAttributeBuffer(VBOlocation, GL_FLOAT, 0, 3);
+
+    GLint textureCoordinateLocation = program.attributeLocation("a_textCoord");
+    program.enableAttributeArray(textureCoordinateLocation);
+    program.setAttributeBuffer(textureCoordinateLocation, GL_FLOAT, 0, 3);
+    textureBuffer->bind();
+    program.setUniformValue("texture", 0);
 
     glPointSize(20);
-    glDrawArrays(GL_POINTS, 0, 4);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 }
 
 void SequencePreview::initShaders() {
     // Compile vertex shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, "/home/m.szolucha/Qt_OpenGL/3dTrajectory/src/vPreview.glsl"))
-        close();
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, "/home/michal/3dTrajectory/src/vPreview.glsl"))
+        this->close();
 
     // Compile fragment shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, "/home/m.szolucha/Qt_OpenGL/3dTrajectory/src/fPreview.glsl"))
-        close();
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, "/home/michal/3dTrajectory/src/fPreview.glsl"))
+        this->close();
 
     // Link shader pipeline
     if (!program.link())
-        close();
+        this->close();
 
     // Bind shader pipeline for use
     if (!program.bind())
-        close();
+        this->close();
 }

@@ -32,6 +32,13 @@ cv::Mat& DataContainer::getNextFrame() {
     return sequenceFrame;
 }
 
+bool DataContainer::getNextFrame(cv::Mat& newFrame) {
+    sequence >> newFrame;
+    if (newFrame.empty())
+        return false;
+    return true;
+}
+
 void DataContainer::setCloud(std::vector<CloudPoint> pc) {
     for (unsigned int i=0; i<pc.size(); i++) {
         point_cloud.push_back(pc[i]);
@@ -48,9 +55,10 @@ void DataContainer::setCloud(std::string filePath) {
     }
     std::string line;
     qDebug() << "DataContainer: start reading file...";
-    int t=0;
-    while(std::getline(cloudFile,line) && t<20000) {
-        t++;
+    qWarning() << "Warning: Data delimiter implemented";
+//    int t=0;
+    while(std::getline(cloudFile,line)) {
+//        t++;
         std::istringstream iss(line);
         float a,b,c,d,e,f,g,h;
         iss >>a>>b>>c>>d>>e>>f>>g>>h;
@@ -59,6 +67,16 @@ void DataContainer::setCloud(std::string filePath) {
     qDebug() << "DataContainer: file read";
     cloudFile.close();
 }
+//BOOST_FUSION_ADAPT_STRUCT(PointCloud, (float, x)(float, y)(float, z))
+
+//void DataContainer::setCloud(std::string filePath) {
+//    using namespace boost::spirit::qi;
+//    boost::iostreams::mapped_file mmap(filePath, boost::iostreams::mapped_file::readonly);
+//    auto file = mmap.const_data();
+//    auto length = file + mmap.size();
+//    point_cloud.reserve(7000000);
+////    bool ok = phrase_parse(file, length, (double_ >> double_ >> double_) % eol, space, point_cloud);
+//}
 
 void DataContainer::debugCloud() {
     for (unsigned int i=0; i<point_cloud.size(); i++) {

@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include "pointcloudpreview.h"
 #include "sequencepreview.h"
+#include "foregroundextractormog2.h"
 
 namespace Ui {
 class MainWindow;
@@ -28,6 +29,7 @@ private:
     Ui::MainWindow *ui;
     PointCloudPreview *pointCloudPreview;
     SequencePreview *sequencePreview;
+    ForegroundExtractorMOG2 foregroundExtractor;
 
     QPushButton *loadSequence, *loadPointCloud;
 };

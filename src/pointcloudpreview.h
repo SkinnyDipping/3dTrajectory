@@ -13,6 +13,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
+#include "data_types.h"
 #include "datacontainer.h"
 
 class PointCloudPreview : public QOpenGLWidget, protected QOpenGLFunctions
@@ -23,8 +24,10 @@ public:
     PointCloudPreview(QWidget *parent = 0);
     ~PointCloudPreview();
 
-signals:
+    void showCloud(PointCloud& cloud);
+    void clearWindow();
 
+signals:
 
 public slots:
 
@@ -35,9 +38,12 @@ protected:
     void resizeGL(int w, int h) Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;
 
-    void initShaders();
+private:
+    void loadCloudShaders();
     void loadPointCloudBuffer();
+    void loadPointCloudBuffer(const void *pointCloud, int nOfPoints);
     void drawPointCloud(QOpenGLShaderProgram *program);
+    void drawCloudNotAvailable();
 
     CloudPoint calculateCentroid();
 
@@ -53,6 +59,10 @@ private:
     qint64 wheelAngle;
     QVector3D rotationAxis;
     QQuaternion rotation;
+
+    PointCloud point_cloud;
+
+    bool cloudPreviewOn;
 
 
 };

@@ -4,7 +4,9 @@
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include <fstream>
-
+#include <boost/fusion/adapted.hpp>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/iostreams/device/mapped_file.hpp>
 #include <QDebug>
 
 #include "data_types.h"
@@ -15,12 +17,13 @@ public:
     static DataContainer& instance();
 
     cv::VideoCapture& getSequence();
-    std::vector<CloudPoint>& getCloud();
+    PointCloud& getCloud();
 
     void loadSequence(std::string filePath);
     cv::Mat& getNextFrame();
+    bool getNextFrame(cv::Mat& newFrame);
 
-    void setCloud(std::vector<CloudPoint>);
+    void setCloud(PointCloud);
     void setCloud(std::string filePath);
 
     void debugCloud();
@@ -32,7 +35,7 @@ private:
     ~DataContainer();
 
 private:
-    std::vector<CloudPoint> point_cloud;
+    PointCloud point_cloud;
 
     cv::VideoCapture sequence;
     cv::Mat sequenceFrame;

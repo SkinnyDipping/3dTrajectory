@@ -17,7 +17,7 @@
 int main(int argc, char *argv[])
 {
 
-    DataContainer::instance().setCloud("/home/m.szolucha/Qt_OpenGL/3dTrajectory/data/chmura4.test");
+    DataContainer::instance().setCloud("/home/michal/3dTrajectory/data/scan_063.xyz");
     QApplication app(argc, argv);
 
 //    QSurfaceFormat format;

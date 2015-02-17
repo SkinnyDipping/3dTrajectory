@@ -38,5 +38,7 @@ public:
     CloudPointRGB(CloudPoint& p) : x(p.x),y(p.x),z(p.z),r(255),g(255),b(255) {}
 };
 
+typedef std::vector<CloudPoint> PointCloud;
+
 #endif // DATA_TYPES_H
 

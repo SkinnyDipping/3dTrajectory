@@ -2,7 +2,7 @@
 
 DataContainer::DataContainer()
 {
-
+    sequence = cv::VideoCapture("/home/michal/3dTrajectory/data/seq/1.mp4");
 }
 
 DataContainer::~DataContainer()
@@ -24,12 +24,28 @@ std::vector<CloudPoint>& DataContainer::getCloud(){
 }
 
 void DataContainer::loadSequence(std::string filePath) {
-    sequence = cv::VideoCapture(filePath);
+    cv::VideoCapture video(filePath);
+    do {
+        cv::Mat frame;
+        video >> frame;
+        if (frame.empty()) break;
+        framesPoll.push_back(frame);
+    } while (true);
+    sequenceFPS=30;
 }
 
+//cv::Mat& DataContainer::getFrame(int n) {
+//    return framesPoll[n];
+//}
+
 cv::Mat& DataContainer::getNextFrame() {
-    sequence >> sequenceFrame;
-    return sequenceFrame;
+    if (framesPoll.size() == 1) {
+        cv::Mat* frame = new cv::Mat();
+        return *frame;
+    }
+    framesPoll.pop_front();
+    cv::Mat& frame = framesPoll.front();
+    return frame;
 }
 
 bool DataContainer::getNextFrame(cv::Mat& newFrame) {
@@ -37,6 +53,11 @@ bool DataContainer::getNextFrame(cv::Mat& newFrame) {
     if (newFrame.empty())
         return false;
     return true;
+}
+
+int DataContainer::getSequenceFPS() {
+    return sequenceFPS;
+
 }
 
 void DataContainer::setCloud(std::vector<CloudPoint> pc) {
@@ -56,9 +77,9 @@ void DataContainer::setCloud(std::string filePath) {
     std::string line;
     qDebug() << "DataContainer: start reading file...";
     qWarning() << "Warning: Data delimiter implemented";
-//    int t=0;
+    //    int t=0;
     while(std::getline(cloudFile,line)) {
-//        t++;
+        //        t++;
         std::istringstream iss(line);
         float a,b,c,d,e,f,g,h;
         iss >>a>>b>>c>>d>>e>>f>>g>>h;

@@ -12,9 +12,11 @@
 #include <QOpenGLBuffer>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <opencv2/core.hpp>
 
 #include "data_types.h"
 #include "datacontainer.h"
+#include "algebra.h"
 
 class PointCloudPreview : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -59,10 +61,15 @@ private:
     qint64 wheelAngle;
     QVector3D rotationAxis;
     QQuaternion rotation;
+    float rotationAngleX, rotationAngleY;
 
     PointCloud point_cloud;
 
     bool cloudPreviewOn;
+
+    float horizontalAngle;
+    float verticalAngle;
+
 
 
 };

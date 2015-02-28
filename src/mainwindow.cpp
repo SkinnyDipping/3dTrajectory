@@ -8,22 +8,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     pointCloudPreview = new PointCloudPreview(this);
     sequencePreview = new SequencePreview(this);
-//    ForegroundExtractorMOG2 foregroundExtractor = ForegroundExtractorMOG2();
+    distinctForeground = ui->toggleForeground;
     ui->horizontalLayout->addWidget(sequencePreview);
     ui->horizontalLayout->addWidget(pointCloudPreview);
-
-//    cv::Mat frame;
-//    while (DataContainer::instance().getNextFrame(frame)) {
-//        sequencePreview->viewFrame(frame);
-//        char k = cv::waitKey(10);
-//        if (k == 'q') break;
-//    }
-
-
     ui->horizontalLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
-    loadSequence = ui->loadSequence;
-    loadPointCloud = ui->loadPointCloud;
+    cvMOG2 = cv::createBackgroundSubtractorMOG2();
+
+    sequencePreviewOn = false;
+
 }
 
 MainWindow::~MainWindow()
@@ -31,10 +24,42 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_loadSequence_clicked() {
-
+void MainWindow::on_startSequencePreview_clicked()
+{
+    sequencePreviewOn = !sequencePreviewOn;
+    toggleSequencePreview();
 }
 
-void MainWindow::on_loadPointCloud_clicked() {
+void MainWindow::on_rewindSequencePreview_clicked()
+{
+    sequencePreviewOn = false;
+}
 
+void MainWindow::toggleSequencePreview()
+{
+    if (sequencePreviewOn){
+        sequencePreview->startPlayback();
+        cv::Mat frame;
+        while (sequencePreviewOn) {
+            frame = DataContainer::instance().getNextFrame();
+            if (frame.empty()) {
+                break;
+            }
+            if (distinctForeground->isChecked()) {
+                cv::Mat foreground;
+                cvMOG2->apply(frame, foreground);
+                sequencePreview->viewFrame(frame);
+                cv::imshow("goreground", foreground);
+//                sequencePreview->viewFrame(foreground);
+//                foreground.convertTo(foreground, frame.type());
+//                qDebug() << foreground.rows << foreground.cols << frame.rows<<frame.cols;
+//                qDebug() << foreground.type() << frame.type();
+            } else {
+                sequencePreview->viewFrame(frame);
+            }
+            cv::waitKey(66);
+        }
+    } else {
+        //TODO
+    }
 }

@@ -11,7 +11,7 @@ public:
     ForegroundExtractorMOG2(const ForegroundExtractorMOG2 &);
     ~ForegroundExtractorMOG2();
 
-    cv::Mat& getForegroundFrame(cv::Mat frame);
+    cv::Mat& getForegroundFrame(cv::Mat& frame);
 
 private:
     cv::Ptr<cv::BackgroundSubtractorMOG2> MOG2;

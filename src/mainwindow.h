@@ -5,6 +5,11 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QCheckBox>
+
+#include "opencv2/opencv.hpp"
+#include "opencv2/video.hpp"
+
 #include "pointcloudpreview.h"
 #include "sequencepreview.h"
 #include "foregroundextractormog2.h"
@@ -22,16 +27,23 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_loadSequence_clicked();
-    void on_loadPointCloud_clicked();
+    void on_startSequencePreview_clicked();
+    void on_rewindSequencePreview_clicked();
+
+private:
+    void toggleSequencePreview();
+
 
 private:
     Ui::MainWindow *ui;
     PointCloudPreview *pointCloudPreview;
     SequencePreview *sequencePreview;
-    ForegroundExtractorMOG2 foregroundExtractor;
+    cv::Ptr<cv::BackgroundSubtractorMOG2> cvMOG2;
 
     QPushButton *loadSequence, *loadPointCloud;
+    QCheckBox *distinctForeground;
+
+    bool sequencePreviewOn;
 };
 
 #endif // MAINWINDOW_H

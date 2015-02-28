@@ -4,26 +4,27 @@
 SequencePreview::SequencePreview(QWidget *parent)
 {
     playbackOn = false;
-    image = QImage("/home/michal/3dTrajectory/res/cloud_na.png").mirrored();
+    image = QImage(":/textures/cloud_na.png").mirrored();
+    frame = cv::imread("/home/michal/3dTrajectory/res/nos.png");
 }
 
 SequencePreview::~SequencePreview()
 {
 }
 
-void SequencePreview::viewFrame(cv::Mat &frame) {
+//void SequencePreview::startPlayback(cv::VideoCapture &video, int fps) {
+void SequencePreview::startPlayback() {
     playbackOn = true;
-//    textureBuffer = new QOpenGLTexture(image);
-//    update();
-
-}
-
-void SequencePreview::startPlayback(cv::VideoCapture &video, int fps) {
-    playbackOn = true;
+    update();
 }
 
 void SequencePreview::stopPlayback() {
     playbackOn = false;
+}
+
+void SequencePreview::viewFrame(cv::Mat &frame) {
+    this->frame = frame;
+    update();
 }
 
 void SequencePreview::initializeGL() {
@@ -39,16 +40,14 @@ void SequencePreview::initializeGL() {
 
     //loading rectangle buffer
     float rectangle[] = {-1.0, -1.0, 0.0,
-                          1.0, -1.0, 0.0,
-                          1.0,  1.0, 0.0,
+                         1.0, -1.0, 0.0,
+                         1.0,  1.0, 0.0,
                          -1.0,  1.0, 0.0};
     rectangleBuffer.create();
     rectangleBuffer.bind();
     rectangleBuffer.allocate(rectangle, 4*3*sizeof(float));
 
-    textureBuffer = new QOpenGLTexture(image);
-//    textureBuffer = new QOpenGLTexture();
-
+    cloudNATexture = new QOpenGLTexture(image);
 }
 
 void SequencePreview::resizeGL() {
@@ -58,7 +57,6 @@ void SequencePreview::resizeGL() {
 void SequencePreview::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (playbackOn)
     drawSequencePreview();
 }
 
@@ -72,20 +70,30 @@ void SequencePreview::drawSequencePreview() {
     GLint textureCoordinateLocation = program.attributeLocation("a_textCoord");
     program.enableAttributeArray(textureCoordinateLocation);
     program.setAttributeBuffer(textureCoordinateLocation, GL_FLOAT, 0, 3);
-    textureBuffer->bind();
+
+    if (playbackOn) {
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frame.size().width, frame.size().height, 0, GL_BGR, GL_UNSIGNED_BYTE, frame.ptr());
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    } else {
+        cloudNATexture->bind();
+    }
+
     program.setUniformValue("texture", 0);
 
-    glPointSize(20);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 }
 
 void SequencePreview::initShaders() {
     // Compile vertex shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, "/home/michal/3dTrajectory/src/vPreview.glsl"))
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vPreview.glsl"))
         this->close();
 
     // Compile fragment shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, "/home/michal/3dTrajectory/src/fPreview.glsl"))
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fPreview.glsl"))
         this->close();
 
     // Link shader pipeline

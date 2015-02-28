@@ -10,6 +10,8 @@
 #include <QImage>
 #include "opencv2/opencv.hpp"
 
+#include "datacontainer.h"
+
 namespace Ui {
 class SequencePreview;
 }
@@ -23,7 +25,8 @@ public:
     ~SequencePreview();
 
     void viewFrame(cv::Mat& frame);
-    void startPlayback(cv::VideoCapture &video, int fps);
+//    void startPlayback(cv::VideoCapture &video, int fps);
+    void startPlayback();
     void stopPlayback();
     void clearView();
 
@@ -39,10 +42,12 @@ private:
 private:
     QOpenGLShaderProgram program;
     QOpenGLBuffer rectangleBuffer;
-    QOpenGLTexture *textureBuffer;
+    QOpenGLTexture *textureBuffer, *cloudNATexture;
 
     //TEMP
-    QImage image;
+    QImage image, img;
+    cv::Mat frame;
+    GLuint textureID;
 
     bool playbackOn;
 

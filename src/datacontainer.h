@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <opencv2/opencv.hpp>
+#include <opencv2/videoio.hpp>
 #include <fstream>
 #include <boost/fusion/adapted.hpp>
 #include <boost/spirit/include/qi.hpp>
@@ -20,8 +21,10 @@ public:
     PointCloud& getCloud();
 
     void loadSequence(std::string filePath);
+    cv::Mat& getFrame(int n);
     cv::Mat& getNextFrame();
     bool getNextFrame(cv::Mat& newFrame);
+    int getSequenceFPS();
 
     void setCloud(PointCloud);
     void setCloud(std::string filePath);
@@ -40,6 +43,8 @@ private:
     cv::VideoCapture sequence;
     cv::Mat sequenceFrame;
     cv::Mat foregroundFrame;
+    std::list<cv::Mat> framesPoll;
+    int sequenceFPS;
 
 };
 

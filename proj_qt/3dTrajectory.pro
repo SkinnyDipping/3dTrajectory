@@ -19,7 +19,8 @@ SOURCES += ../src/main.cpp \
     ../src/sequencepreview.cpp \
     ../src/mainwindow.cpp \
     ../src/QOpenCVWidget.cpp \
-    ../src/foregroundextractormog2.cpp
+    ../src/foregroundextractormog2.cpp \
+    ../src/algebra.cpp
 
 HEADERS  += \
     ../src/pointcloudpreview.h \
@@ -28,7 +29,8 @@ HEADERS  += \
     ../src/sequencepreview.h \
     ../src/mainwindow.h \
     ../src/QOpenCVWidget.h \
-    ../src/foregroundextractormog2.h
+    ../src/foregroundextractormog2.h \
+    ../src/algebra.h
 
 FORMS    += \
     ../src/sequencepreview.ui \
@@ -37,10 +39,13 @@ FORMS    += \
 INCLUDEPATH += /usr/local/include
 
 LIBS += -L"/usr/local/lib/" \
-        -lopencv_core -lopencv_highgui -lopencv_video
+        -lopencv_core -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_imgcodecs
 LIBS += -L"/usr/lib/x86_64-linux-gnu/"
 #        -lboost_iostreams
 
 DISTFILES += \
     ../src/fshader.glsl \
     ../src/vshader.glsl
+
+RESOURCES += \
+    ../res/textures.qrc

@@ -30,6 +30,7 @@ public:
 
     void setCloud(PointCloud);
     void setCloud(std::string filePath);
+    CloudPoint getCloudCentroid();
 
     void debugCloud();
     void showSequence();
@@ -39,6 +40,8 @@ private:
     DataContainer(const DataContainer &);
     ~DataContainer();
 
+    CloudPoint calculateCentroid();
+
 private:
     PointCloud point_cloud;
 
@@ -47,6 +50,8 @@ private:
     cv::Mat foregroundFrame;
     std::vector<cv::Mat> framesPoll;
     int sequenceFPS;
+
+    CloudPoint cloud_centroid;
 
     unsigned int currentFrameIndex;
 

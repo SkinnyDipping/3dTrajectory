@@ -3,6 +3,10 @@
 
 #include <QDebug>
 
+#define DEG2RAD 0.0174532925f
+#define RAD2DEG 57.2957795f
+
+
 class CloudPoint {
 public:
     float x, y, z;

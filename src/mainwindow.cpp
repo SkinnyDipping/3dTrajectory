@@ -39,6 +39,11 @@ void MainWindow::on_rewindSequencePreview_clicked()
     rewindSequence();
 }
 
+void MainWindow::on_performCasting_clicked()
+{
+    qDebug() << DataContainer::instance().getCloudCentroid();
+}
+
 void MainWindow::toggleSequencePreview()
 {
     if (sequencePreviewOn){

@@ -2,17 +2,18 @@
 
 PointCloudPreview::PointCloudPreview(QWidget *parent)
 {
-    angle = 0;
     wheelAngle = 0;
     cloudPreviewOn = false;
 
-    horizontalAngle = 0.0f;
-    verticalAngle = 0.0f;
+    rotationAngleX = 0.0f;
+    rotationAngleY = 0.0f;
+    currentRotationAngleX = 0.0f;
+    currentRotationAngleY = 0.0f;
 }
 
 PointCloudPreview::~PointCloudPreview()
 {
-    pointsBuffer.destroy();
+    points_buffer.destroy();
 }
 
 void PointCloudPreview::showCloud(PointCloud &cloud) {
@@ -23,36 +24,44 @@ void PointCloudPreview::clearWindow() {
     qDebug()<<"clearWindow";
 }
 
-void PointCloudPreview::mouseMoveEvent(QMouseEvent *e) {
-    mousePreviousPosition = mouseCurrentPosition;
-    mouseCurrentPosition = QVector2D(e->pos());
-    QVector2D diff = mouseCurrentPosition - mousePreviousPosition;
-    QVector3D n = QVector3D(diff.y(), diff.x(), 0.0).normalized();
-    angle = diff.length();
-    rotationAxis = (rotationAxis*angle+n).normalized();
-    rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angle)*rotation;
+void PointCloudPreview::mousePressEvent(QMouseEvent *e) {
+    pressed_point = e->pos();
+}
 
-    horizontalAngle += (this->size().width()/2 - e->x())*0.005f;
-    verticalAngle += (this->size().height()/2 - e->y())*0.005f;
-    qDebug() << horizontalAngle;
-    qDebug() << verticalAngle;
+void PointCloudPreview::mouseReleaseEvent(QMouseEvent *e) {
+    release_point = e->pos();
+    currentRotationAngleX = rotationAngleX;
+    currentRotationAngleY = rotationAngleY;
+}
+
+void PointCloudPreview::mouseDoubleClickEvent(QMouseEvent *e) {
+    rotationAngleX = 0;
+    rotationAngleY = 0;
 
     update();
 }
 
-//void PointCloudPreview::mouseMoveEvent(QMouseEvent *e) {
+void PointCloudPreview::mouseMoveEvent(QMouseEvent *e) {
 
-//}
+    Qt::MouseButtons buttons = e->buttons();
+    if (buttons == Qt::LeftButton){
+    rotationAngleX = currentRotationAngleX - (e->x() - pressed_point.x());
+    rotationAngleY = currentRotationAngleY - (e->y() - pressed_point.y());
+    }
+    if (buttons == Qt::RightButton) {
+//TODO implemet translation
+    }
+
+    update();
+}
 
 void PointCloudPreview::wheelEvent(QWheelEvent *e) {
     wheelAngle += e->delta()/8;
-    qDebug() << wheelAngle;
     update();
 }
 
 void PointCloudPreview::initializeGL()
 {
-    qDebug() << "initializeGL";
     initializeOpenGLFunctions();
 
     glClearColor(0, 0, 0.4f, 1);
@@ -87,39 +96,32 @@ void PointCloudPreview::resizeGL(int w, int h)
 
 void PointCloudPreview::paintGL()
 {
-    qDebug() << "paintGL";
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Calculate model view transformation
-    QMatrix4x4 matrix;
-    matrix.setToIdentity();
-    //    matrix.translate(0.0, 0.0, 0.0);
-    matrix.rotate(rotation);
+    //cloud centroid (passed to vertex shader)
+    QVector4D vecCentroid =QVector4D(DataContainer::instance().getCloudCentroid().x,
+                                     DataContainer::instance().getCloudCentroid().y,
+                                     DataContainer::instance().getCloudCentroid().z,
+                                     0.0f);
 
-    float direction[] = {cos(horizontalAngle)*sin(verticalAngle),
-                         sin(horizontalAngle),
-                         cos(horizontalAngle)*cos(verticalAngle)};
-    float right[] = {sin(horizontalAngle - 3.14f/2),
-                     0,
-                     cos(horizontalAngle - 3.14f/2)};
-
-    Vector up = Algebra::crossProduct(right, direction);
-
+    //Rotation
     QMatrix4x4 rotationMatrix = QMatrix4x4();
-    rotationMatrix.rotate(horizontalAngle,1,0,0);
-    rotationMatrix.rotate(verticalAngle,0,1,0);
+    rotationMatrix.rotate(rotationAngleX,0,1,0);
+    rotationMatrix.rotate(rotationAngleY,1,0,0);
 
+    //MVP matrix
     QMatrix4x4 proj, view, camera;
+    //How camera sees
     proj.perspective(45.0f, 4.0f/3.0f, 0.1f, 1500.0f);
-//    view.lookAt(QVector3D(0,0,0),QVector3D(0,0,1),QVector3D(up.x, up.y, up.z));
+    //From where camera sees (ZOOM HERE)
     view.lookAt(QVector3D(0,0,0+wheelAngle/15.0f),QVector3D(0,0,1+wheelAngle/15.0f),QVector3D(0,1,0));
     camera.setToIdentity();
     QMatrix4x4 mvpMatrix = proj*view*camera;
 
+    program.setUniformValue("u_centroid", vecCentroid);
     program.setUniformValue("mvp_matrix", mvpMatrix);
-    program.setUniformValue("u_rotationMatrix", rotationMatrix);
-    //    program.setUniformValue("mvp_matrix", matrix);
+    program.setUniformValue("u_rotation", rotationMatrix);
 
     drawPointCloud(&program);
 }
@@ -144,30 +146,13 @@ void PointCloudPreview::loadCloudShaders()
 }
 
 void PointCloudPreview::loadPointCloudBuffer() {
-    pointsBuffer.create();
-    pointsBuffer.bind();
-
-
-    float v[] = {-1.0, 1.0, 10.0,
-                 -1.0, -1.0, 10.0,
-                 1.0, -1.0, 10.0,
-                 1.0, 1.0, 10.0};
-    //    pointsBuffer.allocate(v, 4*3*sizeof(float));
-    pointsBuffer.allocate(&DataContainer::instance().getCloud()[0], DataContainer::instance().getCloud().size()*sizeof(CloudPoint));
-    //    qDebug() << DataContainer::instance().getCloud().size();
-    //    qDebug() << DataContainer::instance().getCloud()[DataContainer::instance().getCloud().size()-1];
-}
-
-void PointCloudPreview::loadPointCloudBuffer(const void *pointCloud, int nOfPoints) {
-    pointsBuffer.create();
-    pointsBuffer.bind();
-    pointsBuffer.allocate(&DataContainer::instance().getCloud()[0], DataContainer::instance().getCloud().size() * sizeof(CloudPoint));
-    //    pointsBuffer.allocate(pointCloud, nOfPoints * sizeof(CloudPoint));
-    //    qDebug() << pointsBuffer.size();
+    points_buffer.create();
+    points_buffer.bind();
+    points_buffer.allocate(&DataContainer::instance().getCloud()[0], DataContainer::instance().getCloud().size()*sizeof(CloudPoint));
 }
 
 void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program) {
-    pointsBuffer.bind();
+    points_buffer.bind();
     GLint vertexLocation = program->attributeLocation("a_position");
     program->enableAttributeArray(vertexLocation);
     //    program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, DataContainer::instance().getCloud().size());
@@ -175,20 +160,8 @@ void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program) {
 
     glPointSize(1);
     glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
-}
 
-CloudPoint PointCloudPreview::calculateCentroid() {
-    CloudPoint centroid = CloudPoint();
-    CloudPoint sum = CloudPoint();
-    for (int i=0; i<DataContainer::instance().getCloud().size(); i++) {
-        sum += DataContainer::instance().getCloud()[i];
-    }
-    int n=DataContainer::instance().getCloud().size();
-    qDebug() << sum;
-    centroid.x = sum.x/n;
-    centroid.y = sum.y/n;
-    centroid.z = sum.z/n;
-    return centroid;
+    program->disableAttributeArray(vertexLocation);
 }
 
 void PointCloudPreview::drawCloudNotAvailable() {
@@ -220,6 +193,4 @@ void PointCloudPreview::drawCloudNotAvailable() {
                               1.0, -1.0, 0.0,
                               1.0,  1.0, 0.0,
                               -1.0,  1.0, 0.0};
-
-    //    QOpenGLBuffer
 }

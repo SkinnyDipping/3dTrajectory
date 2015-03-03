@@ -2,7 +2,6 @@
 
 DataContainer::DataContainer()
 {
-    sequence = cv::VideoCapture("/home/michal/3dTrajectory/data/seq/1.mp4");
     currentFrameIndex = 0;
 }
 
@@ -90,6 +89,8 @@ void DataContainer::setCloud(std::string filePath) {
     }
     qDebug() << "DataContainer: file read";
     cloudFile.close();
+
+    cloud_centroid = calculateCentroid();
 }
 //BOOST_FUSION_ADAPT_STRUCT(PointCloud, (float, x)(float, y)(float, z))
 
@@ -110,4 +111,21 @@ void DataContainer::debugCloud() {
 
 void DataContainer::showSequence() {
 
+}
+
+CloudPoint DataContainer::calculateCentroid() {
+    CloudPoint centroid = CloudPoint();
+    CloudPoint sum = CloudPoint();
+    for (int i=0; i<point_cloud.size(); i++) {
+        sum += point_cloud[i];
+    }
+    int n=point_cloud.size();
+    centroid.x = sum.x/n;
+    centroid.y = sum.y/n;
+    centroid.z = sum.z/n;
+    return centroid;
+}
+
+CloudPoint DataContainer::getCloudCentroid() {
+    return cloud_centroid;
 }

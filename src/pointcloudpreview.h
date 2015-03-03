@@ -34,6 +34,9 @@ signals:
 public slots:
 
 protected:
+    void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent *e) Q_DECL_OVERRIDE;
     void initializeGL() Q_DECL_OVERRIDE;
@@ -47,31 +50,21 @@ private:
     void drawPointCloud(QOpenGLShaderProgram *program);
     void drawCloudNotAvailable();
 
-    CloudPoint calculateCentroid();
-
-
 private:
     QOpenGLShaderProgram program;
-    QOpenGLBuffer pointsBuffer;
+    QOpenGLBuffer points_buffer;
 
-    QVector2D mouseCurrentPosition, mousePreviousPosition;
+    //Point in which mouse was pressed and released
+    QPoint pressed_point, release_point;
 
-    QMatrix4x4 projection;
-    qreal angle;
     qint64 wheelAngle;
-    QVector3D rotationAxis;
-    QQuaternion rotation;
     float rotationAngleX, rotationAngleY;
+    float currentRotationAngleX, currentRotationAngleY;
 
     PointCloud point_cloud;
+    PointCloud frame_points; //debug-proper: frame with points to be casted
 
     bool cloudPreviewOn;
-
-    float horizontalAngle;
-    float verticalAngle;
-
-
-
 };
 
 #endif // POINTCLOUDPREVIEW_H

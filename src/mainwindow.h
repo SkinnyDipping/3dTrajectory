@@ -29,6 +29,7 @@ public:
 private slots:
     void on_startSequencePreview_clicked();
     void on_rewindSequencePreview_clicked();
+    void on_performCasting_clicked();
 
 private:
     void toggleSequencePreview();

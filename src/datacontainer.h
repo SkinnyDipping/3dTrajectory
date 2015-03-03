@@ -14,6 +14,7 @@
 
 class DataContainer
 {
+
 public:
     static DataContainer& instance();
 
@@ -21,10 +22,11 @@ public:
     PointCloud& getCloud();
 
     void loadSequence(std::string filePath);
-    cv::Mat& getFrame(int n);
+    cv::Mat& getFrame();
     cv::Mat& getNextFrame();
     bool getNextFrame(cv::Mat& newFrame);
     int getSequenceFPS();
+    void setCurrentFrameIndex(int value);
 
     void setCloud(PointCloud);
     void setCloud(std::string filePath);
@@ -43,8 +45,10 @@ private:
     cv::VideoCapture sequence;
     cv::Mat sequenceFrame;
     cv::Mat foregroundFrame;
-    std::list<cv::Mat> framesPoll;
+    std::vector<cv::Mat> framesPoll;
     int sequenceFPS;
+
+    unsigned int currentFrameIndex;
 
 };
 

@@ -27,12 +27,16 @@ MainWindow::~MainWindow()
 void MainWindow::on_startSequencePreview_clicked()
 {
     sequencePreviewOn = !sequencePreviewOn;
+    if (sequencePreviewOn)
+        ui->startSequencePreview->setText("Pause");
+    else
+        ui->startSequencePreview->setText("Play");
     toggleSequencePreview();
 }
 
 void MainWindow::on_rewindSequencePreview_clicked()
 {
-    sequencePreviewOn = false;
+    rewindSequence();
 }
 
 void MainWindow::toggleSequencePreview()
@@ -46,6 +50,7 @@ void MainWindow::toggleSequencePreview()
                 break;
             }
             if (distinctForeground->isChecked()) {
+    //TODO: zrobic w tym samym oknie, kolorowanie takze
                 cv::Mat foreground;
                 cvMOG2->apply(frame, foreground);
                 sequencePreview->viewFrame(frame);
@@ -62,4 +67,8 @@ void MainWindow::toggleSequencePreview()
     } else {
         //TODO
     }
+}
+
+void MainWindow::rewindSequence() {
+    DataContainer::instance().setCurrentFrameIndex(0);
 }

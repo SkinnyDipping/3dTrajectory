@@ -3,6 +3,7 @@
 DataContainer::DataContainer()
 {
     sequence = cv::VideoCapture("/home/michal/3dTrajectory/data/seq/1.mp4");
+    currentFrameIndex = 0;
 }
 
 DataContainer::~DataContainer()
@@ -34,18 +35,16 @@ void DataContainer::loadSequence(std::string filePath) {
     sequenceFPS=30;
 }
 
-//cv::Mat& DataContainer::getFrame(int n) {
-//    return framesPoll[n];
-//}
+cv::Mat& DataContainer::getFrame() {
+    return framesPoll[currentFrameIndex];
+}
 
 cv::Mat& DataContainer::getNextFrame() {
-    if (framesPoll.size() == 1) {
+    if (currentFrameIndex >= framesPoll.size()) {
         cv::Mat* frame = new cv::Mat();
         return *frame;
     }
-    framesPoll.pop_front();
-    cv::Mat& frame = framesPoll.front();
-    return frame;
+    return framesPoll[currentFrameIndex++];
 }
 
 bool DataContainer::getNextFrame(cv::Mat& newFrame) {
@@ -58,6 +57,10 @@ bool DataContainer::getNextFrame(cv::Mat& newFrame) {
 int DataContainer::getSequenceFPS() {
     return sequenceFPS;
 
+}
+
+void DataContainer::setCurrentFrameIndex(int value) {
+    this->currentFrameIndex = value;
 }
 
 void DataContainer::setCloud(std::vector<CloudPoint> pc) {

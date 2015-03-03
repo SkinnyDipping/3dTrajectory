@@ -32,6 +32,7 @@ private slots:
 
 private:
     void toggleSequencePreview();
+    void rewindSequence();
 
 
 private:

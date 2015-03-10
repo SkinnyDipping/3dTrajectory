@@ -20,6 +20,10 @@ void PointCloudPreview::showCloud(PointCloud &cloud) {
     //TODO implement
 }
 
+void PointCloudPreview::drawFrame(cv::Mat transformationMatrix) {
+    qDebug() << "drawFrame";
+}
+
 void PointCloudPreview::clearWindow() {
     qDebug()<<"clearWindow";
 }
@@ -129,11 +133,11 @@ void PointCloudPreview::paintGL()
 void PointCloudPreview::loadCloudShaders()
 {
     // Compile vertex shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vshader.glsl"))
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_pointcloud.glsl"))
         close();
 
     // Compile fragment shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fshader.glsl"))
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_pointcloud.glsl"))
         close();
 
     // Link shader pipeline

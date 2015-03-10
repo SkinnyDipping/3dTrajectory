@@ -89,11 +89,11 @@ void SequencePreview::drawSequencePreview() {
 
 void SequencePreview::initShaders() {
     // Compile vertex shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vPreview.glsl"))
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_sequence.glsl"))
         this->close();
 
     // Compile fragment shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fPreview.glsl"))
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_sequence.glsl"))
         this->close();
 
     // Link shader pipeline

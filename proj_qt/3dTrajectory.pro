@@ -48,4 +48,5 @@ DISTFILES += \
     ../src/vshader.glsl
 
 RESOURCES += \
-    ../res/textures.qrc
+    ../res/textures/textures.qrc \
+    ../res/shaders/shaders.qrc

@@ -4,8 +4,8 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
 {
     wheelAngle = 0;
 
-    cloudPreviewOn = false;
-    framePreviewOn = false;
+    cloudPreviewOn = true;
+    framePreviewOn = true;
 
     rotationAngleX = 0.0f;
     rotationAngleY = 0.0f;

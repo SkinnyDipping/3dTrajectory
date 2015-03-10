@@ -1,6 +1,8 @@
 #ifndef ALGEBRA_H
 #define ALGEBRA_H
 
+#define SQ(a) a*a
+
 class Vector
 {
 public:

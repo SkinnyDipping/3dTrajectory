@@ -5,6 +5,7 @@
 
 #include <QQuaternion>
 
+#include "algebra.h"
 #include "data_types.h"
 #include "datacontainer.h"
 
@@ -25,7 +26,18 @@ public:
 
 private:
 
-//    std::vector<Point3D> imageOnPlane(Point3D)
+    /**
+     * @brief imageOnPlane Casts 2D points on 3D plane
+     *
+     * Function casts points on 3D plane given by members: A, B, C, D.
+     * It does not guarantee proper rotation after cast,
+     * it need to be done manually
+     *
+     * @param castedCentroid centroid of points after cast
+     * @param imagePoints
+     * @return vector of casted coordinates
+     */
+    std::vector<Point3D> imageOnPlane(Point3D castedCentroid, std::vector<Point2D> imagePoints);
 
     /**
      * @brief calculateTangentialPlaneCoeff
@@ -40,7 +52,7 @@ private:
      * @param cloudKeypoints
      * @return casted points
      */
-    std::vector<Point3D> castCloudPoints(std::vector<Point3D> cloudKeypoints);
+    std::vector<Point3D> castCloudPoints(std::vector<Point3D> &cloudKeypoints);
 
     /**
      * @brief castImagePoints Casts image keypoints on ABCD plane

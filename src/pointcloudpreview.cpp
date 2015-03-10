@@ -3,15 +3,14 @@
 PointCloudPreview::PointCloudPreview(QWidget *parent)
 {
     wheelAngle = 0;
+
     cloudPreviewOn = false;
+    framePreviewOn = false;
 
     rotationAngleX = 0.0f;
     rotationAngleY = 0.0f;
     currentRotationAngleX = 0.0f;
     currentRotationAngleY = 0.0f;
-
-    castMatrix = cv::Mat::eye(4,4,CV_32F);
-//    castMatrix(2,3) = 10;
 
     initialZoom = 100;
 }
@@ -21,13 +20,19 @@ PointCloudPreview::~PointCloudPreview()
     pointcloud_buffer.destroy();
 }
 
-void PointCloudPreview::showCloud(PointCloud &cloud) {
-    //TODO implement
+void PointCloudPreview::showCloud() {
+    cloudPreviewOn = true;
+    update();
 }
 
-void PointCloudPreview::renderFrame(cv::Mat transformationMatrix) {
-    qDebug() << "renderFrame";
-    castMatrix = transformationMatrix;
+void PointCloudPreview::renderFrame(cv::Mat_<float> matrix) {
+    castMatrix = QMatrix4x4(matrix(0,0),matrix(0,1),matrix(0,2),matrix(0,3),
+                            matrix(1,0),matrix(1,1),matrix(1,2),matrix(1,3),
+                            matrix(2,0),matrix(2,1),matrix(2,2),matrix(2,3),
+                            matrix(3,0),matrix(3,1),matrix(3,2),matrix(3,3));
+
+    framePreviewOn = true;
+    update();
 }
 
 void PointCloudPreview::clearWindow() {
@@ -130,20 +135,14 @@ void PointCloudPreview::paintGL()
     QMatrix4x4 mvpMatrix = proj*view*camera;
 
 
-    QMatrix4x4 matrix = QMatrix4x4(castMatrix(0,0),castMatrix(0,1),castMatrix(0,2),castMatrix(0,3),
-                                   castMatrix(1,0),castMatrix(1,1),castMatrix(1,2),castMatrix(1,3),
-                                   castMatrix(2,0),castMatrix(2,1),castMatrix(2,2),castMatrix(2,3),
-                                   castMatrix(3,0),castMatrix(3,1),castMatrix(3,2),castMatrix(3,3));
-
-    qDebug() << matrix;
-
     // DRAW WITH CLOUD SHADER PROGRAM
     cloudProgram.bind();
     cloudProgram.setUniformValue("u_rotoid", vecCentroid);
     cloudProgram.setUniformValue("mvp_matrix", mvpMatrix);
     cloudProgram.setUniformValue("u_rotation", rotationMatrix);
 
-    drawPointCloud(&cloudProgram);
+    if (cloudPreviewOn)
+        drawPointCloud(&cloudProgram);
     cloudProgram.release();
 
     // DRAW WITH FRAME SHADER PROGRAM
@@ -151,9 +150,10 @@ void PointCloudPreview::paintGL()
     frameProgram.setUniformValue("u_rotoid", vecCentroid);
     frameProgram.setUniformValue("mvp_matrix", mvpMatrix);
     frameProgram.setUniformValue("u_rotation", rotationMatrix);
-    frameProgram.setUniformValue("u_transformationMatrix", matrix);
+    frameProgram.setUniformValue("u_transformationMatrix", castMatrix);
 
-    drawFrame(&frameProgram);
+    if (framePreviewOn)
+        drawFrame(&frameProgram);
     frameProgram.release();
 }
 

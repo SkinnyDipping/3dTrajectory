@@ -26,8 +26,17 @@ public:
     PointCloudPreview(QWidget *parent = 0);
     ~PointCloudPreview();
 
-    void showCloud(PointCloud& cloud);
-    void renderFrame(cv::Mat transformationMatrix);
+    void showCloud();
+
+    /**
+     * @brief renderFrame Render frame in point cloud window
+     *
+     * Render frame in point cloud window. Apply optional transformation
+     *
+     * @param transformationMatrix
+     */
+    void renderFrame(cv::Mat_<float> transformationMatrix = cv::Mat::eye(4,4,CV_32F));
+
     void clearWindow();
 
 signals:
@@ -71,9 +80,9 @@ private:
     PointCloud point_cloud;
     PointCloud frame_points; //debug-proper: frame with points to be casted
 
-    cv::Mat_<float> castMatrix;
+    QMatrix4x4 castMatrix;
 
-    bool cloudPreviewOn;
+    bool cloudPreviewOn, framePreviewOn;
 };
 
 #endif // POINTCLOUDPREVIEW_H

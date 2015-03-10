@@ -30,6 +30,7 @@ private slots:
     void on_startSequencePreview_clicked();
     void on_rewindSequencePreview_clicked();
     void on_performCasting_clicked();
+    void on_loadCloud_clicked();
 
 private:
     void toggleSequencePreview();

@@ -6,6 +6,7 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
 
     cloudPreviewOn = true;
     framePreviewOn = true;
+    pointsPreviewOn = false;
 
     rotationAngleX = 0.0f;
     rotationAngleY = 0.0f;
@@ -37,6 +38,19 @@ void PointCloudPreview::renderFrame(cv::Mat_<float> matrix) {
 
 void PointCloudPreview::clearWindow() {
     qDebug()<<"clearWindow";
+}
+
+void PointCloudPreview::renderPoint(Point3DRGB point)
+{
+
+}
+
+void PointCloudPreview::renderPoint(std::vector<Point3D> points)
+{
+    points_buffer.bind();
+    points_buffer.allocate(&points[0], points.size()*sizeof(Point3D));
+    pointsPreviewOn = true;
+    update();
 }
 
 void PointCloudPreview::mousePressEvent(QMouseEvent *e) {
@@ -92,6 +106,7 @@ void PointCloudPreview::initializeGL()
 
     loadPointCloudBuffer();
     loadFrameBuffer();
+    points_buffer.create();
 }
 
 void PointCloudPreview::resizeGL(int w, int h)
@@ -134,15 +149,26 @@ void PointCloudPreview::paintGL()
     camera.setToIdentity();
     QMatrix4x4 mvpMatrix = proj*view*camera;
 
+    //Points color
+    QVector4D color = QVector4D(1.0f, 1.0f, 0.0f, 1.0f);
 
     // DRAW WITH CLOUD SHADER PROGRAM
     cloudProgram.bind();
     cloudProgram.setUniformValue("u_rotoid", vecCentroid);
     cloudProgram.setUniformValue("mvp_matrix", mvpMatrix);
     cloudProgram.setUniformValue("u_rotation", rotationMatrix);
+    cloudProgram.setUniformValue("u_pointsColor", color);
 
     if (cloudPreviewOn)
         drawPointCloud(&cloudProgram);
+
+    if (pointsPreviewOn){
+        color = QVector4D(1.0f, 0.0f, 0.0f, 1.0f);
+        cloudProgram.setUniformValue("u_pointsColor", color);
+
+        drawPoints(&cloudProgram);
+    }
+
     cloudProgram.release();
 
     // DRAW WITH FRAME SHADER PROGRAM
@@ -239,6 +265,19 @@ void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram) {
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
     frameProgram->disableAttributeArray(VBOLocation);
+}
+
+void PointCloudPreview::drawPoints(QOpenGLShaderProgram *pointsProgram) {
+    points_buffer.bind();
+
+    GLint vertexLocation = pointsProgram->attributeLocation("a_position");
+    pointsProgram->enableAttributeArray(vertexLocation);
+    pointsProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3);
+
+    glPointSize(10);
+    glDrawArrays(GL_POINTS, 0, 1);
+
+    pointsProgram->disableAttributeArray(vertexLocation);
 }
 
 void PointCloudPreview::drawCloudNotAvailable() {

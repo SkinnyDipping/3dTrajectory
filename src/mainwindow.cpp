@@ -49,6 +49,10 @@ void MainWindow::on_performCasting_clicked()
     matrix(2,3) = centroid.z;
 
     pointCloudPreview->renderFrame(matrix);
+
+    std::vector<Point3D> v;
+    v.push_back(centroid);
+    pointCloudPreview->renderPoint(v);
 }
 
 void MainWindow::on_loadCloud_clicked()

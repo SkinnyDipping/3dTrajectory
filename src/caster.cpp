@@ -13,39 +13,6 @@ Caster::~Caster()
 
 }
 
-std::vector<Point3D> Caster::imageOnPlane(Point3D castedCentroid, std::vector<Point2D> imagePoints)
-{
-    if (A == 1 && B == 3 && C == 3 && D == 7) {
-        std::cerr
-                << "ABCD = 1337: Lack of initialization probable \n FUNCTION RETURN";
-    }
-    vector<Point3D> pointsIn3d, points2;
-
-    //Calculating centroid and translating to origin
-//	Point2f I_centroid = Utils::calculateCentroid(points);
-//	for (int i = 0; i < points.size(); i++) {
-//		points[i].x -= I_centroid.x;
-//		points[i].y -= I_centroid.y;
-//	}
-
-    //Quaternion:
-    // <cos phi/2 ; dx sin phi/2 ; dy sin phi/2 ; dz sin phi/2>
-    // phi = arcos( C / sqrt(AA+BB+CC) )
-    // alpha: Ax + By + D = 0
-    // d = [-B, A, 0]
-
-    double phi = acos(C / sqrt(A * A + B * B + C * C));
-    double normVec = sqrt(B * B + A * A + C * C);
-    PointXYZ vector = PointXYZ(B / normVec, -A / normVec, 0);
-    Quaternion q = Quaternion(-phi, vector);
-
-    for (int i = 0; i < points.size(); i++) {
-        pointsIn3d.push_back(PointXYZ(points[i].x, points[i].y, 0));
-    }
-    points2 = Quaternion::rotate(pointsIn3d, q, tangentialPoint);
-    return points2;
-}
-
 void Caster::calculateTangentialPlaneCoeff()
 {
     /*

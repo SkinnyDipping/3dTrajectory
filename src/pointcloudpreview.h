@@ -51,12 +51,14 @@ private:
 
     void loadFrameShaders();
     void loadFrameBuffer();
-    void drawFrame(QOpenGLShaderProgram *frameProgram, cv::Mat transformationMatrix);
+    void drawFrame(QOpenGLShaderProgram *frameProgram);
     void drawCloudNotAvailable();
 
 private:
     QOpenGLShaderProgram cloudProgram, frameProgram;
     QOpenGLBuffer pointcloud_buffer, frame_buffer;
+
+    GLuint textureID;
 
     //Point in which mouse was pressed and released
     QPoint pressed_point, release_point;
@@ -68,6 +70,8 @@ private:
 
     PointCloud point_cloud;
     PointCloud frame_points; //debug-proper: frame with points to be casted
+
+    cv::Mat_<float> castMatrix;
 
     bool cloudPreviewOn;
 };

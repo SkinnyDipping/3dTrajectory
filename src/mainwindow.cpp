@@ -42,7 +42,7 @@ void MainWindow::on_rewindSequencePreview_clicked()
 void MainWindow::on_performCasting_clicked()
 {
     qDebug() << "Casting";
-    CloudPoint centroid = DataContainer::instance().getCloudCentroid();
+    Point3D centroid = DataContainer::instance().getCloudCentroid();
     cv::Mat_<float> matrix = cv::Mat_<float>::eye(4,4);
     matrix(0,3) = centroid.x;
     matrix(1,3) = centroid.y;

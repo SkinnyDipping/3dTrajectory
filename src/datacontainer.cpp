@@ -3,6 +3,7 @@
 DataContainer::DataContainer()
 {
     currentFrameIndex = 0;
+    sequenceAvailable = false;
 }
 
 DataContainer::~DataContainer()
@@ -19,7 +20,7 @@ cv::VideoCapture& DataContainer::getSequence() {
     return sequence;
 }
 
-std::vector<CloudPoint>& DataContainer::getCloud(){
+std::vector<Point3D>& DataContainer::getCloud(){
     return point_cloud;
 }
 
@@ -32,6 +33,7 @@ void DataContainer::loadSequence(std::string filePath) {
         framesPoll.push_back(frame);
     } while (true);
     sequenceFPS=30;
+    sequenceAvailable = true;
 }
 
 cv::Mat& DataContainer::getFrame() {
@@ -66,7 +68,7 @@ void DataContainer::setCurrentFrameIndex(int value) {
     this->currentFrameIndex = value;
 }
 
-void DataContainer::setCloud(std::vector<CloudPoint> pc) {
+void DataContainer::setCloud(std::vector<Point3D> pc) {
     for (unsigned int i=0; i<pc.size(); i++) {
         point_cloud.push_back(pc[i]);
     }
@@ -89,7 +91,7 @@ void DataContainer::setCloud(std::string filePath) {
         std::istringstream iss(line);
         float a,b,c,d,e,f,g,h;
         iss >>a>>b>>c>>d>>e>>f>>g>>h;
-        point_cloud.push_back(CloudPoint(c,d,e));
+        point_cloud.push_back(Point3D(c,d,e));
     }
     qDebug() << "DataContainer: file read";
     cloudFile.close();
@@ -117,9 +119,9 @@ void DataContainer::showSequence() {
 
 }
 
-CloudPoint DataContainer::calculateCentroid() {
-    CloudPoint centroid = CloudPoint();
-    CloudPoint sum = CloudPoint();
+Point3D DataContainer::calculateCentroid() {
+    Point3D centroid = Point3D();
+    Point3D sum = Point3D();
     for (int i=0; i<point_cloud.size(); i++) {
         sum += point_cloud[i];
     }
@@ -130,6 +132,10 @@ CloudPoint DataContainer::calculateCentroid() {
     return centroid;
 }
 
-CloudPoint DataContainer::getCloudCentroid() {
+Point3D DataContainer::getCloudCentroid() {
     return cloud_centroid;
+}
+
+bool DataContainer::isSequenceAvailable() {
+    return sequenceAvailable;
 }

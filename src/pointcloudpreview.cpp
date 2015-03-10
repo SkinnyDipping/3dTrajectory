@@ -10,6 +10,9 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
     currentRotationAngleX = 0.0f;
     currentRotationAngleY = 0.0f;
 
+    castMatrix = cv::Mat::eye(4,4,CV_32F);
+//    castMatrix(2,3) = 10;
+
     initialZoom = 100;
 }
 
@@ -23,7 +26,8 @@ void PointCloudPreview::showCloud(PointCloud &cloud) {
 }
 
 void PointCloudPreview::renderFrame(cv::Mat transformationMatrix) {
-    qDebug() << "drawFrame";
+    qDebug() << "renderFrame";
+    castMatrix = transformationMatrix;
 }
 
 void PointCloudPreview::clearWindow() {
@@ -70,9 +74,10 @@ void PointCloudPreview::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    glClearColor(0, 0, 0.4f, 1);
+    glClearColor(0, 0, 0, 1);
 
     loadCloudShaders();
+    loadFrameShaders();
 
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
@@ -81,6 +86,7 @@ void PointCloudPreview::initializeGL()
     glEnable(GL_CULL_FACE);
 
     loadPointCloudBuffer();
+    loadFrameBuffer();
 }
 
 void PointCloudPreview::resizeGL(int w, int h)
@@ -123,11 +129,32 @@ void PointCloudPreview::paintGL()
     camera.setToIdentity();
     QMatrix4x4 mvpMatrix = proj*view*camera;
 
-    cloudProgram.setUniformValue("u_centroid", vecCentroid);
+
+    QMatrix4x4 matrix = QMatrix4x4(castMatrix(0,0),castMatrix(0,1),castMatrix(0,2),castMatrix(0,3),
+                                   castMatrix(1,0),castMatrix(1,1),castMatrix(1,2),castMatrix(1,3),
+                                   castMatrix(2,0),castMatrix(2,1),castMatrix(2,2),castMatrix(2,3),
+                                   castMatrix(3,0),castMatrix(3,1),castMatrix(3,2),castMatrix(3,3));
+
+    qDebug() << matrix;
+
+    // DRAW WITH CLOUD SHADER PROGRAM
+    cloudProgram.bind();
+    cloudProgram.setUniformValue("u_rotoid", vecCentroid);
     cloudProgram.setUniformValue("mvp_matrix", mvpMatrix);
     cloudProgram.setUniformValue("u_rotation", rotationMatrix);
 
     drawPointCloud(&cloudProgram);
+    cloudProgram.release();
+
+    // DRAW WITH FRAME SHADER PROGRAM
+    frameProgram.bind();
+    frameProgram.setUniformValue("u_rotoid", vecCentroid);
+    frameProgram.setUniformValue("mvp_matrix", mvpMatrix);
+    frameProgram.setUniformValue("u_rotation", rotationMatrix);
+    frameProgram.setUniformValue("u_transformationMatrix", matrix);
+
+    drawFrame(&frameProgram);
+    frameProgram.release();
 }
 
 void PointCloudPreview::loadCloudShaders()
@@ -143,10 +170,6 @@ void PointCloudPreview::loadCloudShaders()
     // Link shader pipeline
     if (!cloudProgram.link())
         close();
-
-    // Bind shader pipeline for use
-    if (!cloudProgram.bind())
-        close();
 }
 
 void PointCloudPreview::loadFrameShaders()
@@ -157,45 +180,65 @@ void PointCloudPreview::loadFrameShaders()
         close();
     if (!frameProgram.link())
         close();
-    if (!frameProgram.bind())
-        close();
 }
 
 void PointCloudPreview::loadPointCloudBuffer() {
     pointcloud_buffer.create();
     pointcloud_buffer.bind();
-    pointcloud_buffer.allocate(&DataContainer::instance().getCloud()[0], DataContainer::instance().getCloud().size()*sizeof(CloudPoint));
+    pointcloud_buffer.allocate(&DataContainer::instance().getCloud()[0], DataContainer::instance().getCloud().size()*sizeof(Point3D));
 }
 
 void PointCloudPreview::loadFrameBuffer() {
+    float rectangle[] = {-1.0, -1.0, 0.0,
+                         1.0, -1.0, 0.0,
+                         1.0,  1.0, 0.0,
+                         -1.0,  1.0, 0.0};
     frame_buffer.create();
     frame_buffer.bind();
-    frame_buffer.allocate(DataContainer::instance().getReferenceFrame().ptr(), sizeof(DataContainer::instance().getReferenceFrame()));
+    frame_buffer.allocate(rectangle, 4*3*sizeof(float));
 }
 
 void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program) {
     pointcloud_buffer.bind();
+
     GLint vertexLocation = program->attributeLocation("a_position");
     program->enableAttributeArray(vertexLocation);
-    //    program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, DataContainer::instance().getCloud().size());
     program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3);
 
     glPointSize(1);
     glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
 
     program->disableAttributeArray(vertexLocation);
+
 }
 
-void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram, cv::Mat transformationMatrix) {
+void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram) {
     frame_buffer.bind();
-    GLint vertexLocation = frameProgram->attributeLocation("a_position");
-    frameProgram->enableAttributeArray(vertexLocation);
-    frameProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3);
 
-    glPointSize(1);
-    glDrawArrays(GL_POINTS, 0, DataContainer::instance().getReferenceFrame().total());
+    GLint VBOLocation = frameProgram->attributeLocation("a_position");
+    frameProgram->enableAttributeArray(VBOLocation);
+    frameProgram->setAttributeBuffer(VBOLocation, GL_FLOAT, 0, 3);
 
-    frameProgram->disableAttributeArray(vertexLocation);
+    GLint textureCoordLocation = frameProgram->attributeLocation("a_textureCoord");
+    frameProgram->enableAttributeArray(textureCoordLocation);
+    frameProgram->setAttributeBuffer(textureCoordLocation, GL_FLOAT, 0, 3);
+
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 DataContainer::instance().getReferenceFrame().size().width,
+                 DataContainer::instance().getReferenceFrame().size().height,
+                 0, GL_BGR, GL_UNSIGNED_BYTE,
+                 DataContainer::instance().getReferenceFrame().ptr());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    frameProgram->setUniformValue("texture", 0);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    frameProgram->disableAttributeArray(VBOLocation);
 }
 
 void PointCloudPreview::drawCloudNotAvailable() {

@@ -46,6 +46,10 @@ cv::Mat& DataContainer::getNextFrame() {
     return framesPoll[currentFrameIndex++];
 }
 
+cv::Mat& DataContainer::getReferenceFrame() {
+    return framesPoll[0];
+}
+
 bool DataContainer::getNextFrame(cv::Mat& newFrame) {
     sequence >> newFrame;
     if (newFrame.empty())

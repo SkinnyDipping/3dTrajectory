@@ -9,18 +9,20 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
     rotationAngleY = 0.0f;
     currentRotationAngleX = 0.0f;
     currentRotationAngleY = 0.0f;
+
+    initialZoom = 100;
 }
 
 PointCloudPreview::~PointCloudPreview()
 {
-    points_buffer.destroy();
+    pointcloud_buffer.destroy();
 }
 
 void PointCloudPreview::showCloud(PointCloud &cloud) {
     //TODO implement
 }
 
-void PointCloudPreview::drawFrame(cv::Mat transformationMatrix) {
+void PointCloudPreview::renderFrame(cv::Mat transformationMatrix) {
     qDebug() << "drawFrame";
 }
 
@@ -53,7 +55,7 @@ void PointCloudPreview::mouseMoveEvent(QMouseEvent *e) {
     rotationAngleY = currentRotationAngleY - (e->y() - pressed_point.y());
     }
     if (buttons == Qt::RightButton) {
-//TODO implemet translation
+    //TODO implemet translation
     }
 
     update();
@@ -79,8 +81,6 @@ void PointCloudPreview::initializeGL()
     glEnable(GL_CULL_FACE);
 
     loadPointCloudBuffer();
-    //    drawCloudNotAvailable();
-
 }
 
 void PointCloudPreview::resizeGL(int w, int h)
@@ -119,44 +119,62 @@ void PointCloudPreview::paintGL()
     //How camera sees
     proj.perspective(45.0f, 4.0f/3.0f, 0.1f, 1500.0f);
     //From where camera sees (ZOOM HERE)
-    view.lookAt(QVector3D(0,0,0+wheelAngle/15.0f),QVector3D(0,0,1+wheelAngle/15.0f),QVector3D(0,1,0));
+    view.lookAt(QVector3D(0,0,0+wheelAngle/15.0f+initialZoom),QVector3D(0,0,1+wheelAngle/15.0f+initialZoom),QVector3D(0,1,0));
     camera.setToIdentity();
     QMatrix4x4 mvpMatrix = proj*view*camera;
 
-    program.setUniformValue("u_centroid", vecCentroid);
-    program.setUniformValue("mvp_matrix", mvpMatrix);
-    program.setUniformValue("u_rotation", rotationMatrix);
+    cloudProgram.setUniformValue("u_centroid", vecCentroid);
+    cloudProgram.setUniformValue("mvp_matrix", mvpMatrix);
+    cloudProgram.setUniformValue("u_rotation", rotationMatrix);
 
-    drawPointCloud(&program);
+    drawPointCloud(&cloudProgram);
 }
 
 void PointCloudPreview::loadCloudShaders()
 {
     // Compile vertex shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_pointcloud.glsl"))
+    if (!cloudProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_pointcloud.glsl"))
         close();
 
     // Compile fragment shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_pointcloud.glsl"))
+    if (!cloudProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_pointcloud.glsl"))
         close();
 
     // Link shader pipeline
-    if (!program.link())
+    if (!cloudProgram.link())
         close();
 
     // Bind shader pipeline for use
-    if (!program.bind())
+    if (!cloudProgram.bind())
+        close();
+}
+
+void PointCloudPreview::loadFrameShaders()
+{
+    if (!frameProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_frame.glsl"))
+        close();
+    if (!frameProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_frame.glsl"))
+        close();
+    if (!frameProgram.link())
+        close();
+    if (!frameProgram.bind())
         close();
 }
 
 void PointCloudPreview::loadPointCloudBuffer() {
-    points_buffer.create();
-    points_buffer.bind();
-    points_buffer.allocate(&DataContainer::instance().getCloud()[0], DataContainer::instance().getCloud().size()*sizeof(CloudPoint));
+    pointcloud_buffer.create();
+    pointcloud_buffer.bind();
+    pointcloud_buffer.allocate(&DataContainer::instance().getCloud()[0], DataContainer::instance().getCloud().size()*sizeof(CloudPoint));
+}
+
+void PointCloudPreview::loadFrameBuffer() {
+    frame_buffer.create();
+    frame_buffer.bind();
+    frame_buffer.allocate(DataContainer::instance().getReferenceFrame().ptr(), sizeof(DataContainer::instance().getReferenceFrame()));
 }
 
 void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program) {
-    points_buffer.bind();
+    pointcloud_buffer.bind();
     GLint vertexLocation = program->attributeLocation("a_position");
     program->enableAttributeArray(vertexLocation);
     //    program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, DataContainer::instance().getCloud().size());
@@ -166,6 +184,18 @@ void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program) {
     glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
 
     program->disableAttributeArray(vertexLocation);
+}
+
+void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram, cv::Mat transformationMatrix) {
+    frame_buffer.bind();
+    GLint vertexLocation = frameProgram->attributeLocation("a_position");
+    frameProgram->enableAttributeArray(vertexLocation);
+    frameProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3);
+
+    glPointSize(1);
+    glDrawArrays(GL_POINTS, 0, DataContainer::instance().getReferenceFrame().total());
+
+    frameProgram->disableAttributeArray(vertexLocation);
 }
 
 void PointCloudPreview::drawCloudNotAvailable() {

@@ -27,7 +27,7 @@ public:
     ~PointCloudPreview();
 
     void showCloud(PointCloud& cloud);
-    void drawFrame(cv::Mat transformationMatrix);
+    void renderFrame(cv::Mat transformationMatrix);
     void clearWindow();
 
 signals:
@@ -47,13 +47,16 @@ protected:
 private:
     void loadCloudShaders();
     void loadPointCloudBuffer();
-    void loadPointCloudBuffer(const void *pointCloud, int nOfPoints);
-    void drawPointCloud(QOpenGLShaderProgram *program);
+    void drawPointCloud(QOpenGLShaderProgram *cloudProgram);
+
+    void loadFrameShaders();
+    void loadFrameBuffer();
+    void drawFrame(QOpenGLShaderProgram *frameProgram, cv::Mat transformationMatrix);
     void drawCloudNotAvailable();
 
 private:
-    QOpenGLShaderProgram program;
-    QOpenGLBuffer points_buffer;
+    QOpenGLShaderProgram cloudProgram, frameProgram;
+    QOpenGLBuffer pointcloud_buffer, frame_buffer;
 
     //Point in which mouse was pressed and released
     QPoint pressed_point, release_point;
@@ -61,6 +64,7 @@ private:
     qint64 wheelAngle;
     float rotationAngleX, rotationAngleY;
     float currentRotationAngleX, currentRotationAngleY;
+    float initialZoom;  //just to debug easier
 
     PointCloud point_cloud;
     PointCloud frame_points; //debug-proper: frame with points to be casted

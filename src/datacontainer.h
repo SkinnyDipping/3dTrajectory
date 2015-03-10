@@ -22,8 +22,24 @@ public:
     PointCloud& getCloud();
 
     void loadSequence(std::string filePath);
+
+    /**
+     * @brief getFrame get frame in current position
+     * @return cv::Mat with frame
+     */
     cv::Mat& getFrame();
+
+    /**
+     * @brief getNextFrame get frame with current position and increment position
+     * @return cv::Mat with frame
+     */
     cv::Mat& getNextFrame();
+
+    /**
+     * @brief getReferenceFrame get frame containing reference view data (to cast)
+     * @return
+     */
+    cv::Mat& getReferenceFrame();
     bool getNextFrame(cv::Mat& newFrame);
     int getSequenceFPS();
     void setCurrentFrameIndex(int value);

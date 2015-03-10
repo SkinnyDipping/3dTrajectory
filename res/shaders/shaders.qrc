@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/shaders">
+        <file>f_pointcloud.glsl</file>
+        <file>f_sequence.glsl</file>
+        <file>v_pointcloud.glsl</file>
+        <file>v_sequence.glsl</file>
+    </qresource>
+</RCC>

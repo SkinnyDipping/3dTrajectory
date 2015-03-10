@@ -48,6 +48,7 @@ private:
     void loadPointCloudBuffer();
     void loadPointCloudBuffer(const void *pointCloud, int nOfPoints);
     void drawPointCloud(QOpenGLShaderProgram *program);
+    void drawFrame(cv::Mat transformationMatrix);
     void drawCloudNotAvailable();
 
 private:

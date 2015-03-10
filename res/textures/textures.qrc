@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/textures">
+        <file>cloud_na.png</file>
+        <file>szal.png</file>
+    </qresource>
+</RCC>

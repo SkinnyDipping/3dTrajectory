@@ -33,3 +33,12 @@ Vector Algebra::crossProduct(float *a, float *b)
     output.z = a[0]*b[1] - b[0]*a[1];
     return output;
 }
+
+Vector Algebra::sphericalToCarthesian(float r, float phi, float theta)
+{
+    Vector output = Vector();
+    output.x = r * cos(theta) * cos(phi);
+    output.y = r * cos(theta) * sin(phi);
+    output.z = r * sin(theta);
+    return output;
+}

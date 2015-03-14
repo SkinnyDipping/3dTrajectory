@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     cvMOG2 = cv::createBackgroundSubtractorMOG2();
 
+    caster = Caster();
+
     sequencePreviewOn = false;
 
 }
@@ -49,6 +51,10 @@ void MainWindow::on_performCasting_clicked()
     matrix(2,3) = centroid.z;
 
     pointCloudPreview->renderFrame(matrix);
+
+    std::vector<Point3D>& v = caster.generateSphere(centroid, 5);
+//    v.push_back(centroid);
+    pointCloudPreview->renderPoint(v);
 }
 
 void MainWindow::on_loadCloud_clicked()

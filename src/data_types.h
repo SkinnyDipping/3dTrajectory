@@ -15,6 +15,8 @@ public:
 
     Point3D(float x, float y, float z) : x(x),y(y),z(z) {}
 
+    Point3D(float* xyz) : x(xyz[0]), y(xyz[1]), z(xyz[2]) {}
+
     Point3D operator+(Point3D& p) {
         return Point3D(this->x+p.x,this->y+p.y,this->z+p.z);
     }

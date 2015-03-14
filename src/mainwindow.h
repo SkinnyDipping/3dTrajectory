@@ -13,6 +13,7 @@
 #include "pointcloudpreview.h"
 #include "sequencepreview.h"
 #include "foregroundextractormog2.h"
+#include "caster.h"
 
 namespace Ui {
 class MainWindow;
@@ -36,12 +37,12 @@ private:
     void toggleSequencePreview();
     void rewindSequence();
 
-
 private:
     Ui::MainWindow *ui;
     PointCloudPreview *pointCloudPreview;
     SequencePreview *sequencePreview;
     cv::Ptr<cv::BackgroundSubtractorMOG2> cvMOG2;
+    Caster caster;
 
     QPushButton *loadSequence, *loadPointCloud;
     QCheckBox *distinctForeground;

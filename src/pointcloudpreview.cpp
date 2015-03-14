@@ -268,8 +268,8 @@ void PointCloudPreview::drawPoints(QOpenGLShaderProgram *pointsProgram) {
     pointsProgram->enableAttributeArray(vertexLocation);
     pointsProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3);
 
-    glPointSize(10);
-    glDrawArrays(GL_POINTS, 0, 1);
+    glPointSize(1);
+    glDrawArrays(GL_POINTS, 0, points_buffer.size()/sizeof(Point3D)-1);
 
     pointsProgram->disableAttributeArray(vertexLocation);
 }

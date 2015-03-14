@@ -37,6 +37,18 @@ public:
      */
     void renderFrame(cv::Mat_<float> transformationMatrix = cv::Mat::eye(4,4,CV_32F));
 
+    /**
+     * @brief renderPoint Render single point into window
+     * @param point
+     */
+    void renderPoint(Point3DRGB point);
+
+    /**
+     * @brief renderPoint Render vector of points into window.
+     * @param points
+     */
+    void renderPoint(std::vector<Point3D> points);
+
     void clearWindow();
 
 signals:
@@ -54,18 +66,25 @@ protected:
     void paintGL() Q_DECL_OVERRIDE;
 
 private:
+    //Methods for drawing point cloud
     void loadCloudShaders();
     void loadPointCloudBuffer();
     void drawPointCloud(QOpenGLShaderProgram *cloudProgram);
 
+    //Method for drawing single frame
     void loadFrameShaders();
     void loadFrameBuffer();
     void drawFrame(QOpenGLShaderProgram *frameProgram);
+
+    //Methods for drawing single point
+    void loadPointsBuffer();
+    void drawPoints(QOpenGLShaderProgram *pointsProgram);
+
     void drawCloudNotAvailable();
 
 private:
     QOpenGLShaderProgram cloudProgram, frameProgram;
-    QOpenGLBuffer pointcloud_buffer, frame_buffer;
+    QOpenGLBuffer pointcloud_buffer, frame_buffer, points_buffer;
 
     GLuint textureID;
 
@@ -79,10 +98,11 @@ private:
 
     PointCloud point_cloud;
     PointCloud frame_points; //debug-proper: frame with points to be casted
+    PointCloud points;  ///< Regular points to render in Window
 
     QMatrix4x4 castMatrix;
 
-    bool cloudPreviewOn, framePreviewOn;
+    bool cloudPreviewOn, framePreviewOn, pointsPreviewOn;
 };
 
 #endif // POINTCLOUDPREVIEW_H

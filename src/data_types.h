@@ -28,6 +28,20 @@ public:
         return *this;
     }
 
+    Point3D operator/=(double& p) {
+        this->x /= p;
+        this->y /= p;
+        this->z /= p;
+        return *this;
+    }
+
+    Point3D operator/=(Point3D& p) {
+        this->x /= p.x;
+        this->y /= p.y;
+        this->z /= p.z;
+        return *this;
+    }
+
     friend QDebug operator<<(QDebug dbg, const Point3D& p) {
         dbg.nospace() << "["<<p.x<<"; "<<p.y<<"; "<<p.z<<"]";
         return dbg.maybeSpace();

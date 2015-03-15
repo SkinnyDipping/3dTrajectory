@@ -34,8 +34,8 @@ private slots:
     void on_loadCloud_clicked();
 
 private:
-    void toggleSequencePreview();
-    void rewindSequence();
+    void inline toggleSequencePreview();
+    void inline rewindSequence();
 
 private:
     Ui::MainWindow *ui;

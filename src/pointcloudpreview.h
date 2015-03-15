@@ -37,6 +37,8 @@ public:
      */
     void renderFrame(cv::Mat_<float> transformationMatrix = cv::Mat::eye(4,4,CV_32F));
 
+    void renderFrame(Point3D* frame, int n, cv::Mat_<float> transformationMatrix = cv::Mat::eye(4, 4, CV_32F));
+
     /**
      * @brief renderPoint Render single point into window
      * @param point
@@ -44,10 +46,18 @@ public:
     void renderPoint(Point3DRGB point);
 
     /**
-     * @brief renderPoint Render vector of points into window.
-     * @param points
+     * @brief renderPoint Render number of points into window.
+     * @param points pointer to points array
+     * @param n how many points are to be rendered
      */
-    void renderPoint(std::vector<Point3D> points);
+    void renderPoint(Point3D *points, int n);
+
+    /**
+     * @brief rednerPoint
+     * @param points
+     * @param n
+     */
+    void rednerPoint(Point3DRGB *points, int n);
 
     void clearWindow();
 
@@ -68,8 +78,10 @@ protected:
 private:
     //Methods for drawing point cloud
     void loadCloudShaders();
+    void loadTexturedCloudShaders();
     void loadPointCloudBuffer();
     void drawPointCloud(QOpenGLShaderProgram *cloudProgram);
+    void drawTexturedPointCloud(QOpenGLShaderProgram *texturedCloudProgram);
 
     //Method for drawing single frame
     void loadFrameShaders();
@@ -83,8 +95,8 @@ private:
     void drawCloudNotAvailable();
 
 private:
-    QOpenGLShaderProgram cloudProgram, frameProgram;
-    QOpenGLBuffer pointcloud_buffer, frame_buffer, points_buffer;
+    QOpenGLShaderProgram cloudProgram, texturedCloudProgram, frameProgram;
+    QOpenGLBuffer pointcloud_buffer, textured_pointcloud_buffer, frame_buffer, points_buffer;
 
     GLuint textureID;
 

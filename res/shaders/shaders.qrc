@@ -6,5 +6,7 @@
         <file>v_sequence.glsl</file>
         <file>f_frame.glsl</file>
         <file>v_frame.glsl</file>
+        <file>f_pointcloud_textured.glsl</file>
+        <file>v_pointcloud_textured.glsl</file>
     </qresource>
 </RCC>

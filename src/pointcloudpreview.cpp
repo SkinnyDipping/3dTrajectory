@@ -36,17 +36,36 @@ void PointCloudPreview::renderFrame(cv::Mat_<float> matrix) {
     update();
 }
 
+void PointCloudPreview::renderFrame(Point3D *frame, int n, cv::Mat_<float> matrix)
+{
+    frame_buffer.create();
+    frame_buffer.allocate(frame, n*sizeof(Point3D));
+
+    castMatrix = QMatrix4x4(matrix(0,0),matrix(0,1),matrix(0,2),matrix(0,3),
+                            matrix(1,0),matrix(1,1),matrix(1,2),matrix(1,3),
+                            matrix(2,0),matrix(2,1),matrix(2,2),matrix(2,3),
+                            matrix(3,0),matrix(3,1),matrix(3,2),matrix(3,3));
+
+    framePreviewOn = true;
+    update();
+}
+
 void PointCloudPreview::clearWindow() {
     qDebug()<<"clearWindow";
 }
 
-void PointCloudPreview::renderPoint(std::vector<Point3D> points)
+void PointCloudPreview::renderPoint(Point3D* points, int n)
 {
     points_buffer.bind();
-    points_buffer.allocate(&points[0], points.size()*sizeof(Point3D));
+    points_buffer.allocate(points, n*sizeof(Point3D));
     pointsPreviewOn = true;
     update();
 }
+
+//void PointCloudPreview::renderPoint(Point3DRGB* points, int n)
+//{
+
+//}
 
 void PointCloudPreview::mousePressEvent(QMouseEvent *e) {
     pressed_point = e->pos();
@@ -138,7 +157,7 @@ void PointCloudPreview::paintGL()
     //MVP matrix
     QMatrix4x4 proj, view, camera;
     //How camera sees
-    proj.perspective(45.0f, 4.0f/3.0f, 0.1f, 1500.0f);
+    proj.perspective(45.0f, 16.0f/9.0f, 0.1f, 1500.0f);
     //From where camera sees (ZOOM HERE)
     view.lookAt(QVector3D(0,0,0+wheelAngle/15.0f+initialZoom),QVector3D(0,0,1+wheelAngle/15.0f+initialZoom),QVector3D(0,1,0));
     camera.setToIdentity();
@@ -192,6 +211,16 @@ void PointCloudPreview::loadCloudShaders()
         close();
 }
 
+void PointCloudPreview::loadTexturedCloudShaders()
+{
+    if (!texturedCloudProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_pointcloud_textured.glsl"))
+        close();
+    if (!texturedCloudProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_pointcloud_textured.glsl"))
+        close();
+    if (!texturedCloudProgram.link())
+        close();
+}
+
 void PointCloudPreview::loadFrameShaders()
 {
     if (!frameProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_frame.glsl"))
@@ -229,7 +258,19 @@ void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program) {
     glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
 
     program->disableAttributeArray(vertexLocation);
+}
 
+void PointCloudPreview::drawTexturedPointCloud(QOpenGLShaderProgram *texturedCloudProgram)
+{
+    textured_pointcloud_buffer.bind();
+
+    GLint VBOlocation = texturedCloudProgram->attributeLocation("a_position");
+    texturedCloudProgram->enableAttributeArray(VBOlocation);
+    texturedCloudProgram->setAttributeBuffer(VBOlocation, GL_FLOAT, 0, 3);
+
+    GLint texCoordinateLocation = texturedCloudProgram->attributeLocation("a_textureCoord");
+    texturedCloudProgram->enableAttributeArray(texCoordinateLocation);
+    texturedCloudProgram->setAttributeBuffer(texCoordinateLocation, GL_FLOAT, 0, 3);
 }
 
 void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram) {
@@ -256,7 +297,8 @@ void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram) {
 
     frameProgram->setUniformValue("texture", 0);
 
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+//    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glDrawArrays(GL_POINTS, 0, textured_pointcloud_buffer.size()/sizeof(Point3D));
 
     frameProgram->disableAttributeArray(VBOLocation);
 }
@@ -269,7 +311,7 @@ void PointCloudPreview::drawPoints(QOpenGLShaderProgram *pointsProgram) {
     pointsProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3);
 
     glPointSize(1);
-    glDrawArrays(GL_POINTS, 0, points_buffer.size()/sizeof(Point3D)-1);
+    glDrawArrays(GL_POINTS, 0, points_buffer.size()/sizeof(Point3D));
 
     pointsProgram->disableAttributeArray(vertexLocation);
 }

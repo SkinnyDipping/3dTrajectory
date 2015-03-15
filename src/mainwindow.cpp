@@ -50,11 +50,15 @@ void MainWindow::on_performCasting_clicked()
     matrix(1,3) = centroid.y;
     matrix(2,3) = centroid.z;
 
-    pointCloudPreview->renderFrame(matrix);
+//    pointCloudPreview->renderFrame(&DataContainer::instance().getCloud()[0], DataContainer::instance().getCloud().size(), matrix);
+//    qDebug() << centroid;
 
-    std::vector<Point3D>& v = caster.generateSphere(centroid, 5);
-//    v.push_back(centroid);
-    pointCloudPreview->renderPoint(v);
+    OUTPUT pts = caster.castCloudToImage(DataContainer::instance().getCloud(), std::vector<Point2D>());
+
+    pointCloudPreview->renderPoint(pts.first, pts.second);
+
+//    Point3D* p = new Point3D(15.06, 0.17, 132.57);
+//    pointCloudPreview->renderPoint(p, 1);
 }
 
 void MainWindow::on_loadCloud_clicked()

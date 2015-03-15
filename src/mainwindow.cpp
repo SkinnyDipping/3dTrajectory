@@ -50,12 +50,19 @@ void MainWindow::on_performCasting_clicked()
     matrix(1,3) = centroid.y;
     matrix(2,3) = centroid.z;
 
-//    pointCloudPreview->renderFrame(&DataContainer::instance().getCloud()[0], DataContainer::instance().getCloud().size(), matrix);
+    PointCloud image;
+    for (int x=0; x<DataContainer::instance().getReferenceFrame().cols; x++)
+        for (int y=0; y<DataContainer::instance().getReferenceFrame().rows; y++)
+            image.push_back(Point3D(x/DataContainer::instance().getReferenceFrame().cols-1, y/DataContainer::instance().getReferenceFrame().rows-1, 0));
+    qDebug()<<image.size();
+
+    pointCloudPreview->renderFrame(&image[0], image.size(), matrix);
+//    pointCloudPreview->renderPoint(&image[0], image.size());
 //    qDebug() << centroid;
 
-    OUTPUT pts = caster.castCloudToImage(DataContainer::instance().getCloud(), std::vector<Point2D>());
+//    OUTPUT pts = caster.castCloudToImage(DataContainer::instance().getCloud(), std::vector<Point2D>());
 
-    pointCloudPreview->renderPoint(pts.first, pts.second);
+//    pointCloudPreview->renderPoint(pts.first, pts.second);
 
 //    Point3D* p = new Point3D(15.06, 0.17, 132.57);
 //    pointCloudPreview->renderPoint(p, 1);

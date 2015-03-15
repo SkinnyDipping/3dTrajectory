@@ -43,7 +43,7 @@ public:
      * @brief renderPoint Render single point into window
      * @param point
      */
-    void renderPoint(Point3DRGB point);
+//    void renderPoint(Point3DRGB point);
 
     /**
      * @brief renderPoint Render number of points into window.
@@ -57,7 +57,7 @@ public:
      * @param points
      * @param n
      */
-    void rednerPoint(Point3DRGB *points, int n);
+//    void rednerPoint(Point3DRGB *points, int n);
 
     void clearWindow();
 

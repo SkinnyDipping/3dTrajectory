@@ -39,7 +39,9 @@ void PointCloudPreview::renderFrame(cv::Mat_<float> matrix) {
 void PointCloudPreview::renderFrame(Point3D *frame, int n, cv::Mat_<float> matrix)
 {
     frame_buffer.create();
+    frame_buffer.bind();
     frame_buffer.allocate(frame, n*sizeof(Point3D));
+    qDebug() <<"P"<< frame_buffer.size()/sizeof(Point3D);
 
     castMatrix = QMatrix4x4(matrix(0,0),matrix(0,1),matrix(0,2),matrix(0,3),
                             matrix(1,0),matrix(1,1),matrix(1,2),matrix(1,3),
@@ -66,6 +68,7 @@ void PointCloudPreview::renderPoint(Point3D* points, int n)
 //{
 
 //}
+
 
 void PointCloudPreview::mousePressEvent(QMouseEvent *e) {
     pressed_point = e->pos();
@@ -119,7 +122,7 @@ void PointCloudPreview::initializeGL()
     glEnable(GL_CULL_FACE);
 
     loadPointCloudBuffer();
-    loadFrameBuffer();
+//    loadFrameBuffer();
     points_buffer.create();
 }
 
@@ -274,7 +277,7 @@ void PointCloudPreview::drawTexturedPointCloud(QOpenGLShaderProgram *texturedClo
 }
 
 void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram) {
-    frame_buffer.bind();
+    pointcloud_buffer.bind();
 
     GLint VBOLocation = frameProgram->attributeLocation("a_position");
     frameProgram->enableAttributeArray(VBOLocation);
@@ -298,7 +301,7 @@ void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram) {
     frameProgram->setUniformValue("texture", 0);
 
 //    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    glDrawArrays(GL_POINTS, 0, textured_pointcloud_buffer.size()/sizeof(Point3D));
+    glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
 
     frameProgram->disableAttributeArray(VBOLocation);
 }

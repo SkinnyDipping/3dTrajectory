@@ -56,6 +56,7 @@ public:
 
     Point3D_RGB(float x, float y, float z, int r, int g, int b) : x(x),y(y),z(z),r(r),g(g),b(b) {}
     Point3D_RGB(Point3D& p) : x(p.x),y(p.x),z(p.z),r(255),g(255),b(255) {}
+    Point3D_RGB(Point3D &p, int r, int g, int b) : x(p.x),y(p.x),z(p.z),r(r),g(g),b(b) {}
 };
 
 class Point2D {
@@ -82,8 +83,10 @@ public:
     }
 };
 
-typedef std::vector<Point3D> PointCloud;
 typedef Point3D_RGB Point3DRGB;
+typedef std::vector<Point3D> PointCloud;
+typedef std::vector<Point3DRGB> PointCloudRGB;
+
 
 #endif // DATA_TYPES_H
 

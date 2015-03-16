@@ -174,6 +174,7 @@ void PointCloudPreview::paintGL()
     cloudProgram.setUniformValue("u_rotoid", vecCentroid);
     cloudProgram.setUniformValue("mvp_matrix", mvpMatrix);
     cloudProgram.setUniformValue("u_rotation", rotationMatrix);
+    cloudProgram.setUniformValue("u_pointsColor", color);
 
     if (cloudPreviewOn)
         drawPointCloud(&cloudProgram);

@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+#define SQ(a) a*a
+
 class Vector
 {
 public:

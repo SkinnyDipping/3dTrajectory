@@ -2,10 +2,10 @@
 #define DATA_TYPES_H
 
 #include <QDebug>
+#include "opencv2/core.hpp"
 
 #define DEG2RAD 0.0174532925f
 #define RAD2DEG 57.2957795f
-
 
 class Point3D {
 public:
@@ -16,6 +16,7 @@ public:
     Point3D(float x, float y, float z) : x(x),y(y),z(z) {}
 
     Point3D(float* xyz) : x(xyz[0]), y(xyz[1]), z(xyz[2]) {}
+
 
     Point3D operator+(Point3D& p) {
         return Point3D(this->x+p.x,this->y+p.y,this->z+p.z);
@@ -40,6 +41,12 @@ public:
         this->y /= p.y;
         this->z /= p.z;
         return *this;
+    }
+
+    cv::Mat toCvMat() {
+        cv::Mat_<float> m = cv::Mat(4,1,CV_32F);
+        m(0) = x; m(1) = y; m(2) = z; m(3) = 1;
+        return m;
     }
 
     friend QDebug operator<<(QDebug dbg, const Point3D& p) {

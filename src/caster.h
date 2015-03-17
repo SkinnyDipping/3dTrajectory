@@ -2,12 +2,16 @@
 #define CASTER_H
 
 #include <vector>
+#include <iostream>
 
 #include <QDebug>
 #include "opencv2/core.hpp"
 
+#include "quaternion.h"
 #include "algebra.h"
 #include "data_types.h"
+
+using namespace std;
 
 #define SQ(a) a*a
 
@@ -21,7 +25,7 @@ public:
 
     //TODO: temporary change of return value (debug-proper)
 //    cv::Mat castCloudToImage(std::vector<Point3D>& cloudKeypoints, std::vector<Point2D>& imageKeypoints);
-    OUTPUT castCloudToImage(std::vector<Point3D>& cloudKeypoints, std::vector<Point2D> imageKeypoints);
+    OUTPUT castCloudToImage(std::vector<Point3D>& cloudKeypoints, std::vector<Point2D> &imageKeypoints);
 
 //TODO set PRIVATE
 public:
@@ -51,6 +55,8 @@ public:
 
     //TODO description
     std::vector<Point3D> virtual_sphere;
+
+    int qq;
 };
 
 #endif // CASTER_H

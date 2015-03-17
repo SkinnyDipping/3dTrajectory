@@ -4,18 +4,19 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
 {
     wheelAngle = 0;
 
+<<<<<<< HEAD
     cloudPreviewOn = false;
     framePreviewOn = false;
+=======
+    cloudPreviewOn = true;
+    framePreviewOn = true;
+>>>>>>> 6f3cbcfc35cb548ae4801e04cad04f674ba44493
     pointsPreviewOn = false;
 
     rotationAngleX = 0.0f;
     rotationAngleY = 0.0f;
     currentRotationAngleX = 0.0f;
     currentRotationAngleY = 0.0f;
-    translationX = 0.0f;
-    translationY = 0.0f;
-    currentTranslationX = 0.0f;
-    currentTranslationY = 0.0f;
 
     initialZoom = 100;
 }
@@ -40,11 +41,11 @@ void PointCloudPreview::renderFrame(cv::Mat_<float> matrix) {
     update();
 }
 
-void PointCloudPreview::renderFrame(Point3D *frame, int width, int height, cv::Mat_<float> matrix)
+void PointCloudPreview::renderFrame(Point3D *frame, int n, cv::Mat_<float> matrix)
 {
     frame_buffer.create();
     frame_buffer.bind();
-    frame_buffer.allocate(frame, width*height*sizeof(Point3D));
+    frame_buffer.allocate(frame, n*sizeof(Point3D));
     qDebug() <<"P"<< frame_buffer.size()/sizeof(Point3D);
 
     castMatrix = QMatrix4x4(matrix(0,0),matrix(0,1),matrix(0,2),matrix(0,3),
@@ -60,26 +61,35 @@ void PointCloudPreview::clearWindow() {
     qDebug()<<"clearWindow";
 }
 
+<<<<<<< HEAD
 void PointCloudPreview::renderPoint(Point3D* points, int n)
 {
     points_buffer.bind();
-    Point3D* pts = new Point3D[n+3];
-    pts = points;
-    pts[n] = Point3D(10,0,0);
-    pts[n+1] = Point3D(10,0,10);
-    pts[n+2] = Point3D(0,10,0);
-    points_buffer.allocate(pts, (n+3)*sizeof(Point3D));
-//    points_buffer.allocate(points, n*sizeof(Point3D));
+    points_buffer.allocate(points, n*sizeof(Point3D));
+=======
+void PointCloudPreview::renderPoint(Point3DRGB point)
+{
+
+}
+
+void PointCloudPreview::renderPoint(std::vector<Point3D> points)
+{
+    points_buffer.bind();
+    points_buffer.allocate(&points[0], points.size()*sizeof(Point3D));
+>>>>>>> 6f3cbcfc35cb548ae4801e04cad04f674ba44493
     pointsPreviewOn = true;
     update();
 }
 
+<<<<<<< HEAD
 //void PointCloudPreview::renderPoint(Point3DRGB* points, int n)
 //{
 
 //}
 
 
+=======
+>>>>>>> 6f3cbcfc35cb548ae4801e04cad04f674ba44493
 void PointCloudPreview::mousePressEvent(QMouseEvent *e) {
     pressed_point = e->pos();
 }
@@ -88,18 +98,11 @@ void PointCloudPreview::mouseReleaseEvent(QMouseEvent *e) {
     release_point = e->pos();
     currentRotationAngleX = rotationAngleX;
     currentRotationAngleY = rotationAngleY;
-    if (e->buttons() == Qt::LeftButton | Qt::MiddleButton)
-    {
-        currentTranslationX = translationX;
-        currentTranslationY = translationY;
-    }
 }
 
 void PointCloudPreview::mouseDoubleClickEvent(QMouseEvent *e) {
     rotationAngleX = 0;
     rotationAngleY = 0;
-    translationX = 0;
-    translationY = 0;
 
     update();
 }
@@ -112,8 +115,7 @@ void PointCloudPreview::mouseMoveEvent(QMouseEvent *e) {
     rotationAngleY = currentRotationAngleY - (e->y() - pressed_point.y());
     }
     if (buttons == Qt::RightButton) {
-        translationX = currentTranslationX - (e->x() - pressed_point.x());
-        translationY = currentTranslationY - (e->y() - pressed_point.y());
+    //TODO implemet translation
     }
 
     update();
@@ -140,7 +142,11 @@ void PointCloudPreview::initializeGL()
     glEnable(GL_CULL_FACE);
 
     loadPointCloudBuffer();
+<<<<<<< HEAD
 //    loadFrameBuffer();
+=======
+    loadFrameBuffer();
+>>>>>>> 6f3cbcfc35cb548ae4801e04cad04f674ba44493
     points_buffer.create();
 }
 
@@ -180,9 +186,7 @@ void PointCloudPreview::paintGL()
     //How camera sees
     proj.perspective(45.0f, 16.0f/9.0f, 0.1f, 1500.0f);
     //From where camera sees (ZOOM HERE)
-    view.lookAt(QVector3D(-translationX/10,-translationY/10,0+wheelAngle/15.0f+initialZoom),
-                QVector3D(-translationX/10,-translationY/10,1+wheelAngle/15.0f+initialZoom),
-                QVector3D(0,1,0));
+    view.lookAt(QVector3D(0,0,0+wheelAngle/15.0f+initialZoom),QVector3D(0,0,1+wheelAngle/15.0f+initialZoom),QVector3D(0,1,0));
     camera.setToIdentity();
     QMatrix4x4 mvpMatrix = proj*view*camera;
 
@@ -199,8 +203,13 @@ void PointCloudPreview::paintGL()
     if (cloudPreviewOn)
         drawPointCloud(&cloudProgram);
 
+<<<<<<< HEAD
     if (pointsPreviewOn) {
         color = QVector4D(1.0f,0.0f,0.0f,1.0f);
+=======
+    if (pointsPreviewOn){
+        color = QVector4D(1.0f, 0.0f, 0.0f, 1.0f);
+>>>>>>> 6f3cbcfc35cb548ae4801e04cad04f674ba44493
         cloudProgram.setUniformValue("u_pointsColor", color);
 
         drawPoints(&cloudProgram);
@@ -334,8 +343,13 @@ void PointCloudPreview::drawPoints(QOpenGLShaderProgram *pointsProgram) {
     pointsProgram->enableAttributeArray(vertexLocation);
     pointsProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3);
 
+<<<<<<< HEAD
     glPointSize(1);
     glDrawArrays(GL_POINTS, 0, points_buffer.size()/sizeof(Point3D));
+=======
+    glPointSize(10);
+    glDrawArrays(GL_POINTS, 0, 1);
+>>>>>>> 6f3cbcfc35cb548ae4801e04cad04f674ba44493
 
     pointsProgram->disableAttributeArray(vertexLocation);
 }

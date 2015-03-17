@@ -2,7 +2,7 @@
 
 Caster::Caster()
 {
-
+qq=0;
 }
 
 Caster::~Caster()
@@ -10,7 +10,7 @@ Caster::~Caster()
 
 }
 
-OUTPUT Caster::castCloudToImage(std::vector<Point3D>& cloudKeypoints, std::vector<Point2D> imageKeypoints)
+OUTPUT Caster::castCloudToImage(std::vector<Point3D>& cloudKeypoints, std::vector<Point2D>& imageKeypoints)
 {
     Point3D cloudCentroid = calculateCentroid(cloudKeypoints);
 
@@ -22,35 +22,77 @@ OUTPUT Caster::castCloudToImage(std::vector<Point3D>& cloudKeypoints, std::vecto
             sphereRadius = ceil(d);
     }
 
+//    cloudCentroid=Point3D();
+//    sphereRadius = 10;
     generateSphere(cloudCentroid, sphereRadius);
-    Point3D P = virtual_sphere[0];
 
+    Point3D P = virtual_sphere[qq];//test
+    qq++;
+
+//    Point3D P = Point3D(15.0669, 0.172247, 132.569);
+//    Point3D P = Point3D(5,5,7.0710678);
+//    Point3D P = Point3D(7.0710678,7.0710678,0);
+//    Point3D P = Point3D(-9.97496,0,0.707222);
+//    Point3D P = Point3D(8.138,1.962,5);
+
+    // Calculating tangential plane (Pi)
     calculateTangentialPlaneCoeff(cloudCentroid, P);
 
+    // Laying image on XY plane
+    std::vector<Point3D> image;
+    for (int i=0; i<imageKeypoints.size(); i++)
+        image.push_back(Point3D(imageKeypoints[i].x, imageKeypoints[i].y, 0));
 
+    // Translation to origin
+    Point3D imageCentroid = calculateCentroid(image);
+    for (int i=0; i<image.size(); i++) {
+        image[i].x -= imageCentroid.x;
+        image[i].y -= imageCentroid.y;
+        image[i].z -= imageCentroid.z;
+    }
+    // Calculating angle between Pi and XY
+    Point3D normalPi = Point3D(this->A, this->B, this->C);
+    Algebra::normalizeVector(normalPi);
+    Point3D normalXY = Point3D(0, 0, 1);
+    double anglePiXY = acos(Algebra::dotProduct(normalPi, normalXY)/Algebra::length(normalPi)/Algebra::length(normalXY));
 
-    std::vector<Point3D> temp;
-    for (int y=-50; y<50; y++)
-        for (int z=-1000; z<1000; z++) {
-            temp.push_back(Point3D(-(D+B*y+C*z)/A, y, z));
-        }
-    temp.insert(temp.end(), virtual_sphere.begin(), virtual_sphere.end());
-    return OUTPUT(&temp[0], temp.size());
+    // Casting image on Pi
+    Point3D rotationVector = Algebra::crossProduct(normalXY, normalPi);
+    Quaternion q = Quaternion(anglePiXY, rotationVector);
+
+    qDebug() << q;
+    Quaternion::rotate(image, q, P);
+
+//    for (int i=0; i<image.size(); i++)
+//        qDebug() << A*image[i].x+B*image[i].y+C*image[i].z+D;
+    qDebug() << "Angle: "<<anglePiXY*RAD2DEG<<"Vector: "<<rotationVector;
+    qDebug() <<"Tangential plane: "<<A<<B<<C<<D;
+    qDebug() << "Centroid: "<<calculateCentroid(image);
+    qDebug() << "Point P: "<<P;
+//    for (int i=0; i<virtual_sphere.size();i++)
+//    qDebug() << virtual_sphere[i];
+
+    virtual_sphere.insert(virtual_sphere.end(), image.begin(), image.end());
+    return OUTPUT(&virtual_sphere[0], virtual_sphere.size());
 }
 
 void Caster::generateSphere(Point3D sphereCenter, float sphereRadius, float resolution)
 {
     virtual_sphere.clear();
 
-    for (float phi=-180; phi<180; phi+=resolution)
-        for (float theta=-180; theta<180; theta+=resolution)
+    for (float phi=0; phi<180; phi+=resolution)
+        for (float theta=-135; theta<135; theta+=resolution)
         {
+            if (theta > -45 && theta < 45) continue;
+//            if(phi==-180 || phi==180 || phi==0 ||
+//               theta==-180 || theta==180 || theta==0)
+//                continue;
             Point3D p = Point3D();
 
             //Spherical to Carthesian
-            p.x = sphereRadius * cos(theta) * cos(phi);
-            p.y = sphereRadius * cos(theta) * sin(phi);
-            p.z = sphereRadius * sin(theta);
+            p.x = sphereRadius * sin(theta*DEG2RAD) * cos(phi*DEG2RAD);
+            p.y = sphereRadius * sin(theta*DEG2RAD) * sin(phi*DEG2RAD);
+            p.z = sphereRadius * cos(theta*DEG2RAD);
 
             //Translation to sphere center
             p += sphereCenter;
@@ -74,7 +116,7 @@ void Caster::calculateTangentialPlaneCoeff(Point3D sphereCenter, Point3D tangent
     this->A = a - x0;
     this->B = b - y0;
     this->C = c - z0;
-    this->D = -SQ(a) - SQ(b) - SQ(c) + a * x0 + b * y0 + c * z0;
+    this->D = -SQ(a)-SQ(b)-SQ(c)+a * x0+b * y0+c * z0;
 }
 
 double Caster::distance(Point3D p1, Point3D p2) {

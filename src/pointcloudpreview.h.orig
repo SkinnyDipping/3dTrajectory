@@ -37,12 +37,16 @@ public:
      */
     void renderFrame(cv::Mat_<float> transformationMatrix = cv::Mat::eye(4,4,CV_32F));
 
-    void renderFrame(Point3D* frame, int width, int height, cv::Mat_<float> transformationMatrix = cv::Mat::eye(4, 4, CV_32F));
+<<<<<<< HEAD
+    void renderFrame(Point3D* frame, int n, cv::Mat_<float> transformationMatrix = cv::Mat::eye(4, 4, CV_32F));
 
+=======
+>>>>>>> 6f3cbcfc35cb548ae4801e04cad04f674ba44493
     /**
      * @brief renderPoint Render single point into window
      * @param point
      */
+<<<<<<< HEAD
 //    void renderPoint(Point3DRGB point);
 
     /**
@@ -58,6 +62,15 @@ public:
      * @param n
      */
 //    void rednerPoint(Point3DRGB *points, int n);
+=======
+    void renderPoint(Point3DRGB point);
+
+    /**
+     * @brief renderPoint Render vector of points into window.
+     * @param points
+     */
+    void renderPoint(std::vector<Point3D> points);
+>>>>>>> 6f3cbcfc35cb548ae4801e04cad04f674ba44493
 
     void clearWindow();
 
@@ -95,8 +108,13 @@ private:
     void drawCloudNotAvailable();
 
 private:
+<<<<<<< HEAD
     QOpenGLShaderProgram cloudProgram, texturedCloudProgram, frameProgram;
     QOpenGLBuffer pointcloud_buffer, textured_pointcloud_buffer, frame_buffer, points_buffer;
+=======
+    QOpenGLShaderProgram cloudProgram, frameProgram;
+    QOpenGLBuffer pointcloud_buffer, frame_buffer, points_buffer;
+>>>>>>> 6f3cbcfc35cb548ae4801e04cad04f674ba44493
 
     GLuint textureID;
 
@@ -104,9 +122,9 @@ private:
     QPoint pressed_point, release_point;
 
     qint64 wheelAngle;
-    float rotationAngleX, rotationAngleY, currentRotationAngleX, currentRotationAngleY;
+    float rotationAngleX, rotationAngleY;
+    float currentRotationAngleX, currentRotationAngleY;
     float initialZoom;  //just to debug easier
-    float translationX, translationY, currentTranslationX, currentTranslationY;
 
     PointCloud point_cloud;
     PointCloud frame_points; //debug-proper: frame with points to be casted

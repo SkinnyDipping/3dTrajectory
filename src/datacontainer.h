@@ -44,6 +44,22 @@ public:
     int getSequenceFPS();
     void setCurrentFrameIndex(int value);
 
+    /**
+     * @brief setCloudKeypoints
+     * @param points
+     */
+    void setCloudKeypoints(std::vector<Point3D> &points);
+
+    std::vector<Point3D>& getCloudKeypoints();
+
+    std::vector<Point2D>& getImageKeypoints();
+
+    /**
+     * @brief setImageKeypoints
+     * @param points pixel position in cv::Mat
+     */
+    void setImageKeypoints(std::vector<Point2D> &points);
+
     void setCloud(PointCloud);
     void setCloud(std::string filePath);
     Point3D getCloudCentroid();
@@ -62,6 +78,8 @@ private:
 
 private:
     PointCloud point_cloud;
+    std::vector<Point2D> image_keypoints;
+    std::vector<Point3D> cloud_keypoints;
 
     cv::VideoCapture sequence;
     cv::Mat sequenceFrame;

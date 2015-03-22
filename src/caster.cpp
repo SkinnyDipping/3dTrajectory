@@ -50,6 +50,7 @@ OUTPUT Caster::castCloudToImage(std::vector<Point3D>& cloudKeypoints, std::vecto
         image[i].y -= imageCentroid.y;
         image[i].z -= imageCentroid.z;
     }
+
     // Calculating angle between Pi and XY
     Point3D normalPi = Point3D(this->A, this->B, this->C);
     Algebra::normalizeVector(normalPi);
@@ -59,16 +60,22 @@ OUTPUT Caster::castCloudToImage(std::vector<Point3D>& cloudKeypoints, std::vecto
     // Casting image on Pi
     Point3D rotationVector = Algebra::crossProduct(normalXY, normalPi);
     Quaternion q = Quaternion(anglePiXY, rotationVector);
-
-    qDebug() << q;
     Quaternion::rotate(image, q, P);
+
+    // Casting cloud on Pi
+    for (int i=0; i<cloudKeypoints.size(); i++)
+    {
+        cloudKeypoints[i] = castPointOnPlane(cloudKeypoints[i], this->A, this->B, this->C, this->D);
+    }
 
 //    for (int i=0; i<image.size(); i++)
 //        qDebug() << A*image[i].x+B*image[i].y+C*image[i].z+D;
     qDebug() << "Angle: "<<anglePiXY*RAD2DEG<<"Vector: "<<rotationVector;
     qDebug() <<"Tangential plane: "<<A<<B<<C<<D;
-    qDebug() << "Centroid: "<<calculateCentroid(image);
+    qDebug() << "Centroid c: "<<cloudCentroid<<" Centroid i: "<<calculateCentroid(image);
     qDebug() << "Point P: "<<P;
+    for (int i=0; i<cloudKeypoints.size(); i++)
+        qDebug() << cloudKeypoints[i];
 //    for (int i=0; i<virtual_sphere.size();i++)
 //    qDebug() << virtual_sphere[i];
 
@@ -84,9 +91,6 @@ void Caster::generateSphere(Point3D sphereCenter, float sphereRadius, float reso
         for (float theta=-135; theta<135; theta+=resolution)
         {
             if (theta > -45 && theta < 45) continue;
-//            if(phi==-180 || phi==180 || phi==0 ||
-//               theta==-180 || theta==180 || theta==0)
-//                continue;
             Point3D p = Point3D();
 
             //Spherical to Carthesian
@@ -117,6 +121,17 @@ void Caster::calculateTangentialPlaneCoeff(Point3D sphereCenter, Point3D tangent
     this->B = b - y0;
     this->C = c - z0;
     this->D = -SQ(a)-SQ(b)-SQ(c)+a * x0+b * y0+c * z0;
+}
+
+Point3D Caster::castPointOnPlane(Point3D point, float A, float B, float C, float D) {
+    Point3D output;
+    double cx = point.x;
+    double cy = point.y;
+    double cz = point.z;
+    double t = -1 * (A * cx + B * cy + C * cz + D)
+            / (SQ(A) + SQ(B) + SQ(C));
+    output = Point3D(cx + A * t, cy + B * t, cz + C * t);
+    return output;
 }
 
 double Caster::distance(Point3D p1, Point3D p2) {

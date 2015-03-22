@@ -65,7 +65,7 @@ void MainWindow::on_performCasting_clicked()
 //    pointCloudPreview->renderPoint(&image[0], image.size());
 //    qDebug() << centroid;
 
-    OUTPUT pts = caster.castCloudToImage(DataContainer::instance().getCloud(), testPoints);
+    OUTPUT pts = caster.castCloudToImage(DataContainer::instance().getCloudKeypoints(), DataContainer::instance().getImageKeypoints());
 
     pointCloudPreview->renderPoint(pts.first, pts.second);
 
@@ -75,7 +75,7 @@ void MainWindow::on_performCasting_clicked()
 
 void MainWindow::on_loadCloud_clicked()
 {
-    pointCloudPreview->showCloud();
+    pointCloudPreview->showCloud(DataContainer::instance().getCloudKeypoints());
 }
 
 void MainWindow::toggleSequencePreview()

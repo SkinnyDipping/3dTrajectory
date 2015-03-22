@@ -14,44 +14,45 @@
 #define TEST_CLOUD
 #define OPENGL_TEST
 #define MAIN_WINDOW
+#define TEST_DATA
 
 int main(int argc, char *argv[])
 {
 
+#ifdef TEST_DATA
+    std::vector<Point2D> image;
+    std::vector<Point3D> cloud;
+    image.push_back(Point2D(454,132));
+    image.push_back(Point2D(367,127));
+    image.push_back(Point2D(270,199));
+    image.push_back(Point2D(55,110));
+    image.push_back(Point2D(544,364));
+    image.push_back(Point2D(497,230));
+    image.push_back(Point2D(367,320));
+    image.push_back(Point2D(443,321));
+    image.push_back(Point2D(440,196));
+    image.push_back(Point2D(441,229));
+    image.push_back(Point2D(366,137));
+    image.push_back(Point2D(365,202));
+    cloud.push_back(Point3D(0.0463,6.5282,133.215897));
+    cloud.push_back(Point3D(-0.8515,6.1534,133.221603));
+    cloud.push_back(Point3D(-1.775,5.7682,132.409393));
+    cloud.push_back(Point3D(-3.6192,4.9853,133.212799));
+    cloud.push_back(Point3D(0.8383,5.1496,131.091095));
+    cloud.push_back(Point3D(0.556,6.7573,132.14));
+    cloud.push_back(Point3D(-0.8112,6.1722,131.1138));
+    cloud.push_back(Point3D(-0.0135,6.4959,131.105896));
+    cloud.push_back(Point3D(-0.0762,6.4742,132.492706));
+    cloud.push_back(Point3D(-0.617,6.4595,132.135));
+    cloud.push_back(Point3D(-0.8596,6.1433,133.112503));
+    cloud.push_back(Point3D(-0.8529,6.1302,132.419));
+    DataContainer::instance().setImageKeypoints(image);
+    DataContainer::instance().setCloudKeypoints(cloud);
+#endif
     DataContainer::instance().setCloud("/home/michal/3dTrajectory/data/cloud/scan_061.xyz");
-    QApplication app(argc, argv);
     DataContainer::instance().loadSequence("/home/michal/3dTrajectory/data/seq/2.mp4");
-//    cv::Mat frame;
-//    cv::VideoCapture vc("/home/michal/3dTrajectory/data/seq/1.mp4");
-//    cv::namedWindow("a");
-//    int i=0;
-//    vc >> frame;
-//    while (!frame.empty())
-//    {
-//        qDebug() << i++;
-//        cv::imshow("a",frame);
-//        vc >> frame;
-//        cv::waitKey(10);
-//    }
-//    return 5;
-//    cv::Mat frame;
-//    cv::Mat foreground;
-//    cv::Ptr<cv::BackgroundSubtractorMOG2> cvMOG2;
-//    cvMOG2 = cv::createBackgroundSubtractorMOG2();
-//    for (int i=0; i<DataContainer::instance().getSequence().get(7); i++)
-//    {
-//        frame = DataContainer::instance().getNextFrame();
-//        cv::Mat foreground;
-//        cvMOG2->apply(frame, foreground);
-//        cv::imshow("a",frame);
-//        cv::imshow("B", foreground);
-//        cv::waitKey(33);
-//    }
-//    return 3;
 
-//    QSurfaceFormat format;
-//    format.setDepthBufferSize(24);
-//    QSurfaceFormat::setDefaultFormat(format);
+    QApplication app(argc, argv);
 
     app.setApplicationName("3dTrajectory");
 //    app.setApplicationVersion("0.1");

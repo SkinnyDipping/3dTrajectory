@@ -68,6 +68,25 @@ void DataContainer::setCurrentFrameIndex(int value) {
     this->currentFrameIndex = value;
 }
 
+void DataContainer::setCloudKeypoints(std::vector<Point3D> &points)
+{
+    cloud_keypoints = points;
+}
+
+void DataContainer::setImageKeypoints(std::vector<Point2D> &points)
+{
+    image_keypoints = points;
+}
+
+std::vector<Point3D>& DataContainer::getCloudKeypoints()
+{
+    return cloud_keypoints;
+}
+
+std::vector<Point2D>& DataContainer::getImageKeypoints() {
+    return image_keypoints;
+}
+
 void DataContainer::setCloud(std::vector<Point3D> pc) {
     for (unsigned int i=0; i<pc.size(); i++) {
         point_cloud.push_back(pc[i]);
@@ -98,16 +117,6 @@ void DataContainer::setCloud(std::string filePath) {
 
     cloud_centroid = calculateCentroid();
 }
-//BOOST_FUSION_ADAPT_STRUCT(PointCloud, (float, x)(float, y)(float, z))
-
-//void DataContainer::setCloud(std::string filePath) {
-//    using namespace boost::spirit::qi;
-//    boost::iostreams::mapped_file mmap(filePath, boost::iostreams::mapped_file::readonly);
-//    auto file = mmap.const_data();
-//    auto length = file + mmap.size();
-//    point_cloud.reserve(7000000);
-////    bool ok = phrase_parse(file, length, (double_ >> double_ >> double_) % eol, space, point_cloud);
-//}
 
 void DataContainer::debugCloud() {
     for (unsigned int i=0; i<point_cloud.size(); i++) {

@@ -36,6 +36,9 @@ public:
     /// Calculates coefficients of plane tangential to sphere in point [tangentialPoint]
     void inline calculateTangentialPlaneCoeff(Point3D sphereCenter, Point3D tangentialPoint);
 
+    /// Casts point p = [xp, yp, zp] on plane Ax + By + Cz + D = 0
+    Point3D inline castPointOnPlane(Point3D point, float A, float B, float C, float D);
+
     /// MSE Computes Mean Square Error between two sets of points
     double inline MSE(std::vector<Point3D>& set1, std::vector<Point3D>& set2);
 

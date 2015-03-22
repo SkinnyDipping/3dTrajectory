@@ -26,7 +26,7 @@ public:
     PointCloudPreview(QWidget *parent = 0);
     ~PointCloudPreview();
 
-    void showCloud();
+    void showCloud(PointCloud &pc);
 
     /**
      * @brief renderFrame Render frame in point cloud window

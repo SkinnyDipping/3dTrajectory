@@ -17,7 +17,7 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
     currentTranslationX = 0.0f;
     currentTranslationY = 0.0f;
 
-    initialZoom = 100;
+    initialZoom = 10;
 }
 
 PointCloudPreview::~PointCloudPreview()
@@ -25,7 +25,11 @@ PointCloudPreview::~PointCloudPreview()
     pointcloud_buffer.destroy();
 }
 
-void PointCloudPreview::showCloud() {
+void PointCloudPreview::showCloud(PointCloud& pc) {
+    pointcloud_buffer.create();
+    pointcloud_buffer.bind();
+    pointcloud_buffer.allocate(&pc[0], pc.size()*sizeof(Point3D));
+
     cloudPreviewOn = true;
     update();
 }
@@ -139,7 +143,7 @@ void PointCloudPreview::initializeGL()
     // Enable back face culling
     glEnable(GL_CULL_FACE);
 
-    loadPointCloudBuffer();
+//    loadPointCloudBuffer();
 //    loadFrameBuffer();
     points_buffer.create();
 }
@@ -178,7 +182,7 @@ void PointCloudPreview::paintGL()
     //MVP matrix
     QMatrix4x4 proj, view, camera;
     //How camera sees
-    proj.perspective(45.0f, 16.0f/9.0f, 0.1f, 1500.0f);
+    proj.perspective(10.0f, 16.0f/9.0f, 0.1f, 1500.0f);
     //From where camera sees (ZOOM HERE)
     view.lookAt(QVector3D(-translationX/10,-translationY/10,0+wheelAngle/15.0f+initialZoom),
                 QVector3D(-translationX/10,-translationY/10,1+wheelAngle/15.0f+initialZoom),
@@ -334,7 +338,7 @@ void PointCloudPreview::drawPoints(QOpenGLShaderProgram *pointsProgram) {
     pointsProgram->enableAttributeArray(vertexLocation);
     pointsProgram->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3);
 
-    glPointSize(1);
+    glPointSize(10);
     glDrawArrays(GL_POINTS, 0, points_buffer.size()/sizeof(Point3D));
 
     pointsProgram->disableAttributeArray(vertexLocation);

@@ -20,12 +20,33 @@ PointCloudPreview::~PointCloudPreview()
     pointcloud_buffer.destroy();
 }
 
-void PointCloudPreview::showCloud() {
+void PointCloudPreview::showCloud(PointCloud& pointCloud) {
+    pointcloud_buffer.create();
+    pointcloud_buffer.bind();
+    pointcloud_buffer.allocate(&pointCloud[0], pointCloud.size()*sizeof(Point3D));
+
+    cloudPreviewOn = true;
+    update();
+}
+
+void PointCloudPreview::showCloud(PointCloudRGB &pointCloud) {
+    pointcloud_buffer.create();
+    pointcloud_buffer.bind();
+    pointcloud_buffer.allocate(&pointCloud[0], pointCloud.size()*sizeof(Point3DRGB));
+
     cloudPreviewOn = true;
     update();
 }
 
 void PointCloudPreview::renderFrame(cv::Mat_<float> matrix) {
+    float rectangle[] = {-1.0, -1.0, 0.0,
+                         1.0, -1.0, 0.0,
+                         1.0,  1.0, 0.0,
+                         -1.0,  1.0, 0.0};
+    frame_buffer.create();
+    frame_buffer.bind();
+    frame_buffer.allocate(rectangle, 4*3*sizeof(float));
+
     castMatrix = QMatrix4x4(matrix(0,0),matrix(0,1),matrix(0,2),matrix(0,3),
                             matrix(1,0),matrix(1,1),matrix(1,2),matrix(1,3),
                             matrix(2,0),matrix(2,1),matrix(2,2),matrix(2,3),
@@ -81,17 +102,13 @@ void PointCloudPreview::initializeGL()
 
     glClearColor(0, 0, 0, 1);
 
-    loadCloudShaders();
-    loadFrameShaders();
+    loadShaders();
 
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
 
     // Enable back face culling
     glEnable(GL_CULL_FACE);
-
-    loadPointCloudBuffer();
-    loadFrameBuffer();
 }
 
 void PointCloudPreview::resizeGL(int w, int h)
@@ -157,23 +174,17 @@ void PointCloudPreview::paintGL()
     frameProgram.release();
 }
 
-void PointCloudPreview::loadCloudShaders()
+void PointCloudPreview::loadShaders()
 {
-    // Compile vertex shader
+    //Load cloud shaders
     if (!cloudProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_pointcloud.glsl"))
         close();
-
-    // Compile fragment shader
     if (!cloudProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_pointcloud.glsl"))
         close();
-
-    // Link shader pipeline
     if (!cloudProgram.link())
         close();
-}
 
-void PointCloudPreview::loadFrameShaders()
-{
+    //Load frame shaders
     if (!frameProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_frame.glsl"))
         close();
     if (!frameProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_frame.glsl"))
@@ -182,34 +193,22 @@ void PointCloudPreview::loadFrameShaders()
         close();
 }
 
-void PointCloudPreview::loadPointCloudBuffer() {
-    pointcloud_buffer.create();
-    pointcloud_buffer.bind();
-    pointcloud_buffer.allocate(&DataContainer::instance().getCloud()[0], DataContainer::instance().getCloud().size()*sizeof(Point3D));
-}
-
-void PointCloudPreview::loadFrameBuffer() {
-    float rectangle[] = {-1.0, -1.0, 0.0,
-                         1.0, -1.0, 0.0,
-                         1.0,  1.0, 0.0,
-                         -1.0,  1.0, 0.0};
-    frame_buffer.create();
-    frame_buffer.bind();
-    frame_buffer.allocate(rectangle, 4*3*sizeof(float));
-}
-
 void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program) {
     pointcloud_buffer.bind();
 
     GLint vertexLocation = program->attributeLocation("a_position");
     program->enableAttributeArray(vertexLocation);
-    program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3);
+    program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3, 3*sizeof(float));
+
+    GLint colorLocation = program->attributeLocation("a_color");
+    program->enableAttributeArray(colorLocation);
+    program->setAttributeBuffer(colorLocation, GL_FLOAT, 3, 3, 3*sizeof(float));
 
     glPointSize(1);
-    glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
+    glDrawArrays(GL_POINTS, 0, pointcloud_buffer.size()/sizeof(PointCloudRGB));
 
     program->disableAttributeArray(vertexLocation);
-
+    program->disableAttributeArray(colorLocation);
 }
 
 void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram) {

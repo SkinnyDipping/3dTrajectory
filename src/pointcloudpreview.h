@@ -26,7 +26,8 @@ public:
     PointCloudPreview(QWidget *parent = 0);
     ~PointCloudPreview();
 
-    void showCloud();
+    void showCloud(PointCloud &pointCloud);
+    void showCloud(PointCloudRGB &pointCloud);
 
     /**
      * @brief renderFrame Render frame in point cloud window
@@ -54,12 +55,10 @@ protected:
     void paintGL() Q_DECL_OVERRIDE;
 
 private:
-    void loadCloudShaders();
-    void loadPointCloudBuffer();
+    void loadShaders();
+
     void drawPointCloud(QOpenGLShaderProgram *cloudProgram);
 
-    void loadFrameShaders();
-    void loadFrameBuffer();
     void drawFrame(QOpenGLShaderProgram *frameProgram);
     void drawCloudNotAvailable();
 

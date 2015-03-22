@@ -20,7 +20,7 @@ cv::VideoCapture& DataContainer::getSequence() {
     return sequence;
 }
 
-std::vector<Point3D>& DataContainer::getCloud(){
+std::vector<Point3DRGB>& DataContainer::getCloud(){
     return point_cloud;
 }
 
@@ -91,23 +91,13 @@ void DataContainer::setCloud(std::string filePath) {
         std::istringstream iss(line);
         float a,b,c,d,e,f,g,h;
         iss >>a>>b>>c>>d>>e>>f>>g>>h;
-        point_cloud.push_back(Point3D(c,d,e));
+        point_cloud.push_back(Point3DRGB(c,d,e,f,g,h));
     }
     qDebug() << "DataContainer: file read";
     cloudFile.close();
 
     cloud_centroid = calculateCentroid();
 }
-//BOOST_FUSION_ADAPT_STRUCT(PointCloud, (float, x)(float, y)(float, z))
-
-//void DataContainer::setCloud(std::string filePath) {
-//    using namespace boost::spirit::qi;
-//    boost::iostreams::mapped_file mmap(filePath, boost::iostreams::mapped_file::readonly);
-//    auto file = mmap.const_data();
-//    auto length = file + mmap.size();
-//    point_cloud.reserve(7000000);
-////    bool ok = phrase_parse(file, length, (double_ >> double_ >> double_) % eol, space, point_cloud);
-//}
 
 void DataContainer::debugCloud() {
     for (unsigned int i=0; i<point_cloud.size(); i++) {
@@ -123,7 +113,9 @@ Point3D DataContainer::calculateCentroid() {
     Point3D centroid = Point3D();
     Point3D sum = Point3D();
     for (int i=0; i<point_cloud.size(); i++) {
-        sum += point_cloud[i];
+        sum.x += point_cloud[i].x;
+        sum.z += point_cloud[i].y;
+        sum.y += point_cloud[i].z;
     }
     int n=point_cloud.size();
     centroid.x = sum.x/n;

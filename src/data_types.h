@@ -6,6 +6,9 @@
 #define DEG2RAD 0.0174532925f
 #define RAD2DEG 57.2957795f
 
+class Point3D;
+class Point3D_RGB;
+
 
 class Point3D {
 public:
@@ -38,8 +41,13 @@ public:
     float x, y, z;
     int r, g, b;
 
-    Point3D_RGB(float x, float y, float z, int r, int g, int b) : x(x),y(y),z(z),r(r),g(g),b(b) {}
-    Point3D_RGB(Point3D& p) : x(p.x),y(p.x),z(p.z),r(255),g(255),b(255) {}
+    Point3D_RGB(float x, float y, float z, float r, float g, float b) : x(x),y(y),z(z),r(r),g(g),b(b) {}
+    Point3D_RGB(const Point3D& p) : x(p.x),y(p.x),z(p.z),r(255),g(255),b(255) {}
+
+    friend QDebug operator<<(QDebug dbg, const Point3D_RGB& p) {
+        dbg.nospace() << "["<<p.x<<"; "<<p.y<<"; "<<p.z<<p.r<<"; "<<p.g<<"; "<<p.b<<"]";
+        return dbg.maybeSpace();
+    }
 };
 
 class Point2D {
@@ -66,8 +74,10 @@ public:
     }
 };
 
-typedef std::vector<Point3D> PointCloud;
 typedef Point3D_RGB Point3DRGB;
+typedef std::vector<Point3D> PointCloud;
+typedef std::vector<Point3DRGB> PointCloudRGB;
+
 
 #endif // DATA_TYPES_H
 

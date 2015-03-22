@@ -19,7 +19,7 @@ public:
     static DataContainer& instance();
 
     cv::VideoCapture& getSequence();
-    PointCloud& getCloud();
+    PointCloudRGB& getCloud();
 
     void loadSequence(std::string filePath);
 
@@ -61,7 +61,7 @@ private:
     Point3D calculateCentroid();
 
 private:
-    PointCloud point_cloud;
+    PointCloudRGB point_cloud;
 
     cv::VideoCapture sequence;
     cv::Mat sequenceFrame;

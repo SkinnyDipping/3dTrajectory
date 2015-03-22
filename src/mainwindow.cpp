@@ -53,7 +53,7 @@ void MainWindow::on_performCasting_clicked()
 
 void MainWindow::on_loadCloud_clicked()
 {
-    pointCloudPreview->showCloud();
+    pointCloudPreview->showCloud(DataContainer::instance().getCloud());
 }
 
 void MainWindow::toggleSequencePreview()

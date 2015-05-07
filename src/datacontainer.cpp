@@ -139,3 +139,18 @@ Point3D DataContainer::getCloudCentroid() {
 bool DataContainer::isSequenceAvailable() {
     return sequenceAvailable;
 }
+
+PointCloud& DataContainer::getCloudKeypoints() {
+    //TODO
+    return cloud_keypoints;
+}
+
+std::vector<Point2D>& DataContainer::getImageKeypoints() {
+    //TODO
+    return image_keypoints;
+}
+
+Point2D DataContainer::getRGBResolution() {
+    Point2D output = Point2D(framesPoll.front().cols, framesPoll.front().rows);
+    return output;
+}

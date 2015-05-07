@@ -68,6 +68,7 @@ public:
 
 typedef std::vector<Point3D> PointCloud;
 typedef Point3D_RGB Point3DRGB;
+typedef Point3D Vector3D;
 
 #endif // DATA_TYPES_H
 

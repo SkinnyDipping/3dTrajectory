@@ -6,5 +6,9 @@
         <file>v_sequence.glsl</file>
         <file>f_frame.glsl</file>
         <file>v_frame.glsl</file>
+	<file>v_iframe.glsl</file>
+	<file>f_iframe.glsl</file>
+	<file>v_colorized.glsl</file>
+	<file>f_colorized.glsl</file>
     </qresource>
 </RCC>

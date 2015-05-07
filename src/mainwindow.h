@@ -8,8 +8,9 @@
 #include <QCheckBox>
 
 #include "opencv2/opencv.hpp"
-#include "opencv2/video.hpp"
+#include "opencv2/imgproc.hpp"
 
+#include "caster.h"
 #include "pointcloudpreview.h"
 #include "sequencepreview.h"
 #include "foregroundextractormog2.h"
@@ -31,10 +32,14 @@ private slots:
     void on_rewindSequencePreview_clicked();
     void on_performCasting_clicked();
     void on_loadCloud_clicked();
+    void on_analyzeButton_clicked();
 
 private:
     void toggleSequencePreview();
     void rewindSequence();
+
+    //TEMP
+    void debug(cv::Mat_<double> m);
 
 
 private:

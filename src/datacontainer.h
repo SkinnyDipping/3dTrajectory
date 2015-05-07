@@ -44,6 +44,26 @@ public:
     int getSequenceFPS();
     void setCurrentFrameIndex(int value);
 
+    /**
+     * @brief getCloudKeypoints
+     * @return
+     */
+    PointCloud& getCloudKeypoints();
+
+    /**
+     * @brief getImageKeypoints
+     * @return
+     */
+    std::vector<Point2D>& getImageKeypoints();
+
+    /**
+     * @brief getRGBResolution
+     * @return
+     */
+    Point2D getRGBResolution();
+
+
+
     void setCloud(PointCloud);
     void setCloud(std::string filePath);
     Point3D getCloudCentroid();
@@ -62,6 +82,8 @@ private:
 
 private:
     PointCloud point_cloud;
+    std::vector<Point3D> cloud_keypoints;
+    std::vector<Point2D> image_keypoints;
 
     cv::VideoCapture sequence;
     cv::Mat sequenceFrame;

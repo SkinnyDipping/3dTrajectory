@@ -6,5 +6,13 @@ uniform sampler2D texture;
 varying vec2 v_textCoord;
 
 void main() {
-	gl_FragColor = texture2D(texture, v_textCoord);
+
+	// Due to glTexImage2D texture shall have [0, 1] coordinates
+	// therefore scaling is neccessary
+	vec2 textCoord = 0.5*(v_textCoord) - 0.5;
+
+	// Horizontal flip...
+	textCoord.y *= -1.0;
+
+	gl_FragColor = texture2D(texture, textCoord);
 }

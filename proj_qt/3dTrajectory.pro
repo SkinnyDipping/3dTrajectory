@@ -41,7 +41,8 @@ FORMS    += \
 INCLUDEPATH += /usr/local/include
 
 LIBS += -L"/usr/local/lib/" \
-        -lopencv_core -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_imgcodecs
+        -lopencv_core -lopencv_highgui -lopencv_video -lopencv_videoio \
+	-lopencv_imgcodecs -lopencv_imgproc
 LIBS += -L"/usr/lib/x86_64-linux-gnu/"
 #        -lboost_iostreams
 

@@ -6,11 +6,16 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
 
     cloudPreviewOn = false;
     framePreviewOn = false;
+    colorizedPreviewOn = false;
 
     rotationAngleX = 0.0f;
     rotationAngleY = 0.0f;
     currentRotationAngleX = 0.0f;
     currentRotationAngleY = 0.0f;
+    translationX = 0.0f;
+    translationY = 0.0f;
+    currentTranslationX = 0.0f;
+    currentTranslationY = 0.0f;
 
     initialZoom = 100;
 }
@@ -20,8 +25,9 @@ PointCloudPreview::~PointCloudPreview()
     pointcloud_buffer.destroy();
 }
 
-void PointCloudPreview::showCloud() {
+void PointCloudPreview::renderCloud() {
     cloudPreviewOn = true;
+    colorizedPreviewOn = false;
     update();
 }
 
@@ -32,6 +38,38 @@ void PointCloudPreview::renderFrame(cv::Mat_<float> matrix) {
                             matrix(3,0),matrix(3,1),matrix(3,2),matrix(3,3));
 
     framePreviewOn = true;
+    colorizedPreviewOn = false;
+    update();
+}
+
+void PointCloudPreview::renderColorizedCloud(cv::Mat_<float> M) {
+    QMatrix4x4 matrix = QMatrix4x4(M(0,0),M(0,1),M(0,2),M(0,3),
+                                   M(1,0),M(1,1),M(1,2),M(1,3),
+                                   M(2,0),M(2,1),M(2,2),M(2,3),
+                                   M(3,0),M(3,1),M(3,2),M(3,3));
+    renderColorizedCloud(matrix);
+}
+
+void PointCloudPreview::renderColorizedCloud(QMatrix4x4 transformationMatrix) {
+
+    // Calculating reference plane
+    QVector4D _p1 = QVector4D(10.0,10.0,0.0,1.0);
+    QVector4D _p2 = QVector4D(0.0,10.0,0.0,1.0);
+    QVector4D _p3 = QVector4D(10.0,0.0,0.0,1.0);
+    _p1 = transformationMatrix*_p1;
+    _p2 = transformationMatrix*_p2;
+    _p3 = transformationMatrix*_p3;
+    QVector3D p1 = _p1.toVector3D();
+    QVector3D p2 = _p2.toVector3D();
+    QVector3D p3 = _p3.toVector3D();
+    QVector3D p = QVector3D::crossProduct(p2-p1,p3-p1);
+    double d = -1*p.x()*p1.x()-p.y()*p1.y()-p.z()*p1.z();
+    referencePlane = QVector4D(p, d);
+    castMatrix = transformationMatrix;
+
+    colorizedPreviewOn = true;
+    cloudPreviewOn = false;
+    framePreviewOn = false;
     update();
 }
 
@@ -39,38 +77,48 @@ void PointCloudPreview::clearWindow() {
     qDebug()<<"clearWindow";
 }
 
-void PointCloudPreview::mousePressEvent(QMouseEvent *e) {
+void PointCloudPreview::mousePressEvent(QMouseEvent *e)
+{
     pressed_point = e->pos();
 }
 
-void PointCloudPreview::mouseReleaseEvent(QMouseEvent *e) {
+void PointCloudPreview::mouseReleaseEvent(QMouseEvent *e)
+{
     release_point = e->pos();
     currentRotationAngleX = rotationAngleX;
     currentRotationAngleY = rotationAngleY;
+    currentTranslationX = translationX;
+    currentTranslationY = translationY;
 }
 
-void PointCloudPreview::mouseDoubleClickEvent(QMouseEvent *e) {
+void PointCloudPreview::mouseDoubleClickEvent(QMouseEvent *e)
+{
     rotationAngleX = 0;
     rotationAngleY = 0;
+    translationX = 0;
+    translationY = 0;
 
     update();
 }
 
-void PointCloudPreview::mouseMoveEvent(QMouseEvent *e) {
-
+void PointCloudPreview::mouseMoveEvent(QMouseEvent *e)
+{
     Qt::MouseButtons buttons = e->buttons();
     if (buttons == Qt::LeftButton){
-    rotationAngleX = currentRotationAngleX - (e->x() - pressed_point.x());
-    rotationAngleY = currentRotationAngleY - (e->y() - pressed_point.y());
+        rotationAngleX = currentRotationAngleX - (e->x() - pressed_point.x());
+        rotationAngleY = currentRotationAngleY - (e->y() - pressed_point.y());
     }
     if (buttons == Qt::RightButton) {
-    //TODO implemet translation
+        translationX = currentTranslationX - (e->x() - pressed_point.x());
+        translationY = currentTranslationY - (e->y() - pressed_point.y());
+        //TODO implemet translation
     }
 
     update();
 }
 
-void PointCloudPreview::wheelEvent(QWheelEvent *e) {
+void PointCloudPreview::wheelEvent(QWheelEvent *e)
+{
     wheelAngle += e->delta()/8;
     update();
 }
@@ -83,6 +131,7 @@ void PointCloudPreview::initializeGL()
 
     loadCloudShaders();
     loadFrameShaders();
+    loadColorizedShaders();
 
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
@@ -90,8 +139,8 @@ void PointCloudPreview::initializeGL()
     // Enable back face culling
     glEnable(GL_CULL_FACE);
 
-    loadPointCloudBuffer();
-    loadFrameBuffer();
+    initPointCloudBuffer();
+    initFrameBuffer();
 }
 
 void PointCloudPreview::resizeGL(int w, int h)
@@ -130,31 +179,56 @@ void PointCloudPreview::paintGL()
     //How camera sees
     proj.perspective(45.0f, 4.0f/3.0f, 0.1f, 1500.0f);
     //From where camera sees (ZOOM HERE)
-    view.lookAt(QVector3D(0,0,0+wheelAngle/15.0f+initialZoom),QVector3D(0,0,1+wheelAngle/15.0f+initialZoom),QVector3D(0,1,0));
+    view.lookAt(QVector3D(translationX,translationY,0+wheelAngle/15.0f+initialZoom),  //eye
+                QVector3D(0,0,1+wheelAngle/15.0f+initialZoom),  //center
+                QVector3D(0,1,0));                              //up
     camera.setToIdentity();
     QMatrix4x4 mvpMatrix = proj*view*camera;
 
 
     // DRAW WITH CLOUD SHADER PROGRAM
-    cloudProgram.bind();
-    cloudProgram.setUniformValue("u_rotoid", vecCentroid);
-    cloudProgram.setUniformValue("mvp_matrix", mvpMatrix);
-    cloudProgram.setUniformValue("u_rotation", rotationMatrix);
+    if (cloudPreviewOn) {
+        cloudProgram.bind();
+        cloudProgram.setUniformValue("u_rotoid", vecCentroid);
+        cloudProgram.setUniformValue("mvp_matrix", mvpMatrix);
+        cloudProgram.setUniformValue("u_rotation", rotationMatrix);
 
-    if (cloudPreviewOn)
         drawPointCloud(&cloudProgram);
-    cloudProgram.release();
+        cloudProgram.release();
+    }
 
     // DRAW WITH FRAME SHADER PROGRAM
-    frameProgram.bind();
-    frameProgram.setUniformValue("u_rotoid", vecCentroid);
-    frameProgram.setUniformValue("mvp_matrix", mvpMatrix);
-    frameProgram.setUniformValue("u_rotation", rotationMatrix);
-    frameProgram.setUniformValue("u_transformationMatrix", castMatrix);
+    if (framePreviewOn) {
+        frameProgram.bind();
+        frameProgram.setUniformValue("u_rotoid", vecCentroid);
+        frameProgram.setUniformValue("mvp_matrix", mvpMatrix);
+        frameProgram.setUniformValue("u_rotation", rotationMatrix);
+        frameProgram.setUniformValue("u_transformationMatrix", castMatrix);
+        QVector2D resolution = QVector2D((float)DataContainer::instance().getReferenceFrame().size().width,
+                                         (float)DataContainer::instance().getReferenceFrame().size().height);
+        frameProgram.setUniformValue("u_rgb_resolution", resolution);
 
-    if (framePreviewOn)
         drawFrame(&frameProgram);
-    frameProgram.release();
+        frameProgram.release();
+    }
+
+    if(colorizedPreviewOn) {
+        colorizedProgram.bind();
+        colorizedProgram.setUniformValue("u_rotoid", vecCentroid);
+        colorizedProgram.setUniformValue("mvp_matrix", mvpMatrix);
+        colorizedProgram.setUniformValue("u_rotation", rotationMatrix);
+        colorizedProgram.setUniformValue("u_transformationMatrix", castMatrix);
+        colorizedProgram.setUniformValue("u_transformationMatrix_inv", castMatrix.inverted());
+        colorizedProgram.setUniformValue("u_ref_plane", referencePlane);
+        QVector2D resolution = QVector2D((float)DataContainer::instance().getReferenceFrame().size().width,
+                                         (float)DataContainer::instance().getReferenceFrame().size().height);
+        colorizedProgram.setUniformValue("u_rgb_resolution", resolution);
+        qDebug() << castMatrix;
+        qDebug() << castMatrix.inverted();
+
+        drawColorizedPointCloud(&colorizedProgram);
+        colorizedProgram.release();
+    }
 }
 
 void PointCloudPreview::loadCloudShaders()
@@ -174,31 +248,50 @@ void PointCloudPreview::loadCloudShaders()
 
 void PointCloudPreview::loadFrameShaders()
 {
-    if (!frameProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_frame.glsl"))
+    if (!frameProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_iframe.glsl"))
         close();
-    if (!frameProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_frame.glsl"))
+    if (!frameProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_iframe.glsl"))
         close();
     if (!frameProgram.link())
         close();
 }
 
-void PointCloudPreview::loadPointCloudBuffer() {
+void PointCloudPreview::loadColorizedShaders()
+{
+    if (!colorizedProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_colorized.glsl"))
+        close();
+    if (!colorizedProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_colorized.glsl"))
+        close();
+    if (!colorizedProgram.link())
+        close();
+}
+
+void PointCloudPreview::initPointCloudBuffer()
+{
     pointcloud_buffer.create();
     pointcloud_buffer.bind();
-    pointcloud_buffer.allocate(&DataContainer::instance().getCloud()[0], DataContainer::instance().getCloud().size()*sizeof(Point3D));
+    pointcloud_buffer.allocate(&DataContainer::instance().getCloud()[0],
+            DataContainer::instance().getCloud().size()*sizeof(Point3D));
 }
 
-void PointCloudPreview::loadFrameBuffer() {
-    float rectangle[] = {-1.0, -1.0, 0.0,
-                         1.0, -1.0, 0.0,
-                         1.0,  1.0, 0.0,
-                         -1.0,  1.0, 0.0};
+void PointCloudPreview::initFrameBuffer()
+{
+    int w = DataContainer::instance().getReferenceFrame().size().width;
+    int h = DataContainer::instance().getReferenceFrame().size().height;
+    float* frame = new float[h*w*3];
+    for (int y=0; y<h; y++)
+        for (int x=0; x<w; x++) {
+            frame[3*(y*w+x)+0]=(float)(x);
+            frame[3*(y*w+x)+1]=(float)(y);
+            frame[3*(y*w+x)+2]=0.0;
+        }
     frame_buffer.create();
     frame_buffer.bind();
-    frame_buffer.allocate(rectangle, 4*3*sizeof(float));
+    frame_buffer.allocate(frame, w*h*3*sizeof(float));
 }
 
-void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program) {
+void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program)
+{
     pointcloud_buffer.bind();
 
     GLint vertexLocation = program->attributeLocation("a_position");
@@ -212,16 +305,13 @@ void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program) {
 
 }
 
-void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram) {
+void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram)
+{
     frame_buffer.bind();
 
-    GLint VBOLocation = frameProgram->attributeLocation("a_position");
-    frameProgram->enableAttributeArray(VBOLocation);
-    frameProgram->setAttributeBuffer(VBOLocation, GL_FLOAT, 0, 3);
-
-    GLint textureCoordLocation = frameProgram->attributeLocation("a_textureCoord");
-    frameProgram->enableAttributeArray(textureCoordLocation);
-    frameProgram->setAttributeBuffer(textureCoordLocation, GL_FLOAT, 0, 3);
+    GLint VBOlocation = frameProgram->attributeLocation("a_position");
+    frameProgram->enableAttributeArray(VBOlocation);
+    frameProgram->setAttributeBuffer(VBOlocation, GL_FLOAT, 0, 3);
 
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
@@ -236,12 +326,49 @@ void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram) {
 
     frameProgram->setUniformValue("texture", 0);
 
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glDrawArrays(GL_POINTS, 0,
+                 DataContainer::instance().getReferenceFrame().size().width *
+                 DataContainer::instance().getReferenceFrame().size().height);
 
-    frameProgram->disableAttributeArray(VBOLocation);
+    frameProgram->disableAttributeArray(VBOlocation);
 }
 
-void PointCloudPreview::drawCloudNotAvailable() {
+void PointCloudPreview::drawColorizedPointCloud(QOpenGLShaderProgram *program)
+{
+    pointcloud_buffer.bind();
+
+    GLint location_pointCoordinates = program->attributeLocation("a_position");
+    program->enableAttributeArray(location_pointCoordinates);
+    program->setAttributeBuffer(location_pointCoordinates, GL_FLOAT, 0, 3);
+
+    frame_buffer.bind();
+
+    GLint location_texCoordinates = program->attributeLocation("a_textureCoors");
+    program->enableAttributeArray(location_texCoordinates);
+    program->setAttributeArray(location_texCoordinates, GL_FLOAT, 0, 3);
+
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 DataContainer::instance().getReferenceFrame().size().width,
+                 DataContainer::instance().getReferenceFrame().size().height,
+                 0, GL_BGR, GL_UNSIGNED_BYTE,
+                 DataContainer::instance().getReferenceFrame().ptr());
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    program->setUniformValue("u_texture", 0);
+
+    glPointSize(1);
+    glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
+
+    program->disableAttributeArray(location_pointCoordinates);
+}
+
+//TODO: implement
+void PointCloudPreview::initCloudNotAvailableScreen()
+{
     const char* vshader =   "#ifdef GL_ES\n"
                             "precision mediump float;\n"
                             "precision mediump int;\n"
@@ -255,16 +382,21 @@ void PointCloudPreview::drawCloudNotAvailable() {
                             "v_textCoord = a_textCoord;\n"
                             "}\n";
 
-    const char* fshader =   "#ifdef GL_ES\n"
-                            "precision mediump float;\n"
-                            "precision mediump int;\n"
-                            "#endif\n"
-                            "uniform sampler2D texture;\n"
-                            "varying vec2 v_textCoord;\n"
+    const char* fshader =  "#ifdef GL_ES\n"
+                           "precision mediump float;\n"
+                           "precision mediump int;\n"
+                           "#endif\n"
+                           "uniform sampler2D texture;\n"
+                           "varying vec2 v_textCoord;\n"
 
-                            "void main() {\n"
-                            "gl_FragColor = texture2D(texture, v_textCoord);\n"
-                            "}\n";
+                           "void main() {\n"
+                           "        // Due to glTexImage2D texture shall have [0, 1] coordinates\n"
+                           "        // therefore scaling is neccessary\n"
+                           "        vec2 textCoord = 0.5*(v_textCoord) - 0.5;\n"
+                           "        // Horizontal flip...\n"
+                           "        textCoord.y *= -1.0;\n"
+                           "        gl_FragColor = texture2D(texture, textCoord);\n"
+                           "}\n";
 
     const float vertices[] = {-1.0, -1.0, 0.0,
                               1.0, -1.0, 0.0,

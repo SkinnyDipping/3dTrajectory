@@ -24,10 +24,26 @@ public:
     explicit SequencePreview(QWidget *parent = 0);
     ~SequencePreview();
 
-    void viewFrame(cv::Mat& frame);
-//    void startPlayback(cv::VideoCapture &video, int fps);
+    /**
+     * @brief viewFrame Render frame
+     * @param frame Frame to be rendered
+     * @param foreground True, if frame contains only foreground
+     */
+    void viewFrame(cv::Mat &frame, bool foreground = false);
+
+    /**
+     * @brief startPlayback Enable frames rendering
+     */
     void startPlayback();
+
+    /**
+     * @brief stopPlayback Disable frames rendering
+     */
     void stopPlayback();
+
+    /**
+     * @brief clearView TODO
+     */
     void clearView();
 
 protected:
@@ -46,10 +62,14 @@ private:
 
     //TEMP
     QImage image, img;
+
+    /// True, if only foreground shall be rendered
+    bool m_renderForeground;
+    bool m_playbackOn;
+
     cv::Mat frame;
     GLuint textureID;
 
-    bool playbackOn;
 
 
 };

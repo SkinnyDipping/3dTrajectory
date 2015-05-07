@@ -3,8 +3,8 @@
 
 SequencePreview::SequencePreview(QWidget *parent)
 {
-    playbackOn = false;
-    image = QImage(":/textures/cloud_na.png").mirrored();
+    m_playbackOn = false;
+    image = QImage(":/textures/cloud_na.png");
     frame = cv::imread("/home/michal/3dTrajectory/res/nos.png");
 }
 
@@ -14,16 +14,17 @@ SequencePreview::~SequencePreview()
 
 //void SequencePreview::startPlayback(cv::VideoCapture &video, int fps) {
 void SequencePreview::startPlayback() {
-    playbackOn = true;
+    m_playbackOn = true;
     update();
 }
 
 void SequencePreview::stopPlayback() {
-    playbackOn = false;
+    m_playbackOn = false;
 }
 
-void SequencePreview::viewFrame(cv::Mat &frame) {
+void SequencePreview::viewFrame(cv::Mat &frame, bool foreground) {
     this->frame = frame;
+    m_renderForeground = foreground;
     update();
 }
 
@@ -71,14 +72,15 @@ void SequencePreview::drawSequencePreview() {
     program.enableAttributeArray(textureCoordinateLocation);
     program.setAttributeBuffer(textureCoordinateLocation, GL_FLOAT, 0, 3);
 
-    if (playbackOn) {
+    if (m_playbackOn) {
         glGenTextures(1, &textureID);
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frame.size().width, frame.size().height, 0, GL_BGR, GL_UNSIGNED_BYTE, frame.ptr());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                     frame.size().width, frame.size().height,
+                     0, GL_BGR, GL_UNSIGNED_BYTE, frame.ptr());
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        qDebug() << textureID;
     } else {
         cloudNATexture->bind();
     }

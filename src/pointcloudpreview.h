@@ -6,6 +6,8 @@
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector2D>
+#include <QVector3D>
+#include <QVector4D>
 #include <QBasicTimer>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
@@ -26,7 +28,12 @@ public:
     PointCloudPreview(QWidget *parent = 0);
     ~PointCloudPreview();
 
-    void showCloud();
+    /**
+     * @brief renderCloud Render point cloud
+     *
+     * Point cloud is loaded from DataContainer
+     */
+    void renderCloud();
 
     /**
      * @brief renderFrame Render frame in point cloud window
@@ -36,6 +43,13 @@ public:
      * @param transformationMatrix
      */
     void renderFrame(cv::Mat_<float> transformationMatrix = cv::Mat::eye(4,4,CV_32F));
+
+    /**
+     * @brief renderColorizedCloud Render colorized point cloud
+     * @param transformationMatrix transformation between RGB texture and ReferencePlane
+     */
+    void renderColorizedCloud(cv::Mat_<float> transformationMatrix);
+    void renderColorizedCloud(QMatrix4x4 transformationMatrix);
 
     void clearWindow();
 
@@ -55,26 +69,34 @@ protected:
 
 private:
     void loadCloudShaders();
-    void loadPointCloudBuffer();
+    void initPointCloudBuffer();
     void drawPointCloud(QOpenGLShaderProgram *cloudProgram);
 
     void loadFrameShaders();
-    void loadFrameBuffer();
+    void initFrameBuffer();
     void drawFrame(QOpenGLShaderProgram *frameProgram);
-    void drawCloudNotAvailable();
+
+    void loadColorizedShaders();
+    void drawColorizedPointCloud(QOpenGLShaderProgram *program);
+
+    //TODO: implement
+    void initCloudNotAvailableScreen();
 
 private:
-    QOpenGLShaderProgram cloudProgram, frameProgram;
+    QOpenGLShaderProgram cloudProgram, frameProgram, colorizedProgram;
     QOpenGLBuffer pointcloud_buffer, frame_buffer;
 
     GLuint textureID;
 
-    //Point in which mouse was pressed and released
+    /// Point in which mouse was pressed and released
     QPoint pressed_point, release_point;
 
+    /// Fields that describe user controll of view
     qint64 wheelAngle;
     float rotationAngleX, rotationAngleY;
     float currentRotationAngleX, currentRotationAngleY;
+    float translationX, translationY;
+    float currentTranslationX, currentTranslationY;
     float initialZoom;  //just to debug easier
 
     PointCloud point_cloud;
@@ -82,7 +104,14 @@ private:
 
     QMatrix4x4 castMatrix;
 
-    bool cloudPreviewOn, framePreviewOn;
+    bool cloudPreviewOn, framePreviewOn, colorizedPreviewOn;
+
+    /// For colorized preview
+    QVector4D referencePlane;
+
+    /// If cloud is not available:
+    QOpenGLShaderProgram cloudNAProgram;
+    QOpenGLBuffer cloudNA_buffer;
 };
 
 #endif // POINTCLOUDPREVIEW_H

@@ -41,19 +41,38 @@ void MainWindow::on_rewindSequencePreview_clicked()
 
 void MainWindow::on_performCasting_clicked()
 {
+    float scale = 0.3;
     //TODO casting
     Point3D centroid = DataContainer::instance().getCloudCentroid();
-    cv::Mat_<float> matrix = cv::Mat_<float>::eye(4,4);
+    cv::Mat_<double> matrix = cv::Mat::eye(4,4, CV_64F);
     matrix(0,3) = centroid.x;
     matrix(1,3) = centroid.y;
     matrix(2,3) = centroid.z;
+    matrix(0,0) = scale;
+    matrix(1,1) = scale;
+    matrix(2,2) = scale;
 
-    pointCloudPreview->renderFrame(matrix);
+//    cv::Mat transformationMatrix = Caster::cast(DataContainer::instance().getCloudKeypoints(),
+//                                                DataContainer::instance().getImageKeypoints());
+    cv::Mat_<double> transformationMatrix = Caster::instance().cast();
+
+
+//    transformationMatrix = matrix*transformationMatrix;
+
+    pointCloudPreview->renderFrame(transformationMatrix);
+
+
 }
 
 void MainWindow::on_loadCloud_clicked()
 {
-    pointCloudPreview->showCloud();
+    pointCloudPreview->renderCloud();
+}
+
+void MainWindow::on_analyzeButton_clicked()
+{
+    cv::Mat_<double> matrix = Caster::instance().cast();
+    pointCloudPreview->renderColorizedCloud(matrix);
 }
 
 void MainWindow::toggleSequencePreview()
@@ -67,15 +86,10 @@ void MainWindow::toggleSequencePreview()
                 break;
             }
             if (distinctForeground->isChecked()) {
-    //TODO: zrobic w tym samym oknie, kolorowanie takze
                 cv::Mat foreground;
                 cvMOG2->apply(frame, foreground);
-                sequencePreview->viewFrame(frame);
-                cv::imshow("goreground", foreground);
-//                sequencePreview->viewFrame(foreground);
-//                foreground.convertTo(foreground, frame.type());
-//                qDebug() << foreground.rows << foreground.cols << frame.rows<<frame.cols;
-//                qDebug() << foreground.type() << frame.type();
+                cv::cvtColor(foreground, foreground, cv::COLOR_GRAY2BGR);
+                sequencePreview->viewFrame(foreground, true);
             } else {
                 sequencePreview->viewFrame(frame);
             }
@@ -88,4 +102,10 @@ void MainWindow::toggleSequencePreview()
 
 void MainWindow::rewindSequence() {
     DataContainer::instance().setCurrentFrameIndex(0);
+}
+
+void MainWindow::debug(cv::Mat_<double> m) {
+    for (int x=0; x<m.rows; x++)
+        for (int y=0; y<m.cols; y++)
+            qDebug() << m(y, x);
 }

@@ -14,6 +14,7 @@
 #include "pointcloudpreview.h"
 #include "sequencepreview.h"
 #include "foregroundextractormog2.h"
+#include "skeletonization.h"
 
 namespace Ui {
 class MainWindow;
@@ -47,6 +48,8 @@ private:
     PointCloudPreview *pointCloudPreview;
     SequencePreview *sequencePreview;
     cv::Ptr<cv::BackgroundSubtractorMOG2> cvMOG2;
+
+    Skeletonization *skeletonization;
 
     QPushButton *loadSequence, *loadPointCloud;
     QCheckBox *distinctForeground;

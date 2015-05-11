@@ -21,7 +21,8 @@ SOURCES += ../src/main.cpp \
     ../src/QOpenCVWidget.cpp \
     ../src/foregroundextractormog2.cpp \
     ../src/algebra.cpp \
-    ../src/caster.cpp
+    ../src/caster.cpp \
+    ../src/skeletonization.cpp
 
 HEADERS  += \
     ../src/pointcloudpreview.h \
@@ -32,7 +33,8 @@ HEADERS  += \
     ../src/QOpenCVWidget.h \
     ../src/foregroundextractormog2.h \
     ../src/algebra.h \
-    ../src/caster.h
+    ../src/caster.h \
+    ../src/skeletonization.h
 
 FORMS    += \
     ../src/sequencepreview.ui \

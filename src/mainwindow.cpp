@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->horizontalLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
     cvMOG2 = cv::createBackgroundSubtractorMOG2();
+    skeletonization = new Skeletonization(cv::Size(720,400));
 
     sequencePreviewOn = false;
 
@@ -86,10 +87,18 @@ void MainWindow::toggleSequencePreview()
                 break;
             }
             if (distinctForeground->isChecked()) {
+#ifndef CLASS
                 cv::Mat foreground;
-                cvMOG2->apply(frame, foreground);
+                cvMOG2->apply(frame, foreground, -1);
+                cv::Canny(foreground, foreground, 1, 3);
                 cv::cvtColor(foreground, foreground, cv::COLOR_GRAY2BGR);
                 sequencePreview->viewFrame(foreground, true);
+#else
+                cv::Mat foreground;
+                skeletonization->pushFrame(frame);
+                foreground = skeletonization->getForeground();
+                sequencePreview->viewFrame(foreground, true);
+#endif
             } else {
                 sequencePreview->viewFrame(frame);
             }

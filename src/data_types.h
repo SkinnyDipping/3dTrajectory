@@ -60,6 +60,18 @@ public:
         return *this;
     }
 
+    bool operator==(const Point2D& p) {
+        if (this->x == p.x && this->y == p.y)
+            return true;
+        return false;
+    }
+
+    bool operator!=(const Point2D& p) {
+        if (this->x != p.x || this->y != p.y)
+            return true;
+        return false;
+    }
+
     friend QDebug operator<<(QDebug dbg, const Point2D& p) {
         dbg.nospace() << "["<<p.x<<"; "<<p.y<<"]";
         return dbg.maybeSpace();

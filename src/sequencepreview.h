@@ -29,7 +29,7 @@ public:
      * @param frame Frame to be rendered
      * @param foreground True, if frame contains only foreground
      */
-    void viewFrame(cv::Mat &frame, bool foreground = false);
+    void viewFrame(cv::Mat &frame, bool foreground = false, std::vector<Point2D> points = std::vector<Point2D>());
 
     /**
      * @brief startPlayback Enable frames rendering
@@ -54,10 +54,12 @@ protected:
 private:
     void initShaders();
     void drawSequencePreview();
+    void initPointsPreview();
+    void drawPoints(std::vector<Point2D> joints);
 
 private:
-    QOpenGLShaderProgram program;
-    QOpenGLBuffer rectangleBuffer;
+    QOpenGLShaderProgram program, point_program;
+    QOpenGLBuffer rectangleBuffer, pointsBuffer;
     QOpenGLTexture *textureBuffer, *cloudNATexture;
 
     //TEMP
@@ -66,8 +68,10 @@ private:
     /// True, if only foreground shall be rendered
     bool m_renderForeground;
     bool m_playbackOn;
+    bool m_renderJoints;
 
     cv::Mat frame;
+    std::vector<Point2D> m_joints;
     GLuint textureID;
 
 

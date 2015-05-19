@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->horizontalLayout->addWidget(pointCloudPreview);
     ui->horizontalLayout->setSizeConstraint(QLayout::SetMaximumSize);
 
-    cvMOG2 = cv::createBackgroundSubtractorMOG2();
+    cvMOG2 = cv::createBackgroundSubtractorMOG2(500, 16, true);
     skeletonization = new Skeletonization(cv::Size(720,400));
 
     sequencePreviewOn = false;
@@ -53,12 +53,12 @@ void MainWindow::on_performCasting_clicked()
     matrix(1,1) = scale;
     matrix(2,2) = scale;
 
-//    cv::Mat transformationMatrix = Caster::cast(DataContainer::instance().getCloudKeypoints(),
-//                                                DataContainer::instance().getImageKeypoints());
+    //    cv::Mat transformationMatrix = Caster::cast(DataContainer::instance().getCloudKeypoints(),
+    //                                                DataContainer::instance().getImageKeypoints());
     cv::Mat_<double> transformationMatrix = Caster::instance().cast();
 
 
-//    transformationMatrix = matrix*transformationMatrix;
+    //    transformationMatrix = matrix*transformationMatrix;
 
     pointCloudPreview->renderFrame(transformationMatrix);
 
@@ -78,27 +78,22 @@ void MainWindow::on_analyzeButton_clicked()
 
 void MainWindow::toggleSequencePreview()
 {
-    if (sequencePreviewOn){
+    if (sequencePreviewOn) {
         sequencePreview->startPlayback();
-        cv::Mat frame;
         while (sequencePreviewOn) {
-            frame = DataContainer::instance().getNextFrame();
+            cv::Mat frame = DataContainer::instance().getNextFrame();
             if (frame.empty()) {
+                // end of preview
+                sequencePreviewOn = false;
+                ui->startSequencePreview->setText("Play");
+                rewindSequence();
                 break;
             }
             if (distinctForeground->isChecked()) {
-#ifndef CLASS
-                cv::Mat foreground;
-                cvMOG2->apply(frame, foreground, -1);
-                cv::Canny(foreground, foreground, 1, 3);
-                cv::cvtColor(foreground, foreground, cv::COLOR_GRAY2BGR);
-                sequencePreview->viewFrame(foreground, true);
-#else
-                cv::Mat foreground;
-                skeletonization->pushFrame(frame);
-                foreground = skeletonization->getForeground();
-                sequencePreview->viewFrame(foreground, true);
-#endif
+
+                if(skeletonization->apply(frame))
+                sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+
             } else {
                 sequencePreview->viewFrame(frame);
             }

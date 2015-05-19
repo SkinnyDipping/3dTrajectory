@@ -33,3 +33,10 @@ Vector Algebra::crossProduct(float *a, float *b)
     output.z = a[0]*b[1] - b[0]*a[1];
     return output;
 }
+
+float Algebra::distance(Point2D a, Point2D b)
+{
+    float output;
+    output = sqrt(SQ(a.x-b.x) + SQ(a.y-b.y));
+    return output;
+}

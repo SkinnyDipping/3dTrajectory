@@ -40,7 +40,9 @@ FORMS    += \
     ../src/sequencepreview.ui \
     ../src/mainwindow.ui
 
-INCLUDEPATH += /usr/local/include
+INCLUDEPATH += \
+    /usr/local/include \
+    ../3rdparty/Persistence1D/include
 
 LIBS += -L"/usr/local/lib/" \
         -lopencv_core -lopencv_highgui -lopencv_video -lopencv_videoio \

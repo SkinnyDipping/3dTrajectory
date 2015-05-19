@@ -7,8 +7,7 @@
 #include "opencv2/core.hpp"
 
 #include "data_types.h"
-
-#define SQ(a) (a*a)
+#include "algebra.h"
 
 class Caster
 {

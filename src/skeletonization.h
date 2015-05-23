@@ -94,6 +94,8 @@ private:
 
     p1d::Persistence1D p1d_program;
 
+    Point2D centroid;
+
 };
 
 #endif // SKELETONIZATION_H

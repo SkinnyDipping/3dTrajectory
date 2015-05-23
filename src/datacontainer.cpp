@@ -122,7 +122,7 @@ void DataContainer::showSequence() {
 Point3D DataContainer::calculateCentroid() {
     Point3D centroid = Point3D();
     Point3D sum = Point3D();
-    for (int i=0; i<point_cloud.size(); i++) {
+    for (unsigned int i=0; i<point_cloud.size(); i++) {
         sum += point_cloud[i];
     }
     int n=point_cloud.size();

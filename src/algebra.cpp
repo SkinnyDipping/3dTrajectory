@@ -1,11 +1,5 @@
 #include "algebra.h"
 
-float* Vector::getFloat()
-{
-    float output[] = {this->x, this->y, this->z};
-    return output;
-}
-
 Algebra::Algebra()
 {
 

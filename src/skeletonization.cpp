@@ -84,7 +84,7 @@ bool Skeletonization::skeletonization(std::list<Point2D>& pixels)
     centroid.x /= pixels.size();
     centroid.y /= pixels.size();
     m_joints.push_back(centroid);
-    this->centroid = centroid; //tEMP
+    this->centroid = centroid;
 
     std::vector<Point2D> pts_sorted = sort(pixels);
     findExtremas(pts_sorted, 9);
@@ -126,7 +126,7 @@ void Skeletonization::findExtremas(std::vector<Point2D>& points, int persistence
     std::vector<p1d::TPairedExtrema> extremas;
     p1d_program.GetPairedExtrema(extremas, persistence);
 
-    for (int i=0; i<extremas.size(); i++)
+    for (unsigned int i=0; i<extremas.size(); i++)
     {
         m_joints.push_back(points[extremas[i].MaxIndex]);
     }

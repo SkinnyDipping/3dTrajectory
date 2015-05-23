@@ -92,7 +92,8 @@ void MainWindow::toggleSequencePreview()
             if (distinctForeground->isChecked()) {
 
                 if(skeletonization->apply(frame))
-                sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+                    /// Choosing viewing of particular joints is available in this method
+                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
 
             } else {
                 sequencePreview->viewFrame(frame);

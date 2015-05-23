@@ -28,6 +28,7 @@ public:
      * @brief viewFrame Render frame
      * @param frame Frame to be rendered
      * @param foreground True, if frame contains only foreground
+     * @param points Points to be rendered apart from texture
      */
     void viewFrame(cv::Mat &frame, bool foreground = false, std::vector<Point2D> points = std::vector<Point2D>());
 
@@ -62,11 +63,10 @@ private:
     QOpenGLBuffer rectangleBuffer, pointsBuffer;
     QOpenGLTexture *textureBuffer, *cloudNATexture;
 
-    //TEMP
-    QImage image, img;
+    /// Container for cloud N/A texture
+    QImage image;
 
-    /// True, if only foreground shall be rendered
-    bool m_renderForeground;
+    bool m_renderForeground; /// True, if only foreground shall be rendered
     bool m_playbackOn;
     bool m_renderJoints;
 

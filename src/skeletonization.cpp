@@ -43,12 +43,6 @@ bool Skeletonization::apply(cv::Mat &frame)
         }
 
     bool skl = skeletonization(pixels);
-    //        qDebug()<<"\nFRAME:";
-    //        for (unsigned int i=0; i<pts_sorted.size(); i++)
-    //            qDebug() << pts_sorted[i].x<<" "<<pts_sorted[i].y;
-    //        qDebug()<<"Extremas: "<<extremas.size();
-    //        for (unsigned int i=0; i<extremas.size(); i++)
-    //            qDebug()<<extremas[i];
 
     cv::cvtColor(m_foreground, m_foreground, cv::COLOR_GRAY2BGR);
     return skl;
@@ -93,11 +87,7 @@ bool Skeletonization::skeletonization(std::list<Point2D>& pixels)
     this->centroid = centroid; //tEMP
 
     std::vector<Point2D> pts_sorted = sort(pixels);
-    //    std::vector<int> extremasIdx = findExtremas(pts_sorted, centroid, 6);
-    findExtremas(pts_sorted);
-
-    //    for (unsigned int i=0; i<extremasIdx.size(); i++)
-    //        m_joints.push_back(pts_sorted[extremasIdx[i]]);
+    findExtremas(pts_sorted, 9);
 
     return true;
 }
@@ -125,7 +115,7 @@ std::vector<Point2D> Skeletonization::sort(std::list<Point2D>& points)
     return pts_sorted;
 }
 
-void Skeletonization::findExtremas(std::vector<Point2D>& points)
+void Skeletonization::findExtremas(std::vector<Point2D>& points, int persistence)
 {
     std::vector<float> distances;
     for (unsigned int i=0; i<points.size(); i++)
@@ -134,60 +124,14 @@ void Skeletonization::findExtremas(std::vector<Point2D>& points)
     if (!p1d_program.RunPersistence(distances))
         qDebug() << "P1D error";
     std::vector<p1d::TPairedExtrema> extremas;
-    p1d_program.GetPairedExtrema(extremas, 2);
-    qDebug()<<extremas.size();
-
-//    for(std::vector<p1d::TPairedExtrema>::iterator it; it != extremas.end(); it++)
-//    {
-//        m_joints.push_back(points[it->MinIndex]);
-//    }
+    p1d_program.GetPairedExtrema(extremas, persistence);
 
     for (int i=0; i<extremas.size(); i++)
     {
-        m_joints.push_back(points[extremas[i].MinIndex]);
+        m_joints.push_back(points[extremas[i].MaxIndex]);
     }
 
 }
-
-std::vector<int> Skeletonization::findExtremas(std::vector<Point2D>& points, Point2D centroid, int mask)
-{
-    // mask shall be even
-    if (mask % 2 != 0) mask++;
-
-    std::vector<float> distances;
-    for (unsigned int i=0; i<points.size(); i++)
-        distances.push_back(Algebra::distance(centroid, points[i]));
-
-    std::vector<int> extremas;
-    int mins=0,maxs=0;
-    for (unsigned int i=mask/2; i<distances.size()-mask/2; i++)
-    {
-        int min = 1, max = 1;
-        for (int j=1; j<=mask/2; j++)
-        {
-            if (j<0) continue;
-
-            if(distances[i+j] <= distances[i])
-                min *= 0;
-            else if (distances[i+j] >= distances[i])
-                max *= 0;
-
-            if(distances[i-j] <= distances[i])
-                min *= 0;
-            else if (distances[i-j] >= distances[i])
-                max *= 0;
-        }
-
-        if (min || max)
-            extremas.push_back(i);
-        if(min) mins++;
-        if(max) maxs++;
-    }
-
-    return extremas;
-
-}
-
 
 
 

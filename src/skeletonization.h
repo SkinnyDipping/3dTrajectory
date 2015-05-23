@@ -23,7 +23,17 @@ class Skeletonization
 public:
     Skeletonization(cv::Size frameResolution);
     ~Skeletonization();
+
+    /**
+     * @brief getForeground
+     * @return segmented foreground
+     */
     cv::Mat& getForeground();
+
+    /**
+     * @brief getJoints
+     * @return vector of joints (2xfoot, 2xhand, 1xhead)
+     */
     std::vector<Point2D> getJoints();
 
     /**
@@ -42,17 +52,32 @@ private:
      */
     void thresholding(cv::Mat &frame, int threshold, bool highPass = true);
     
+    /**
+     * @brief sort Sorting border points
+     *
+     * Primitive method sorts border points. After operation they are aligned
+     * so that next point is a neighbour of previous on border.
+     *
+     * @param points
+     * @return new vector of sorted points
+     */
     std::vector<Point2D> sort(std::list<Point2D> &points);
 
-    std::vector<int> findExtremas(std::vector<Point2D>& points, Point2D centroid, int mask);
-    void findExtremas(std::vector<Point2D>& points);
+    /**
+     * @brief findExtremas find extremas using Persistence1D
+     * @param points vector of points
+     * @param persistence persistence of points
+     */
+    void findExtremas(std::vector<Point2D>& points, int persistence);
 
+    /**
+     * @brief skeletonization perform skeletonization
+     * @param pixels points of human border on image
+     * @return true on success
+     */
     bool skeletonization(std::list<Point2D> &pixels);
 
-//TODO change to private
-public:
-    /// currently processed frame TODO(?)
-
+private:
     /// segmented image
     cv::Mat m_foreground;
 
@@ -64,14 +89,10 @@ public:
 
     /// vector with joints
     /// [0] - skeleton center
-    /// [1] - right leg
-    /// [2] - left leg
-    /// [3] - head
+    /// other joint are not classified
     std::vector<Point2D> m_joints;
 
     p1d::Persistence1D p1d_program;
-
-    Point2D centroid; //TMEP
 
 };
 

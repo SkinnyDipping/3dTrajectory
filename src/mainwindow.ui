@@ -94,23 +94,36 @@
     <rect>
      <x>30</x>
      <y>400</y>
-     <width>101</width>
+     <width>141</width>
      <height>31</height>
     </rect>
    </property>
+   <property name="currentText">
+    <string>Skeletonization</string>
+   </property>
    <item>
     <property name="text">
-     <string>Load</string>
+     <string>Preview</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>Sequence</string>
+     <string>Foreground</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>Cloud</string>
+     <string>Thresholding</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Canny</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Skeletonization</string>
     </property>
    </item>
   </widget>

@@ -79,8 +79,8 @@ private:
     void loadColorizedShaders();
     void drawColorizedPointCloud(QOpenGLShaderProgram *program);
 
-    //TODO: implement
     void initCloudNotAvailableScreen();
+    void drawCloudNotAvailableScreen(QOpenGLShaderProgram *program);
 
 private:
     QOpenGLShaderProgram cloudProgram, frameProgram, colorizedProgram;
@@ -110,8 +110,12 @@ private:
     QVector4D referencePlane;
 
     /// If cloud is not available:
+    QImage cloudNAimage;
     QOpenGLShaderProgram cloudNAProgram;
-    QOpenGLBuffer cloudNA_buffer;
+    QOpenGLBuffer cloudNAbuffer;
+    QOpenGLTexture* cloudNAtexture;
+    GLuint textureCloudNA_ID;
+
 };
 
 #endif // POINTCLOUDPREVIEW_H

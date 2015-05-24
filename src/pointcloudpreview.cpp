@@ -18,6 +18,8 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
     currentTranslationY = 0.0f;
 
     initialZoom = 100;
+
+    cloudNAimage = QImage(":/textures/cloud_na.png");
 }
 
 PointCloudPreview::~PointCloudPreview()
@@ -141,6 +143,7 @@ void PointCloudPreview::initializeGL()
 
     initPointCloudBuffer();
     initFrameBuffer();
+    initCloudNotAvailableScreen();
 }
 
 void PointCloudPreview::resizeGL(int w, int h)
@@ -229,6 +232,10 @@ void PointCloudPreview::paintGL()
         drawColorizedPointCloud(&colorizedProgram);
         colorizedProgram.release();
     }
+
+    if (!(cloudPreviewOn || framePreviewOn || colorizedPreviewOn)) {
+        drawCloudNotAvailableScreen(&cloudNAProgram);
+    }
 }
 
 void PointCloudPreview::loadCloudShaders()
@@ -308,6 +315,7 @@ void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program)
 void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram)
 {
     frame_buffer.bind();
+    frameProgram->bind();
 
     GLint VBOlocation = frameProgram->attributeLocation("a_position");
     frameProgram->enableAttributeArray(VBOlocation);
@@ -336,6 +344,7 @@ void PointCloudPreview::drawFrame(QOpenGLShaderProgram *frameProgram)
 void PointCloudPreview::drawColorizedPointCloud(QOpenGLShaderProgram *program)
 {
     pointcloud_buffer.bind();
+    program->bind();
 
     GLint location_pointCoordinates = program->attributeLocation("a_position");
     program->enableAttributeArray(location_pointCoordinates);
@@ -369,11 +378,7 @@ void PointCloudPreview::drawColorizedPointCloud(QOpenGLShaderProgram *program)
 //TODO: implement
 void PointCloudPreview::initCloudNotAvailableScreen()
 {
-    const char* vshader =   "#ifdef GL_ES\n"
-                            "precision mediump float;\n"
-                            "precision mediump int;\n"
-                            "#endif\n"
-                            "attribute vec2 a_position;\n"
+    const char* vshader =   "attribute vec2 a_position;\n"
                             "attribute vec2 a_textCoord;\n"
                             "varying vec2 v_textCoord;\n"
 
@@ -382,11 +387,7 @@ void PointCloudPreview::initCloudNotAvailableScreen()
                             "v_textCoord = a_textCoord;\n"
                             "}\n";
 
-    const char* fshader =  "#ifdef GL_ES\n"
-                           "precision mediump float;\n"
-                           "precision mediump int;\n"
-                           "#endif\n"
-                           "uniform sampler2D texture;\n"
+    const char* fshader =  "uniform sampler2D texture;\n"
                            "varying vec2 v_textCoord;\n"
 
                            "void main() {\n"
@@ -402,4 +403,41 @@ void PointCloudPreview::initCloudNotAvailableScreen()
                               1.0, -1.0, 0.0,
                               1.0,  1.0, 0.0,
                               -1.0,  1.0, 0.0};
+
+    cloudNAbuffer.create();
+    cloudNAbuffer.bind();
+    cloudNAbuffer.allocate(vertices, 4*3*sizeof(float));
+
+    cloudNAtexture = new QOpenGLTexture(cloudNAimage);
+
+    if (!cloudNAProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_sequence.glsl"))
+        this->close();
+    if (!cloudNAProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_sequence.glsl"))
+        this->close();
+    if (!cloudNAProgram.link())
+        this->close();
+
+}
+
+void PointCloudPreview::drawCloudNotAvailableScreen(QOpenGLShaderProgram *program)
+{
+    cloudNAbuffer.bind();
+    program->bind();
+
+    GLint VBOlocation = program->attributeLocation("a_position");
+    program->enableAttributeArray(VBOlocation);
+    program->setAttributeBuffer(VBOlocation, GL_FLOAT, 0, 3);
+
+    GLint textureCoordinateLocation = program->attributeLocation("a_textCoord");
+    program->enableAttributeArray(textureCoordinateLocation);
+    program->setAttributeBuffer(textureCoordinateLocation, GL_FLOAT, 0, 3);
+
+    cloudNAtexture->bind();
+
+    program->setUniformValue("texture", 0);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    program->disableAttributeArray(VBOlocation);
+    program->disableAttributeArray(textureCoordinateLocation);
 }

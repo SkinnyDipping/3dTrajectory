@@ -93,6 +93,7 @@ public:
 };
 
 typedef std::vector<Point3D> PointCloud;
+typedef std::vector<Point3D_RGB> PointCloudRGB;
 typedef Point3D_RGB Point3DRGB;
 typedef Point3D Vector3D;
 

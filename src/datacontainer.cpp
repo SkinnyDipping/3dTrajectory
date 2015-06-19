@@ -24,6 +24,10 @@ std::vector<Point3D>& DataContainer::getCloud(){
     return point_cloud;
 }
 
+PointCloudRGB& DataContainer::getRGBCloud() {
+    return point_cloud_RGB;
+}
+
 void DataContainer::loadSequence(std::string filePath) {
     cv::VideoCapture video(filePath);
     do {
@@ -92,6 +96,7 @@ void DataContainer::setCloud(std::string filePath) {
         float a,b,c,d,e,f,g,h;
         iss >>a>>b>>c>>d>>e>>f>>g>>h;
         point_cloud.push_back(Point3D(c,d,e));
+        point_cloud_RGB.push_back(Point3DRGB(c,d,e,f,g,h));
     }
     qDebug() << "DataContainer: file read";
     cloudFile.close();

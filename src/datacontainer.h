@@ -20,6 +20,7 @@ public:
 
     cv::VideoCapture& getSequence();
     PointCloud& getCloud();
+    PointCloudRGB& getRGBCloud();
 
     void loadSequence(std::string filePath);
 
@@ -82,6 +83,7 @@ private:
 
 private:
     PointCloud point_cloud;
+    PointCloudRGB point_cloud_RGB;
     std::vector<Point3D> cloud_keypoints;
     std::vector<Point2D> image_keypoints;
 

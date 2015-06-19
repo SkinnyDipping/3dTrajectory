@@ -22,7 +22,9 @@ SOURCES += ../src/main.cpp \
     ../src/foregroundextractormog2.cpp \
     ../src/algebra.cpp \
     ../src/caster.cpp \
-    ../src/skeletonization.cpp
+    ../src/skeletonization.cpp \
+    ../src/quaternion.cpp \
+    ../src/fww.cpp
 
 HEADERS  += \
     ../src/pointcloudpreview.h \
@@ -34,7 +36,9 @@ HEADERS  += \
     ../src/foregroundextractormog2.h \
     ../src/algebra.h \
     ../src/caster.h \
-    ../src/skeletonization.h
+    ../src/skeletonization.h \
+    ../src/quaternion.h /
+    ../src/fww.h
 
 FORMS    += \
     ../src/sequencepreview.ui \

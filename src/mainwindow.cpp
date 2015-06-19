@@ -53,16 +53,12 @@ void MainWindow::on_performCasting_clicked()
     matrix(1,1) = scale;
     matrix(2,2) = scale;
 
-    //    cv::Mat transformationMatrix = Caster::cast(DataContainer::instance().getCloudKeypoints(),
-    //                                                DataContainer::instance().getImageKeypoints());
+    //        cv::Mat transformationMatrix = Caster::cast(DataContainer::instance().getCloudKeypoints(),
+    //                                                    DataContainer::instance().getImageKeypoints());
     cv::Mat_<double> transformationMatrix = Caster::instance().cast();
 
 
-    //    transformationMatrix = matrix*transformationMatrix;
-
     pointCloudPreview->renderFrame(transformationMatrix);
-
-
 }
 
 void MainWindow::on_loadCloud_clicked()
@@ -74,6 +70,66 @@ void MainWindow::on_analyzeButton_clicked()
 {
     cv::Mat_<double> matrix = Caster::instance().cast();
     pointCloudPreview->renderColorizedCloud(matrix);
+}
+
+void MainWindow::on_casterCast_clicked()
+{
+
+    std::vector<Point2D> image_keypoints;
+    std::vector<Point3D> cloud_keypoints;
+    image_keypoints.push_back(Point2D(454, 132));
+    image_keypoints.push_back(Point2D(367, 127));
+    image_keypoints.push_back(Point2D(270, 199));
+    image_keypoints.push_back(Point2D(55, 110));
+    image_keypoints.push_back(Point2D(544, 364));
+    image_keypoints.push_back(Point2D(497, 230));
+    image_keypoints.push_back(Point2D(367, 320));
+    image_keypoints.push_back(Point2D(443, 321));
+    image_keypoints.push_back(Point2D(440, 196));
+    image_keypoints.push_back(Point2D(441, 229));
+    image_keypoints.push_back(Point2D(366, 137));
+    image_keypoints.push_back(Point2D(365, 202));
+    cloud_keypoints.push_back(Point3D(0.0463, 6.5282, 133.215897));
+    cloud_keypoints.push_back(Point3D(-0.8515, 6.1534, 133.221603));
+    cloud_keypoints.push_back(Point3D(-1.775, 5.7682, 132.409393));
+    cloud_keypoints.push_back(Point3D(-3.6192, 4.9853, 133.212799));
+    cloud_keypoints.push_back(Point3D(0.8383, 5.1496, 131.091095));
+    cloud_keypoints.push_back(Point3D(0.556, 6.7573, 132.14));
+    cloud_keypoints.push_back(Point3D(-0.8112, 6.1722, 131.1138));
+    cloud_keypoints.push_back(Point3D(-0.0135, 6.4959, 131.105896));
+    cloud_keypoints.push_back(Point3D(-0.0762, 6.4742, 132.492706));
+    cloud_keypoints.push_back(Point3D(-0.617, 6.4595, 132.135));
+    cloud_keypoints.push_back(Point3D(-0.8596, 6.1433, 133.112503));
+    cloud_keypoints.push_back(Point3D(-0.8529, 6.1302, 132.419));
+
+    m_transformationMatrix = Caster::instance().cast(cloud_keypoints, image_keypoints);
+
+    std::vector<Point3D> transImg;
+    for (int i=0; i<image_keypoints.size(); i++)
+        transImg.push_back(Point3D(image_keypoints[i].x, image_keypoints[i].y, 0));
+
+
+#define t_I (transImg)
+    cv::Mat_<double> t_M = m_transformationMatrix;
+    for (int i=0; i<transImg.size(); i++)
+    {
+        Point3D p = Point3D();
+        p.x = t_M(0,0)*t_I[i].x + t_M(0,1)*t_I[i].y + t_M(0,2)*t_I[i].z + t_M(0,3);
+        p.y = t_M(1,0)*t_I[i].x + t_M(1,1)*t_I[i].y + t_M(1,2)*t_I[i].z + t_M(1,3);
+        p.z = t_M(2,0)*t_I[i].x + t_M(2,1)*t_I[i].y + t_M(2,2)*t_I[i].z + t_M(2,3);
+        transImg[i] = p;
+    }
+#undef t_I
+
+    qDebug() << "IMAGE:";
+    for (int i=0; i<image_keypoints.size(); i++)
+        qDebug() << transImg[i];
+
+    Point3D normalVector = Point3D(0,0,1);
+    qDebug()<<"normalVector"<<normalVector<<normalVector*m_transformationMatrix;
+
+    pointCloudPreview->renderFrame(m_transformationMatrix);
+
 }
 
 void MainWindow::toggleSequencePreview()
@@ -92,7 +148,7 @@ void MainWindow::toggleSequencePreview()
             if (distinctForeground->isChecked()) {
 
                 if(skeletonization->apply(frame))
-                    /// Choosing viewing of particular joints is available in this method
+                    // Choosing viewing of particular joints is available in this method
                     sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
 
             } else {

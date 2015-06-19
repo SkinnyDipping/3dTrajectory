@@ -116,6 +116,9 @@ private:
     QOpenGLTexture* cloudNAtexture;
     GLuint textureCloudNA_ID;
 
+    //TEMP
+    void* pc_ptr, *im_ptr;
+
 };
 
 #endif // POINTCLOUDPREVIEW_H

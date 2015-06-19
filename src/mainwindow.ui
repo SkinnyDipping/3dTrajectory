@@ -99,7 +99,7 @@
     </rect>
    </property>
    <property name="currentText">
-    <string>Skeletonization</string>
+    <string>Preview</string>
    </property>
    <item>
     <property name="text">
@@ -127,17 +127,17 @@
     </property>
    </item>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="casterCast">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>440</y>
+     <x>520</x>
+     <y>570</y>
      <width>141</width>
-     <height>121</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>REwind</string>
+    <string>Go with cast()</string>
    </property>
   </widget>
   <widget class="QPushButton" name="analyzeButton">

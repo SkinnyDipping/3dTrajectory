@@ -8,6 +8,11 @@
 
 #include "data_types.h"
 #include "algebra.h"
+#include "quaternion.h"
+
+#ifndef SQ
+#define SQ(a) ((a)*(a))
+#endif
 
 class Caster
 {
@@ -27,6 +32,8 @@ public:
     cv::Mat cast(std::vector<Point3D>& cloudKeypoints, std::vector<Point2D>& imageKeypoints);
     //TEMP
     cv::Mat cast();
+
+    cv::Mat getTransformationMatrix();
 
 private:
     Caster();
@@ -51,10 +58,30 @@ private:
     /// Calculates centroid
     Point3D calculateCentroid(std::vector<Point3D>& points);
 
-private:
+    /// Creates transformation matrix based on params set in cast(...)
+    cv::Mat generateTransformationMatrix();
+
+// TODO: change to private
+public:
+    /// Tangential plane coefficients
     double A, B, C, D;
+
     std::vector<Point3D> virtual_sphere;
+
+    /// Containers for image and cloud keypoints during calculations
     std::vector<Point3D> image, cloud;
+
+    /// Transformation parameters
+    Quaternion m_rotation_PiXY, m_rotation_overPi;
+    Point3D m_rotation_PiXY_centroid, m_rotation_casted_centroid;
+    Point3D m_translation_P, m_translation_O;
+    double m_scale;
+    Point3D m_image_centroid;
+    double currentMSE;
+    int currentIdx;
+
+    /// Effect of casting
+    cv::Mat m_transformationMatrix;
 
 };
 

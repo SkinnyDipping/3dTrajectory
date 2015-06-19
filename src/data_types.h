@@ -2,6 +2,7 @@
 #define DATA_TYPES_H
 
 #include <QDebug>
+#include <opencv2/core.hpp>
 
 #define DEG2RAD 0.0174532925f
 #define RAD2DEG 57.2957795f
@@ -24,6 +25,19 @@ public:
         this->y += p.y;
         this->z += p.z;
         return *this;
+    }
+
+    Point3D operator*(cv::Mat& matrix) {
+        cv::Mat_<double> m = matrix;
+        Point3D output = Point3D();
+        output.x = this->x*m(0,0) + this->y*m(0,1) + this->z*m(0,2) + m(0,3);
+        output.y = this->x*m(1,0) + this->y*m(1,1) + this->z*m(1,2) + m(1,3);
+        output.z = this->x*m(2,0) + this->y*m(2,1) + this->z*m(2,2) + m(2,3);
+        return output;
+    }
+
+    Point3D getOpposite() {
+        return Point3D(-this->x, -this->y, -this->y);
     }
 
     friend QDebug operator<<(QDebug dbg, const Point3D& p) {

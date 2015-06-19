@@ -1,5 +1,7 @@
 #include "pointcloudpreview.h"
 
+#include "caster.h"
+
 PointCloudPreview::PointCloudPreview(QWidget *parent)
 {
     wheelAngle = 0;
@@ -41,6 +43,7 @@ void PointCloudPreview::renderFrame(cv::Mat_<float> matrix) {
 
     framePreviewOn = true;
     colorizedPreviewOn = false;
+
     update();
 }
 
@@ -279,6 +282,17 @@ void PointCloudPreview::initPointCloudBuffer()
     pointcloud_buffer.bind();
     pointcloud_buffer.allocate(&DataContainer::instance().getCloud()[0],
             DataContainer::instance().getCloud().size()*sizeof(Point3D));
+//    pc_ptr = pointcloud_buffer.map(QOpenGLBuffer::Access::ReadOnly);
+//    if (pc_ptr == nullptr)
+//        qDebug() << "DAFAQ";
+//    else {
+//        qDebug() << "And the buffer is:";
+//        for (int i=0; i<100; i++)
+//            qDebug() << ((float *)pc_ptr)[i];
+//    }
+//    pointcloud_buffer.allocate(DataContainer::instance().getCloud().size()*sizeof(Point3D));
+//    pointcloud_buffer.allocate(Caster::instance().virtual_sphere.size()*sizeof(Point3D));
+//    pointcloud_buffer.write(0, &Caster::instance().virtual_sphere[0], Caster::instance().virtual_sphere.size());
 }
 
 void PointCloudPreview::initFrameBuffer()
@@ -295,6 +309,14 @@ void PointCloudPreview::initFrameBuffer()
     frame_buffer.create();
     frame_buffer.bind();
     frame_buffer.allocate(frame, w*h*3*sizeof(float));
+//    im_ptr = frame_buffer.map(QOpenGLBuffer::Access::ReadOnly);
+//    if (im_ptr == nullptr)
+//        qDebug()<<"DAFAQ im";
+//    else {
+//        qDebug()<<"And the image is:";
+//        for (int i=0; i<100; i++)
+//            qDebug()<<((float *)im_ptr)[i];
+//    }
 }
 
 void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program)
@@ -306,7 +328,8 @@ void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program)
     program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3);
 
     glPointSize(1);
-    glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
+//    glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
+    glDrawArrays(GL_POINTS, 0, pointcloud_buffer.size()/sizeof(Point3D));
 
     program->disableAttributeArray(vertexLocation);
 

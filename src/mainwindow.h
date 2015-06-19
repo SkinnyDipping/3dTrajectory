@@ -34,6 +34,7 @@ private slots:
     void on_performCasting_clicked();
     void on_loadCloud_clicked();
     void on_analyzeButton_clicked();
+    void on_casterCast_clicked();
 
 private:
     void toggleSequencePreview();
@@ -50,11 +51,15 @@ private:
     cv::Ptr<cv::BackgroundSubtractorMOG2> cvMOG2;
 
     Skeletonization *skeletonization;
+//    Caster m_caster;
 
     QPushButton *loadSequence, *loadPointCloud;
     QCheckBox *distinctForeground;
 
     bool sequencePreviewOn;
+
+    //TEMP
+    cv::Mat m_transformationMatrix;
 };
 
 #endif // MAINWINDOW_H

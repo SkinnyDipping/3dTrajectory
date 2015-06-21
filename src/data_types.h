@@ -16,6 +16,8 @@ public:
 
     Point3D(float x, float y, float z) : x(x),y(y),z(z) {}
 
+    Point3D(cv::Mat_<float> mat) : x(mat(0)), y(mat(1)), z(mat(2)) {}
+
     Point3D operator+(Point3D& p) {
         return Point3D(this->x+p.x,this->y+p.y,this->z+p.z);
     }

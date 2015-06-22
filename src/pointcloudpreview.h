@@ -30,10 +30,11 @@ public:
 
     /**
      * @brief renderCloud Render point cloud
+     * @param selected_points Points that should be selected (marked different color)
      *
      * Point cloud is loaded from DataContainer
      */
-    void renderCloud(std::vector<Point3D> selected_points = std::vector<Point3D>());
+    void renderCloud(std::vector<Point3D>& selected_points);
 
     /**
      * @brief renderFrame Render frame in point cloud window

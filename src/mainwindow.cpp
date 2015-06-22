@@ -63,13 +63,15 @@ void MainWindow::on_performCasting_clicked()
 
 void MainWindow::on_loadCloud_clicked()
 {
-    pointCloudPreview->renderCloud();
+    std::vector<Point3D> _ = std::vector<Point3D>();
+//    _.push_back(Point3D(0,0,0));
+    pointCloudPreview->renderCloud(_);
 }
 
 void MainWindow::on_analyzeButton_clicked()
 {
-    cv::Mat_<double> matrix = Caster::instance().cast();
-    pointCloudPreview->renderColorizedCloud(matrix);
+    setTrajectory();
+    pointCloudPreview->renderCloud(m_trajectory);
 }
 
 void MainWindow::on_casterCast_clicked()
@@ -163,6 +165,11 @@ void MainWindow::toggleSequencePreview()
 
 void MainWindow::rewindSequence() {
     DataContainer::instance().setCurrentFrameIndex(0);
+}
+
+void MainWindow::setTrajectory()
+{
+    m_trajectory.push_back(Point3D(0,0,0));
 }
 
 void MainWindow::debug(cv::Mat_<double> m) {

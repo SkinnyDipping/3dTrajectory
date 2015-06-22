@@ -40,6 +40,8 @@ private:
     void toggleSequencePreview();
     void rewindSequence();
 
+    void setTrajectory();
+
     //TEMP
     void debug(cv::Mat_<double> m);
 
@@ -57,6 +59,8 @@ private:
     QCheckBox *distinctForeground;
 
     bool sequencePreviewOn;
+
+    std::vector<Point3D> m_trajectory;
 
     //TEMP
     cv::Mat m_transformationMatrix;

@@ -29,9 +29,13 @@ PointCloudPreview::~PointCloudPreview()
     pointcloud_buffer.destroy();
 }
 
-void PointCloudPreview::renderCloud() {
+void PointCloudPreview::renderCloud(std::vector<Point3D> &selected_points) {
     cloudPreviewOn = true;
     colorizedPreviewOn = false;
+
+    trajectory_buffer.bind();
+    trajectory_buffer.allocate(&selected_points[0], selected_points.size()*sizeof(Point3D));
+
     update();
 }
 
@@ -280,19 +284,10 @@ void PointCloudPreview::initPointCloudBuffer()
 {
     pointcloud_buffer.create();
     pointcloud_buffer.bind();
-    pointcloud_buffer.allocate(&DataContainer::instance().getCloud()[0],
-            DataContainer::instance().getCloud().size()*sizeof(Point3D));
-//    pc_ptr = pointcloud_buffer.map(QOpenGLBuffer::Access::ReadOnly);
-//    if (pc_ptr == nullptr)
-//        qDebug() << "DAFAQ";
-//    else {
-//        qDebug() << "And the buffer is:";
-//        for (int i=0; i<100; i++)
-//            qDebug() << ((float *)pc_ptr)[i];
-//    }
-//    pointcloud_buffer.allocate(DataContainer::instance().getCloud().size()*sizeof(Point3D));
-//    pointcloud_buffer.allocate(Caster::instance().virtual_sphere.size()*sizeof(Point3D));
-//    pointcloud_buffer.write(0, &Caster::instance().virtual_sphere[0], Caster::instance().virtual_sphere.size());
+    pointcloud_buffer.allocate(&DataContainer::instance().getRGBCloud()[0],
+            DataContainer::instance().getRGBCloud().size()*sizeof(Point3DRGB));
+
+    trajectory_buffer.create();
 }
 
 void PointCloudPreview::initFrameBuffer()
@@ -309,29 +304,55 @@ void PointCloudPreview::initFrameBuffer()
     frame_buffer.create();
     frame_buffer.bind();
     frame_buffer.allocate(frame, w*h*3*sizeof(float));
-//    im_ptr = frame_buffer.map(QOpenGLBuffer::Access::ReadOnly);
-//    if (im_ptr == nullptr)
-//        qDebug()<<"DAFAQ im";
-//    else {
-//        qDebug()<<"And the image is:";
-//        for (int i=0; i<100; i++)
-//            qDebug()<<((float *)im_ptr)[i];
-//    }
+    //    im_ptr = frame_buffer.map(QOpenGLBuffer::Access::ReadOnly);
+    //    if (im_ptr == nullptr)
+    //        qDebug()<<"DAFAQ im";
+    //    else {
+    //        qDebug()<<"And the image is:";
+    //        for (int i=0; i<100; i++)
+    //            qDebug()<<((float *)im_ptr)[i];
+    //    }
 }
 
 void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program)
 {
+    program->bind();
+
     pointcloud_buffer.bind();
 
-    GLint vertexLocation = program->attributeLocation("a_position");
-    program->enableAttributeArray(vertexLocation);
-    program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3);
+    // Drawing point cloud
+    GLint position_location = program->attributeLocation("a_position");
+    program->setAttributeBuffer(position_location, GL_FLOAT, 0, 3, sizeof(Point3DRGB));
+    program->enableAttributeArray(position_location);
+
+    GLint color_location = program->attributeLocation("a_color_pc");
+    program->setAttributeBuffer(color_location, GL_FLOAT, 3*sizeof(float), 3, sizeof(Point3DRGB));
+    program->enableAttributeArray(color_location);
 
     glPointSize(1);
-//    glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
-    glDrawArrays(GL_POINTS, 0, pointcloud_buffer.size()/sizeof(Point3D));
+    glDrawArrays(GL_POINTS, 0, pointcloud_buffer.size()/sizeof(Point3DRGB));
 
-    program->disableAttributeArray(vertexLocation);
+    program->disableAttributeArray(position_location);
+    program->disableAttributeArray(color_location);
+
+    pointcloud_buffer.release();
+
+    trajectory_buffer.bind();
+
+    // That's it, if there's no points to colour
+    if(trajectory_buffer.size() == 0 || !trajectory_buffer.isCreated())
+        return;
+
+    // Drawing (selecting) additional points
+    program->setAttributeValue(color_location, 47, 255, 7.8);
+    program->setAttributeBuffer(position_location, GL_FLOAT, 0, 3);
+    program->enableAttributeArray(position_location);
+
+    glPointSize(10);
+    glDrawArrays(GL_POINTS, 0, trajectory_buffer.size()/sizeof(Point3D));
+
+    program->disableAttributeArray(position_location);
+    trajectory_buffer.release();
 
 }
 

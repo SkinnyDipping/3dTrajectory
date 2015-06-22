@@ -24,7 +24,6 @@ SOURCES += ../src/main.cpp \
     ../src/caster.cpp \
     ../src/skeletonization.cpp \
     ../src/quaternion.cpp \
-    ../src/fww.cpp
 
 HEADERS  += \
     ../src/pointcloudpreview.h \
@@ -38,7 +37,6 @@ HEADERS  += \
     ../src/caster.h \
     ../src/skeletonization.h \
     ../src/quaternion.h /
-    ../src/fww.h
 
 FORMS    += \
     ../src/sequencepreview.ui \

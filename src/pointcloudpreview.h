@@ -30,10 +30,11 @@ public:
 
     /**
      * @brief renderCloud Render point cloud
+     * @param selected_points Points that should be selected (marked different color)
      *
      * Point cloud is loaded from DataContainer
      */
-    void renderCloud();
+    void renderCloud(std::vector<Point3D>& selected_points);
 
     /**
      * @brief renderFrame Render frame in point cloud window
@@ -84,7 +85,7 @@ private:
 
 private:
     QOpenGLShaderProgram cloudProgram, frameProgram, colorizedProgram;
-    QOpenGLBuffer pointcloud_buffer, frame_buffer;
+    QOpenGLBuffer pointcloud_buffer, trajectory_buffer, frame_buffer;
 
     GLuint textureID;
 

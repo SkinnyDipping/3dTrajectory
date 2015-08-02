@@ -236,14 +236,16 @@ void MainWindow::toggleSequencePreview()
 
                 if(skeletonization->apply(frame))
                     // Choosing viewing of particular joints is available in this method
-                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+//                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+                    sequencePreview->viewFrame(frame);
 
                 if (analysisOn)
                     //TODO zrobic zeby nie zrwalao vectora tylko 1 punkt
                 {
-                    if (skeletonization->getJoints()[0].x < 0 || skeletonization->getJoints()[0].y < 0 )
+                    Point2D point = skeletonization->getFeet().first;
+                    if (point.x < 0 || point.y < 0 )
                         continue;
-                    std::vector<Point3D> trajectory_points = Caster::instance().getPoint(skeletonization->getJoints()[0]);
+                    std::vector<Point3D> trajectory_points = Caster::instance().getPoint(point);
                     qDebug()<<"Trajectory: "<<trajectory_points.size()<<"pts";
                     for (Point3D p : trajectory_points) {
                         m_trajectory.push_back(p);

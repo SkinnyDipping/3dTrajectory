@@ -37,6 +37,12 @@ public:
     std::vector<Point2D> getJoints();
 
     /**
+     * @brief getFeet
+     * @return 2 points: feet
+     */
+    std::pair<Point2D, Point2D> getFeet();
+
+    /**
      * @brief apply apply skeletonization to frame
      * @param frame
      * @return true, if all went well

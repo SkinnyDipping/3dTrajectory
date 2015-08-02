@@ -21,6 +21,17 @@ std::vector<Point2D> Skeletonization::getJoints()
     return m_joints;
 }
 
+std::pair<Point2D, Point2D> Skeletonization::getFeet()
+{
+    Point2D _2 = Point2D();
+    Point2D _1 = m_joints[0];
+    for (Point2D j : m_joints) {
+        if (j.y > _1.y)
+            _1 = j;
+    }
+    return std::pair<Point2D, Point2D>(_1, _2);
+}
+
 Skeletonization::~Skeletonization()
 {
 

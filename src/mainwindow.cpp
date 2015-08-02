@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     sequencePreviewOn = false;
 
+    modeSelectionBox = ui->modeSelectionBox;
+
 }
 
 MainWindow::~MainWindow()
@@ -147,15 +149,53 @@ void MainWindow::toggleSequencePreview()
                 rewindSequence();
                 break;
             }
-            if (distinctForeground->isChecked()) {
 
-                if(skeletonization->apply(frame))
-                    // Choosing viewing of particular joints is available in this method
+//            if (distinctForeground->isChecked()) {
+
+//                if(skeletonization->apply(frame))
+//                    // Choosing viewing of particular joints is available in this method
+//                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+
+//            } else {
+//                sequencePreview->viewFrame(frame);
+//            }
+
+            if (modeSelectionBox->currentText() == "Preview") {
+                sequencePreview->viewFrame(frame);
+
+            } else if (modeSelectionBox->currentText() == "Foreground") {
+                if(skeletonization->apply(frame, -1))
+                    // Choosing viewing of particular joint is available in this method
                     sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
 
-            } else {
-                sequencePreview->viewFrame(frame);
+            } else if (modeSelectionBox->currentText() == "Thresholding") {
+                if(skeletonization->apply(frame, 0))
+                    // Choosing viewing of particular joint is available in this method
+                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+
+            } else if (modeSelectionBox->currentText() == "Median Filtering") {
+                if(skeletonization->apply(frame, 1))
+                    // Choosing viewing of particular joint is available in this method
+                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+
+            } else if (modeSelectionBox->currentText() == "Erosion & Dilatation") {
+                if(skeletonization->apply(frame, 2))
+                    // Choosing viewing of particular joint is available in this method
+                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+
+            } else if (modeSelectionBox->currentText() == "Canny") {
+                if(skeletonization->apply(frame, 3))
+                    // Choosing viewing of particular joint is available in this method
+                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+
+            } else if (modeSelectionBox->currentText() == "Skeletonization") {
+                if(skeletonization->apply(frame, 4))
+                    // Choosing viewing of particular joint is available in this method
+                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+
             }
+
+
             cv::waitKey(66);
         }
     } else {

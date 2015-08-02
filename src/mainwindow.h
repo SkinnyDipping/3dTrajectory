@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QCheckBox>
+#include <QComboBox>
 
 #include "opencv2/opencv.hpp"
 #include "opencv2/imgproc.hpp"
@@ -57,6 +58,7 @@ private:
 
     QPushButton *loadSequence, *loadPointCloud;
     QCheckBox *distinctForeground;
+    QComboBox *modeSelectionBox;
 
     bool sequencePreviewOn;
 

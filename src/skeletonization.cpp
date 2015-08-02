@@ -6,8 +6,8 @@ Skeletonization::Skeletonization(cv::Size frameResolution)
     m_cvMOG2 = cv::createBackgroundSubtractorMOG2();
     m_morph_kernel = cv::Mat::ones(3, 3, CV_8U);
 
-//    for (int i=0; i<3; i++)
-//        m_joints.push_back(Point2D(-1,-1));
+    //    for (int i=0; i<3; i++)
+    //        m_joints.push_back(Point2D(-1,-1));
     m_joints.push_back(Point2D(0,0));
 }
 
@@ -26,14 +26,19 @@ Skeletonization::~Skeletonization()
 
 }
 
-bool Skeletonization::apply(cv::Mat &frame)
+bool Skeletonization::apply(cv::Mat &frame, int mode)
 {
     m_cvMOG2->apply(frame, m_foreground);
-    thresholding(m_foreground, 255);
-    cv::medianBlur(m_foreground, m_foreground, 3);
-    cv::erode(m_foreground, m_foreground, m_morph_kernel, cv::Point(-1,-1), 1);
-    cv::dilate(m_foreground, m_foreground, m_morph_kernel, cv::Point(-1, -1), 4);
-    cv::Canny(m_foreground, m_foreground, 1, 3);
+    if(mode >= 0)
+        thresholding(m_foreground, 255);
+    if(mode >= 1)
+        cv::medianBlur(m_foreground, m_foreground, 3);
+    if(mode >= 2) {
+        cv::erode(m_foreground, m_foreground, m_morph_kernel, cv::Point(-1,-1), 1);
+        cv::dilate(m_foreground, m_foreground, m_morph_kernel, cv::Point(-1, -1), 4);
+    }
+    if(mode >= 3)
+        cv::Canny(m_foreground, m_foreground, 1, 3);
 
     std::list<Point2D> pixels;
     cv::MatIterator_<uchar> it, end;
@@ -42,10 +47,11 @@ bool Skeletonization::apply(cv::Mat &frame)
             pixels.push_back(Point2D(it.pos().x, it.pos().y));
         }
 
-    bool skl = skeletonization(pixels);
+    if(mode >= 4)
+        skeletonization(pixels);
 
     cv::cvtColor(m_foreground, m_foreground, cv::COLOR_GRAY2BGR);
-    return skl;
+    return true;
 }
 
 void Skeletonization::thresholding(cv::Mat& frame, int threshold, bool highPass)

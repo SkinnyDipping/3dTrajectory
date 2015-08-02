@@ -20,22 +20,22 @@ bool Caster::cast(PointCloud &point_cloud,
                   std::vector<Point2D>& image_keypoints, std::vector<Point3D>& cloud_keypoints,
                   Point2D img_res)
 {
+    m_resolution = img_res;
     performFWW(image_keypoints, cloud_keypoints);
     qDebug()<<m_x0<<m_y0<<m_fs<<m_centerCast;
     debug(m_rotationMatrix, "rotation matrix");
-    qDebug()<<"Point:"<<calcImagePoint(cloud_keypoints[0]);
 
-    m_pixelCoordinates = new Point3D*[img_res.x];
-    for(int i=0; i<img_res.x; i++)
-        m_pixelCoordinates[i] = new Point3D[img_res.y];
+    const int& ix = (int) img_res.x;
+    const int& iy = (int) img_res.y;
+    int pixCoorSize = ix * iy;
+
+    m_pixelCoordinates = new std::vector<Point3D>[pixCoorSize];
 
     for (Point3D p : point_cloud)
     {
         Point2D img_pt = calcImagePoint(p);
 
-        img_pt += Point2D(x0, y0);
-
-        if( img_pt.x > img_res.x || img_pt.y > img_res.y ||
+        if( img_pt.x >= img_res.x-1 || img_pt.y >= img_res.y-1 ||
                 img_pt.x < 0 || img_pt.y < 0)
             continue;
 
@@ -49,13 +49,15 @@ bool Caster::cast(PointCloud &point_cloud,
         else
             img_pt.y = ceil(img_pt.y);
 
-        m_pixelCoordinates
+        m_pixelCoordinates[(int)img_pt.y * (int)img_res.x + (int)img_pt.x].push_back(p);
     }
+
+    qDebug()<< "CASTED";
 
     return true;
 }
 
-cv::Mat Caster::getPixelCoordinates()
+std::vector<Point3D>* Caster::getPixelCoordinates()
 {
     return m_pixelCoordinates;
 }
@@ -96,7 +98,7 @@ void Caster::performFWW(const std::vector<Point2D>& image_keypoints, const std::
                    (m_x0*L(10)-L(2))*(m_x0*L(10)-L(2)) + (m_y0*L(8)-L(4))*(m_y0*L(8)-L(4)) +
                    (m_y0*L(9)-L(5))*(m_y0*L(9)-L(5)) + (m_y0*L(10)-L(6))*(m_y0*L(10)-L(6)) ) /
                  ( 2* ( L(8)*L(8) + L(9)*L(9) + L(10)*L(10) ) )
-               );
+                 );
 
     cv::Mat_<double> _cc1 = cv::Mat::zeros(3,3,CV_64F);
     _cc1(0,0) = L(0); _cc1(0,1) = L(1); _cc1(0,2) = L(2);
@@ -133,6 +135,9 @@ Point2D Caster::calcImagePoint(Point3D& cloud_point)
     P.y = -m_fs * ( rm(0,1)*(cp.x-cc.x) + rm(1,1)*(cp.y-cc.y) + rm(2,1)*(cp.z-cc.z) );
     P.y /= rm(0,2)*(cp.x-cc.x) + rm(1,2)*(cp.y-cc.y) + rm(2,2)*(cp.z-cc.z);
 
+    P.x += (float) m_x0;
+    P.y += (float) m_y0;
+
     return P;
 }
 
@@ -140,4 +145,9 @@ void Caster::printPixelCoordinates()
 {
     qDebug() << "Pixel coordinates:";
 
+}
+
+std::vector<Point3D>& Caster::getPoint(Point2D pixel)
+{
+    return m_pixelCoordinates[(int) pixel.y * (int) m_resolution.x + (int) pixel.x];
 }

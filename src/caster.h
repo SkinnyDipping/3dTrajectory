@@ -26,7 +26,8 @@ public:
     }
 
     bool cast(PointCloud& point_cloud, std::vector<Point2D>& image_keypoints, std::vector<Point3D>& cloud_keypoints, Point2D img_res);
-    cv::Mat getPixelCoordinates();
+    std::vector<Point3D> *getPixelCoordinates();
+    std::vector<Point3D> &getPoint(Point2D pixel);
     void printPixelCoordinates();
 
 private:
@@ -39,12 +40,14 @@ private:
 
 private:
 //    cv::Mat_<double> m_pixelCoordinates;
-    Point3D** m_pixelCoordinates;
+    // Dynamic lookup table containing points coordinates
+    std::vector<Point3D>* m_pixelCoordinates;
 
     bool m_FWWperformed;
     double m_x0, m_y0, m_fs;
     Point3D m_centerCast;
     cv::Mat m_rotationMatrix;
+    Point2D m_resolution;
 
 };
 

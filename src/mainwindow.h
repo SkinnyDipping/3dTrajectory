@@ -59,6 +59,7 @@ private:
     QCheckBox *distinctForeground;
 
     bool sequencePreviewOn;
+    bool analysisOn;
 
     std::vector<Point3D> m_trajectory;
 

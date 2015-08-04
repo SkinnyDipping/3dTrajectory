@@ -189,8 +189,8 @@ void PointCloudPreview::paintGL()
     //How camera sees
     proj.perspective(45.0f, 4.0f/3.0f, 0.1f, 1500.0f);
     //From where camera sees (ZOOM HERE)
-    view.lookAt(QVector3D(translationX,translationY,0+wheelAngle/15.0f+initialZoom),  //eye
-                QVector3D(translationX,translationY,1+wheelAngle/15.0f+initialZoom),  //center
+    view.lookAt(QVector3D(-translationX/10,-translationY/10,0+wheelAngle/15.0f+initialZoom),  //eye
+                QVector3D(-translationX/10,-translationY/10,1+wheelAngle/15.0f+initialZoom),  //center
                 QVector3D(0,1,0));                              //up
     camera.setToIdentity();
     QMatrix4x4 mvpMatrix = proj*view*camera;

@@ -240,15 +240,23 @@ void MainWindow::toggleSequencePreview()
                     sequencePreview->viewFrame(frame);
 
                 if (analysisOn)
-                    //TODO zrobic zeby nie zrwalao vectora tylko 1 punkt
                 {
-                    Point2D point = skeletonization->getFeet().first;
-                    if (point.x < 0 || point.y < 0 )
+                    std::vector<User>& users = skeletonization->getUsers();
+
+                    for (int usr_idx=0;usr_idx<users.size();usr_idx++) {
+                    User& usr = users[usr_idx];
+
+                    if (usr.foot.x < 0 || usr.foot.y < 0 )
                         continue;
-                    std::vector<Point3D> trajectory_points = Caster::instance().getPoint(point);
-                    qDebug()<<"Trajectory: "<<trajectory_points.size()<<"pts";
+
+                    std::vector<Point3D> trajectory_points = Caster::instance().getPoint(usr.foot);
                     for (Point3D p : trajectory_points) {
-                        m_trajectory.push_back(Point3DRGB(p.x,p.y,p.z,0,0,255));
+                        int r,g,b;
+                        r=0;
+                        g=((usr.idx+1)%2)*255;
+                        b=usr.idx*255;
+                        m_trajectory.push_back(Point3DRGB(p.x,p.y,p.z,r,g,b));
+                    }
                     }
                     pointCloudPreview->renderCloud(m_trajectory);
                 }

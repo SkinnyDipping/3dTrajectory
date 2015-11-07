@@ -63,7 +63,7 @@ void MainWindow::on_performCasting_clicked()
 
 void MainWindow::on_loadCloud_clicked()
 {
-    std::vector<Point3D> _ = std::vector<Point3D>();
+    std::vector<Point3DRGB> _ = std::vector<Point3DRGB>();
 //    _.push_back(Point3D(0,0,0));
     pointCloudPreview->renderCloud(_);
 }
@@ -248,7 +248,7 @@ void MainWindow::toggleSequencePreview()
                     std::vector<Point3D> trajectory_points = Caster::instance().getPoint(point);
                     qDebug()<<"Trajectory: "<<trajectory_points.size()<<"pts";
                     for (Point3D p : trajectory_points) {
-                        m_trajectory.push_back(p);
+                        m_trajectory.push_back(Point3DRGB(p.x,p.y,p.z,0,0,255));
                     }
                     pointCloudPreview->renderCloud(m_trajectory);
                 }
@@ -269,7 +269,7 @@ void MainWindow::rewindSequence() {
 
 void MainWindow::setTrajectory()
 {
-    m_trajectory.push_back(Point3D(0,0,0));
+    m_trajectory.push_back(Point3DRGB(0,0,0,0,0,255));
 }
 
 void MainWindow::debug(cv::Mat_<double> m) {

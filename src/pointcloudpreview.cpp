@@ -29,12 +29,12 @@ PointCloudPreview::~PointCloudPreview()
     pointcloud_buffer.destroy();
 }
 
-void PointCloudPreview::renderCloud(std::vector<Point3D> &selected_points) {
+void PointCloudPreview::renderCloud(std::vector<Point3DRGB> &selected_points) {
     cloudPreviewOn = true;
     colorizedPreviewOn = false;
 
     trajectory_buffer.bind();
-    trajectory_buffer.allocate(&selected_points[0], selected_points.size()*sizeof(Point3D));
+    trajectory_buffer.allocate(&selected_points[0], selected_points.size()*sizeof(Point3DRGB));
 
     update();
 }
@@ -344,14 +344,16 @@ void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program)
         return;
 
     // Drawing (selecting) additional points
-    program->setAttributeValue(color_location, 47, 255, 7.8);
-    program->setAttributeBuffer(position_location, GL_FLOAT, 0, 3);
+    program->setAttributeBuffer(color_location, GL_FLOAT, 3*sizeof(float), 3, sizeof(Point3DRGB));
+    program->setAttributeBuffer(position_location, GL_FLOAT, 0, 3, sizeof(Point3DRGB));
     program->enableAttributeArray(position_location);
+    program->enableAttributeArray(color_location);
 
     glPointSize(10);
-    glDrawArrays(GL_POINTS, 0, trajectory_buffer.size()/sizeof(Point3D));
+    glDrawArrays(GL_POINTS, 0, trajectory_buffer.size()/sizeof(Point3DRGB));
 
     program->disableAttributeArray(position_location);
+    program->disableAttributeArray(color_location);
     trajectory_buffer.release();
 
 }

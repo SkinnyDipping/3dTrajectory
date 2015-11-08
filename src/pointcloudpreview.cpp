@@ -10,6 +10,7 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
     framePreviewOn = false;
     colorizedPreviewOn = false;
 
+#ifdef INITIAL_MVP_ZERO
     rotationAngleX = 0.0f;
     rotationAngleY = 0.0f;
     currentRotationAngleX = 0.0f;
@@ -18,10 +19,24 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
     translationY = 0.0f;
     currentTranslationX = 0.0f;
     currentTranslationY = 0.0f;
+#else
+    rotationAngleX = 233.0f;
+    rotationAngleY = -87.0f;
+    currentRotationAngleX = 233.0f;
+    currentRotationAngleY = -87.0f;
+    translationX = -27.0f;
+    translationY = -54.0f;
+    currentTranslationX = -27.0f;
+    currentTranslationY = -54.0f;
+    wheelAngle = 375;
+#endif
 
     initialZoom = 100;
 
     cloudNAimage = QImage(":/textures/cloud_na.png");
+
+    float mvp[] = {-1.81066,0,0,3.44025,0,2.41421,0,-13.0368,0,0,1.00013,-124.217,0,0,1,-124};
+    m_initialMVP = QMatrix4x4(mvp);
 }
 
 PointCloudPreview::~PointCloudPreview()
@@ -195,6 +210,12 @@ void PointCloudPreview::paintGL()
     camera.setToIdentity();
     QMatrix4x4 mvpMatrix = proj*view*camera;
 
+    qDebug() << "\nTUTEJ:";
+    qDebug()<<rotationAngleX;
+    qDebug()<<rotationAngleY;
+    qDebug()<<translationX;
+    qDebug()<<translationY;
+    qDebug()<<wheelAngle;
 
     // DRAW WITH CLOUD SHADER PROGRAM
     if (cloudPreviewOn) {

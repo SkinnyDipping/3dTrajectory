@@ -104,6 +104,7 @@ private:
     PointCloud frame_points; //debug-proper: frame with points to be casted
 
     QMatrix4x4 castMatrix;
+    QMatrix4x4 m_initialMVP;
 
     bool cloudPreviewOn, framePreviewOn, colorizedPreviewOn;
 

@@ -210,13 +210,6 @@ void PointCloudPreview::paintGL()
     camera.setToIdentity();
     QMatrix4x4 mvpMatrix = proj*view*camera;
 
-    qDebug() << "\nTUTEJ:";
-    qDebug()<<rotationAngleX;
-    qDebug()<<rotationAngleY;
-    qDebug()<<translationX;
-    qDebug()<<translationY;
-    qDebug()<<wheelAngle;
-
     // DRAW WITH CLOUD SHADER PROGRAM
     if (cloudPreviewOn) {
         cloudProgram.bind();

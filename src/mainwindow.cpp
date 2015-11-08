@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->horizontalLayout->addWidget(sequencePreview);
     ui->horizontalLayout->addWidget(pointCloudPreview);
     ui->horizontalLayout->setSizeConstraint(QLayout::SetMaximumSize);
+    m_sequencePath = ui->sequencePath;
 
     cvMOG2 = cv::createBackgroundSubtractorMOG2(500, 16, true);
     skeletonization = new Skeletonization(cv::Size(720,400));
@@ -217,6 +218,12 @@ void MainWindow::on_casterCast_clicked()
 
     Caster::instance().cast(DataContainer::instance().getCloud(), image_keypoints, cloud_keypoints, Point2D(720,400));
 
+}
+
+void MainWindow::on_loadSequenceButton_clicked() {
+    qDebug() << "Load sequence from: "<<m_sequencePath->text();
+    DataContainer::instance().loadSequence(m_sequencePath->text().toStdString());
+    qDebug() << "Sequence loaded";
 }
 
 void MainWindow::toggleSequencePreview()

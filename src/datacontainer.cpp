@@ -29,6 +29,7 @@ PointCloudRGB& DataContainer::getRGBCloud() {
 }
 
 void DataContainer::loadSequence(std::string filePath) {
+    framesPoll.clear();
     cv::VideoCapture video(filePath);
     do {
         cv::Mat frame;
@@ -38,6 +39,7 @@ void DataContainer::loadSequence(std::string filePath) {
     } while (true);
     sequenceFPS=30;
     sequenceAvailable = true;
+    setCurrentFrameIndex(0);
 }
 
 cv::Mat& DataContainer::getFrame() {

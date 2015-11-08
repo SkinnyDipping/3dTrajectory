@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QCheckBox>
+#include <QLineEdit>
 
 #include "opencv2/opencv.hpp"
 #include "opencv2/imgproc.hpp"
@@ -35,6 +36,7 @@ private slots:
     void on_loadCloud_clicked();
     void on_analyzeButton_clicked();
     void on_casterCast_clicked();
+    void on_loadSequenceButton_clicked();
 
 private:
     void toggleSequencePreview();
@@ -57,6 +59,8 @@ private:
 
     QPushButton *loadSequence, *loadPointCloud;
     QCheckBox *distinctForeground;
+    QLineEdit *m_sequencePath;
+
 
     bool sequencePreviewOn;
     bool analysisOn;

@@ -83,72 +83,12 @@ void MainWindow::on_casterCast_clicked()
 
     std::vector<Point2D> image_keypoints;
     std::vector<Point3D> cloud_keypoints;
-//    image_keypoints.push_back(Point2D(454, 132));
-//    image_keypoints.push_back(Point2D(367, 127));
-//    image_keypoints.push_back(Point2D(270, 199));
-//    image_keypoints.push_back(Point2D(55, 110));
-//    image_keypoints.push_back(Point2D(544, 364));
-//    image_keypoints.push_back(Point2D(497, 230));
-//    image_keypoints.push_back(Point2D(367, 320));
-//    image_keypoints.push_back(Point2D(443, 321));
-//    image_keypoints.push_back(Point2D(440, 196));
-//    image_keypoints.push_back(Point2D(441, 229));
-//    image_keypoints.push_back(Point2D(366, 137));
-//    image_keypoints.push_back(Point2D(365, 202));
-//    cloud_keypoints.push_back(Point3D(0.0463, 6.5282, 133.215897));
-//    cloud_keypoints.push_back(Point3D(-0.8515, 6.1534, 133.221603));
-//    cloud_keypoints.push_back(Point3D(-1.775, 5.7682, 132.409393));
-//    cloud_keypoints.push_back(Point3D(-3.6192, 4.9853, 133.212799));
-//    cloud_keypoints.push_back(Point3D(0.8383, 5.1496, 131.091095));
-//    cloud_keypoints.push_back(Point3D(0.556, 6.7573, 132.14));
-//    cloud_keypoints.push_back(Point3D(-0.8112, 6.1722, 131.1138));
-//    cloud_keypoints.push_back(Point3D(-0.0135, 6.4959, 131.105896));
-//    cloud_keypoints.push_back(Point3D(-0.0762, 6.4742, 132.492706));
-//    cloud_keypoints.push_back(Point3D(-0.617, 6.4595, 132.135));
-//    cloud_keypoints.push_back(Point3D(-0.8596, 6.1433, 133.112503));
-//    cloud_keypoints.push_back(Point3D(-0.8529, 6.1302, 132.419));
-
-//    image_keypoints.clear();
-//    cloud_keypoints.clear();
-
-//    image_keypoints.push_back(Point2D(368, 127));
-//    image_keypoints.push_back(Point2D(367, 136));
-//    image_keypoints.push_back(Point2D(374, 134));
-//    image_keypoints.push_back(Point2D(454, 132));
-//    image_keypoints.push_back(Point2D(448, 138));
-//    image_keypoints.push_back(Point2D(364, 202));
-//    image_keypoints.push_back(Point2D(270, 199));
-//    image_keypoints.push_back(Point2D(498, 229));
-//    image_keypoints.push_back(Point2D(440, 197));
-//    image_keypoints.push_back(Point2D(303, 378));
-//    image_keypoints.push_back(Point2D(431, 369));
-//    image_keypoints.push_back(Point2D(546, 364));
-//    image_keypoints.push_back(Point2D(610, 207));
-//    image_keypoints.push_back(Point2D(538, 62));
-//    image_keypoints.push_back(Point2D(55, 110));
-
-//    cloud_keypoints.push_back(Point3D(-0.85150000, 6.15340000, 133.22160000));
-//    cloud_keypoints.push_back(Point3D(-0.86040000, 6.14910000, 133.11830000));
-//    cloud_keypoints.push_back(Point3D(-0.78370000, 6.17650000, 133.13580000));
-//    cloud_keypoints.push_back(Point3D(0.05170000, 6.52890000 ,133.21090000));
-//    cloud_keypoints.push_back(Point3D(-0.00980000, 6.49730000, 133.13410000));
-//    cloud_keypoints.push_back(Point3D(-0.85290000, 6.13020000, 132.41910000));
-//    cloud_keypoints.push_back(Point3D(-1.77060000, 5.73810000, 132.42180000));
-//    cloud_keypoints.push_back(Point3D(0.56140000 ,6.75780000 ,132.14000000));
-//    cloud_keypoints.push_back(Point3D(-0.07120000, 6.47120000, 132.49750000));
-//    cloud_keypoints.push_back(Point3D(-0.97200000, 4.28410000, 131.08200000));
-//    cloud_keypoints.push_back(Point3D(-0.10230000, 4.73800000, 131.08500000));
-//    cloud_keypoints.push_back(Point3D(0.84990000 ,5.14390000 ,131.09180000));
-//    cloud_keypoints.push_back(Point3D(1.06440000 ,4.19220000 ,132.42920000));
-//    cloud_keypoints.push_back(Point3D(0.90020000 ,6.37770000 ,133.94240000));
-//    cloud_keypoints.push_back(Point3D(-3.61530000, 4.98000000, 133.20190000));
 
 
     image_keypoints.push_back(Point2D(158, 333));
     image_keypoints.push_back(Point2D(184, 306));
     image_keypoints.push_back(Point2D(205, 279));
     image_keypoints.push_back(Point2D(222, 256));
-//    image_keypoints.push_back(Point2D(239, 235));
     image_keypoints.push_back(Point2D(255, 216));
     image_keypoints.push_back(Point2D(269, 199));
     image_keypoints.push_back(Point2D(282, 184));
@@ -170,10 +110,8 @@ void MainWindow::on_casterCast_clicked()
     image_keypoints.push_back(Point2D(567, 359));
     image_keypoints.push_back(Point2D(593, 362));
     image_keypoints.push_back(Point2D(478, 309));
-//    image_keypoints.push_back(Point2D(483, 280));
     image_keypoints.push_back(Point2D(488, 255));
     image_keypoints.push_back(Point2D(490, 233));
-//    image_keypoints.push_back(Point2D(500, 201));
     image_keypoints.push_back(Point2D(525, 202));
     image_keypoints.push_back(Point2D(551, 204));
     image_keypoints.push_back(Point2D(578, 206));
@@ -184,7 +122,6 @@ void MainWindow::on_casterCast_clicked()
     cloud_keypoints.push_back(Point3D(1.81080000, 4.19850000, 133.16140000));
     cloud_keypoints.push_back(Point3D(2.08380000, 4.31660000, 133.32100000));
     cloud_keypoints.push_back(Point3D(2.34030000, 4.44020000, 133.48450000));
-//    cloud_keypoints.push_back(Point3D(2.62590000, 4.56720000, 133.64590000));
     cloud_keypoints.push_back(Point3D(2.91310000, 4.67620000, 133.80760000));
     cloud_keypoints.push_back(Point3D(3.17970000, 4.78630000, 133.96270000));
     cloud_keypoints.push_back(Point3D(3.46040000, 4.90610000, 134.12690000));
@@ -206,10 +143,8 @@ void MainWindow::on_casterCast_clicked()
     cloud_keypoints.push_back(Point3D(2.68570000, 1.42380000, 133.21800000));
     cloud_keypoints.push_back(Point3D(2.74870000, 1.28340000, 133.21260000));
     cloud_keypoints.push_back(Point3D(2.97900000, 2.19750000, 133.31620000));
-//    cloud_keypoints.push_back(Point3D(3.16990000, 2.25350000, 133.47120000));
     cloud_keypoints.push_back(Point3D(3.44850000, 2.35260000, 133.62180000));
     cloud_keypoints.push_back(Point3D(3.71520000, 2.48000000, 133.78330000));
-//    cloud_keypoints.push_back(Point3D(4.67570000, 8.48540000, 134.39470000));
     cloud_keypoints.push_back(Point3D(2.58490000, 1.67900000, 134.15940000));
     cloud_keypoints.push_back(Point3D(2.64360000, 1.54400000, 134.15940000));
     cloud_keypoints.push_back(Point3D(2.70390000, 1.40320000, 134.15940000));

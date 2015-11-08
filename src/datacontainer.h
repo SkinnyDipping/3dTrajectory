@@ -80,6 +80,7 @@ private:
     ~DataContainer();
 
     Point3D calculateCentroid();
+    void loadSequenceKeypoints(std::string sequencePath);
 
 private:
     PointCloud point_cloud;

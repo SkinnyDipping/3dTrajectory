@@ -40,6 +40,7 @@ void DataContainer::loadSequence(std::string filePath) {
     sequenceFPS=30;
     sequenceAvailable = true;
     setCurrentFrameIndex(0);
+    loadSequenceKeypoints(filePath);
 }
 
 cv::Mat& DataContainer::getFrame() {
@@ -104,6 +105,22 @@ void DataContainer::setCloud(std::string filePath) {
     cloudFile.close();
 
     cloud_centroid = calculateCentroid();
+
+    //Load cloud keypoints
+    std::string cloudKeypointsPath = "/home/michal/3dTrajectory/data/keypoints/cloud_keypoints.dat";
+    std::ifstream keypointsFile(cloudKeypointsPath.c_str());
+    if (!keypointsFile.is_open()) {
+        qCritical() << "DataContainer: Error opening cloud keypoints file";
+        keypointsFile.close();
+        return;
+    }
+    std::string keypointsLine;
+    while (std::getline(keypointsFile, keypointsLine)) {
+        std::istringstream iss(keypointsLine);
+        float a,b,c,d,e,f,g;
+        iss >>a>>b>>c>>d>>e>>f>>g;
+        cloud_keypoints.push_back(Point3D(b,c,d));
+    }
 }
 //BOOST_FUSION_ADAPT_STRUCT(PointCloud, (float, x)(float, y)(float, z))
 
@@ -160,4 +177,27 @@ std::vector<Point2D>& DataContainer::getImageKeypoints() {
 Point2D DataContainer::getRGBResolution() {
     Point2D output = Point2D(framesPoll.front().cols, framesPoll.front().rows);
     return output;
+}
+
+void DataContainer::loadSequenceKeypoints(std::string sequencePath) {
+    std::string sequenceKeypointsFilePath = sequencePath.substr(0, sequencePath.find_last_of("/"));
+    std::string seqName = sequencePath.substr(sequencePath.find_last_of("/")+1);
+    seqName = seqName.substr(0, seqName.find_last_of("."));
+    sequenceKeypointsFilePath = sequenceKeypointsFilePath + "/../keypoints/"+ seqName + ".dat";
+
+    //Load sequence keypoints
+    std::ifstream keypointsFile(sequenceKeypointsFilePath.c_str());
+    if (!keypointsFile.is_open()) {
+        qCritical() << "DataContainer: Error opening sequence keypoints file";
+        keypointsFile.close();
+        return;
+    }
+    std::string keypointsLine;
+    while (std::getline(keypointsFile, keypointsLine)) {
+        std::istringstream iss(keypointsLine);
+        int a,b;
+        iss >>a>>b;
+        image_keypoints.push_back(Point2D(a,b));
+    }
+
 }

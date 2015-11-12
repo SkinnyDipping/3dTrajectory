@@ -79,11 +79,18 @@ void MainWindow::on_analyzeButton_clicked()
 
 void MainWindow::on_casterCast_clicked()
 {
-    qDebug()<<"So we cast..";
+    qDebug()<<"Casting..";
 
-    std::vector<Point2D> image_keypoints;
-    std::vector<Point3D> cloud_keypoints;
+    std::vector<Point2D> image_keypoints = std::vector<Point2D>();
+    std::vector<Point3D> cloud_keypoints = std::vector<Point3D>();
 
+    image_keypoints = DataContainer::instance().getImageKeypoints();
+    cloud_keypoints = DataContainer::instance().getCloudKeypoints();
+
+//#define POINTS_FROM_HARDCODE
+#ifdef POINTS_FROM_HARDCODE
+    image_keypoints.clear();
+    cloud_keypoints.clear();
 
     image_keypoints.push_back(Point2D(158, 333));
     image_keypoints.push_back(Point2D(184, 306));
@@ -116,8 +123,6 @@ void MainWindow::on_casterCast_clicked()
     image_keypoints.push_back(Point2D(551, 204));
     image_keypoints.push_back(Point2D(578, 206));
     image_keypoints.push_back(Point2D(605, 207));
-
-
     cloud_keypoints.push_back(Point3D(1.51570000, 4.08810000, 133.02970000));
     cloud_keypoints.push_back(Point3D(1.81080000, 4.19850000, 133.16140000));
     cloud_keypoints.push_back(Point3D(2.08380000, 4.31660000, 133.32100000));
@@ -149,7 +154,7 @@ void MainWindow::on_casterCast_clicked()
     cloud_keypoints.push_back(Point3D(2.64360000, 1.54400000, 134.15940000));
     cloud_keypoints.push_back(Point3D(2.70390000, 1.40320000, 134.15940000));
     cloud_keypoints.push_back(Point3D(2.75950000, 1.27390000, 134.15750000));
-
+#endif
 
     Caster::instance().cast(DataContainer::instance().getCloud(), image_keypoints, cloud_keypoints, Point2D(720,400));
 
@@ -182,13 +187,11 @@ void MainWindow::toggleSequencePreview()
                     sequencePreview->viewFrame(frame);
 
                 if (analysisOn)
-                    //TODO zrobic zeby nie zrwalao vectora tylko 1 punkt
                 {
                     Point2D point = skeletonization->getFeet().first;
                     if (point.x < 0 || point.y < 0 )
                         continue;
                     std::vector<Point3D> trajectory_points = Caster::instance().getPoint(point);
-                    qDebug()<<"Trajectory: "<<trajectory_points.size()<<"pts";
                     for (Point3D p : trajectory_points) {
                         m_trajectory.push_back(p);
                     }

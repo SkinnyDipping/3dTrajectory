@@ -144,6 +144,19 @@ Point2D Caster::calcImagePoint(Point3D& cloud_point)
 void Caster::printPixelCoordinates()
 {
     qDebug() << "Pixel coordinates:";
+    for (int i=0;i<2000;i++) {
+        std::vector<Point3D> points = m_pixelCoordinates[i];
+        char* output = new char[600];
+        bzero(output,600);
+        for (int ii=0;ii<points.size();ii++) {
+            char* tako = new char[100];
+            sprintf(tako, "Pt %d: %f %f %f; ", points[ii].x, points[ii].y, points[ii].z);
+            strcat(output, tako);
+            delete[] tako;
+        }
+        qDebug()<<output;
+        delete[] output;
+    }
 
 }
 

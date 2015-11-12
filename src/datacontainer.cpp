@@ -1,6 +1,8 @@
 #include "datacontainer.h"
 
-DataContainer::DataContainer()
+DataContainer::DataContainer() :
+    cloud_keypoints(),
+    image_keypoints()
 {
     currentFrameIndex = 0;
     sequenceAvailable = false;
@@ -107,6 +109,7 @@ void DataContainer::setCloud(std::string filePath) {
     cloud_centroid = calculateCentroid();
 
     //Load cloud keypoints
+    cloud_keypoints.clear();
     std::string cloudKeypointsPath = "/home/michal/3dTrajectory/data/keypoints/cloud_keypoints.dat";
     std::ifstream keypointsFile(cloudKeypointsPath.c_str());
     if (!keypointsFile.is_open()) {
@@ -165,12 +168,10 @@ bool DataContainer::isSequenceAvailable() {
 }
 
 PointCloud& DataContainer::getCloudKeypoints() {
-    //TODO
     return cloud_keypoints;
 }
 
 std::vector<Point2D>& DataContainer::getImageKeypoints() {
-    //TODO
     return image_keypoints;
 }
 
@@ -180,6 +181,7 @@ Point2D DataContainer::getRGBResolution() {
 }
 
 void DataContainer::loadSequenceKeypoints(std::string sequencePath) {
+    image_keypoints.clear();
     std::string sequenceKeypointsFilePath = sequencePath.substr(0, sequencePath.find_last_of("/"));
     std::string seqName = sequencePath.substr(sequencePath.find_last_of("/")+1);
     seqName = seqName.substr(0, seqName.find_last_of("."));
@@ -196,6 +198,7 @@ void DataContainer::loadSequenceKeypoints(std::string sequencePath) {
     while (std::getline(keypointsFile, keypointsLine)) {
         std::istringstream iss(keypointsLine);
         int a,b;
+
         iss >>a>>b;
         image_keypoints.push_back(Point2D(a,b));
     }

@@ -14,7 +14,6 @@
 #define SQ(a) ((a)*(a))
 #endif
 
-//template<typename T, int N> using t_3Darray = std::array<T,
 typedef std::vector< std::vector< std::vector<Point3D> > > t_3Darray;
 
 class Caster
@@ -39,7 +38,6 @@ private:
     Point2D calcImagePoint(Point3D &cloud_point);
 
 private:
-//    cv::Mat_<double> m_pixelCoordinates;
     // Dynamic lookup table containing points coordinates
     std::vector<Point3D>* m_pixelCoordinates;
 

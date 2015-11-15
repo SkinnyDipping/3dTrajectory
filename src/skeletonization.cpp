@@ -6,8 +6,8 @@ Skeletonization::Skeletonization(cv::Size frameResolution)
     m_cvMOG2 = cv::createBackgroundSubtractorMOG2();
     m_morph_kernel = cv::Mat::ones(3, 3, CV_8U);
 
-//    for (int i=0; i<3; i++)
-//        m_joints.push_back(Point2D(-1,-1));
+    //    for (int i=0; i<3; i++)
+    //        m_joints.push_back(Point2D(-1,-1));
     m_joints.push_back(Point2D(0,0));
 }
 
@@ -34,43 +34,41 @@ std::pair<Point2D, Point2D> Skeletonization::getFeet()
 
 Skeletonization::~Skeletonization()
 {
-
 }
 
 #define CHECK_END(a) if(mode == a) goto koniec;
 
-bool Skeletonization::apply(cv::Mat &frame, int mode)
+void Skeletonization::apply(cv::Mat &frame, int mode)
 {
     m_foreground = frame;
     bool skl = true;
     if (mode != 6) skl = false;
-    CHECK_END(0)
+    CHECK_END(0);
     m_cvMOG2->apply(m_foreground, m_foreground);
-    CHECK_END(1)
+    CHECK_END(1);
     thresholding(m_foreground, 255);
-    CHECK_END(2)
+    CHECK_END(2);
     cv::medianBlur(m_foreground, m_foreground, 3);
-    CHECK_END(3)
+    CHECK_END(3);
     cv::erode(m_foreground, m_foreground, m_morph_kernel, cv::Point(-1,-1), 1);
     cv::dilate(m_foreground, m_foreground, m_morph_kernel, cv::Point(-1, -1), 4);
-    CHECK_END(4)
+    CHECK_END(4);
     cv::Canny(m_foreground, m_foreground, 1, 3);
-    CHECK_END(5)
+    CHECK_END(5);
 
     if (skl) {
-    std::list<Point2D> pixels;
-    cv::MatIterator_<uchar> it, end;
-    for (it = m_foreground.begin<uchar>(), end = m_foreground.end<uchar>(); it != end; it++)
-        if (*it == (uchar)255) {
-            pixels.push_back(Point2D(it.pos().x, it.pos().y));
-        }
-    skeletonization(pixels);
+        std::list<Point2D> pixels;
+        cv::MatIterator_<uchar> it, end;
+        for (it = m_foreground.begin<uchar>(), end = m_foreground.end<uchar>(); it != end; it++)
+            if (*it == (uchar)255) {
+                pixels.push_back(Point2D(it.pos().x, it.pos().y));
+            }
+        skeletonization(pixels);
     }
 
 koniec:
-
-    cv::cvtColor(m_foreground, m_foreground, cv::COLOR_GRAY2BGR);
-    return true;
+    if(mode != 0)
+        cv::cvtColor(m_foreground, m_foreground, cv::COLOR_GRAY2BGR);
 }
 
 #undef CHECK_END

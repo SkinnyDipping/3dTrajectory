@@ -180,35 +180,24 @@ void MainWindow::toggleSequencePreview()
                 rewindSequence();
                 break;
             }
-            if (distinctForeground->isChecked()) {
 
-                if(skeletonization->apply(frame, decodePreviewMode(modeSelectionBox->currentText().toStdString())))
-                    // Choosing viewing of particular joints is available in this method
-                    //                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
-                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+            skeletonization->apply(frame, decodePreviewMode(modeSelectionBox->currentText().toStdString()));
+            sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
 
-                if (analysisOn)
-                {
-                    //TEMP
-
-                    decodePreviewMode(modeSelectionBox->currentText().toStdString());
-                    Point2D point = skeletonization->getFeet().first;
-                    if (point.x < 0 || point.y < 0 )
-                        continue;
-                    std::vector<Point3D> trajectory_points = Caster::instance().getPoint(point);
-                    for (Point3D p : trajectory_points) {
-                        m_trajectory.push_back(p);
-                    }
-                    pointCloudPreview->renderCloud(m_trajectory);
+            if (analysisOn)
+            {
+                Point2D point = skeletonization->getFeet().first;
+                if (point.x < 0 || point.y < 0 )
+                    continue;
+                std::vector<Point3D> trajectory_points = Caster::instance().getPoint(point);
+                for (Point3D p : trajectory_points) {
+                    m_trajectory.push_back(p);
                 }
-
-            } else {
-                sequencePreview->viewFrame(frame);
+                pointCloudPreview->renderCloud(m_trajectory);
             }
+
             cv::waitKey(66);
         }
-    } else {
-        //TODO
     }
 }
 

@@ -47,7 +47,7 @@ public:
      * @param frame
      * @return true, if all went well
      */
-    bool apply(cv::Mat& frame, int mode);
+    void apply(cv::Mat& frame, int mode);
 
 private:
     /**

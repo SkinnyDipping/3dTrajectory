@@ -89,7 +89,7 @@
     <string>Rewind</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="comboBox">
+  <widget class="QComboBox" name="modeSelectionBox">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -114,6 +114,16 @@
    <item>
     <property name="text">
      <string>Thresholding</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Median filtering</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Erosion &amp; Dilatation</string>
     </property>
    </item>
    <item>

@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QLineEdit>
 
 #include "opencv2/opencv.hpp"
@@ -41,6 +42,7 @@ private slots:
 private:
     void toggleSequencePreview();
     void rewindSequence();
+    int decodePreviewMode(std::string mode);
 
     void setTrajectory();
 
@@ -60,7 +62,7 @@ private:
     QPushButton *loadSequence, *loadPointCloud;
     QCheckBox *distinctForeground;
     QLineEdit *m_sequencePath;
-
+    QComboBox *modeSelectionBox;
 
     bool sequencePreviewOn;
     bool analysisOn;

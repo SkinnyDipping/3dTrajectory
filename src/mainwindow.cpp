@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     pointCloudPreview = new PointCloudPreview(this);
     sequencePreview = new SequencePreview(this);
     distinctForeground = ui->toggleForeground;
+    modeSelectionBox = ui->modeSelectionBox;
     ui->horizontalLayout->addWidget(sequencePreview);
     ui->horizontalLayout->addWidget(pointCloudPreview);
     ui->horizontalLayout->setSizeConstraint(QLayout::SetMaximumSize);
@@ -65,7 +66,7 @@ void MainWindow::on_performCasting_clicked()
 void MainWindow::on_loadCloud_clicked()
 {
     std::vector<Point3D> _ = std::vector<Point3D>();
-//    _.push_back(Point3D(0,0,0));
+    //    _.push_back(Point3D(0,0,0));
     pointCloudPreview->renderCloud(_);
 }
 
@@ -74,7 +75,7 @@ void MainWindow::on_analyzeButton_clicked()
     analysisOn = true;
     on_startSequencePreview_clicked();
     setTrajectory();
-//    pointCloudPreview->renderCloud(m_trajectory);
+    //    pointCloudPreview->renderCloud(m_trajectory);
 }
 
 void MainWindow::on_casterCast_clicked()
@@ -87,7 +88,7 @@ void MainWindow::on_casterCast_clicked()
     image_keypoints = DataContainer::instance().getImageKeypoints();
     cloud_keypoints = DataContainer::instance().getCloudKeypoints();
 
-//#define POINTS_FROM_HARDCODE
+    //#define POINTS_FROM_HARDCODE
 #ifdef POINTS_FROM_HARDCODE
     image_keypoints.clear();
     cloud_keypoints.clear();
@@ -181,13 +182,16 @@ void MainWindow::toggleSequencePreview()
             }
             if (distinctForeground->isChecked()) {
 
-                if(skeletonization->apply(frame))
+                if(skeletonization->apply(frame, decodePreviewMode(modeSelectionBox->currentText().toStdString())))
                     // Choosing viewing of particular joints is available in this method
-//                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
-                    sequencePreview->viewFrame(frame);
+                    //                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
+                    sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
 
                 if (analysisOn)
                 {
+                    //TEMP
+
+                    decodePreviewMode(modeSelectionBox->currentText().toStdString());
                     Point2D point = skeletonization->getFeet().first;
                     if (point.x < 0 || point.y < 0 )
                         continue;
@@ -215,6 +219,23 @@ void MainWindow::rewindSequence() {
 void MainWindow::setTrajectory()
 {
     m_trajectory.push_back(Point3D(0,0,0));
+}
+
+int MainWindow::decodePreviewMode(std::string mode) {
+    if (mode == "Preview")
+        return 0;
+    if (mode == "Foreground")
+        return 1;
+    if (mode == "Thresholding")
+        return 2;
+    if (mode == "Median filtering")
+        return 3;
+    if (mode == "Erosion & Dilatation")
+        return 4;
+    if (mode == "Canny")
+        return 5;
+    if (mode == "Skeletonization")
+        return 6;
 }
 
 void MainWindow::debug(cv::Mat_<double> m) {

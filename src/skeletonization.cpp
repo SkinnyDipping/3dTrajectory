@@ -37,27 +37,43 @@ Skeletonization::~Skeletonization()
 
 }
 
-bool Skeletonization::apply(cv::Mat &frame)
+#define CHECK_END(a) if(mode == a) goto koniec;
+
+bool Skeletonization::apply(cv::Mat &frame, int mode)
 {
-    m_cvMOG2->apply(frame, m_foreground);
+    m_foreground = frame;
+    bool skl = true;
+    if (mode != 6) skl = false;
+    CHECK_END(0)
+    m_cvMOG2->apply(m_foreground, m_foreground);
+    CHECK_END(1)
     thresholding(m_foreground, 255);
+    CHECK_END(2)
     cv::medianBlur(m_foreground, m_foreground, 3);
+    CHECK_END(3)
     cv::erode(m_foreground, m_foreground, m_morph_kernel, cv::Point(-1,-1), 1);
     cv::dilate(m_foreground, m_foreground, m_morph_kernel, cv::Point(-1, -1), 4);
+    CHECK_END(4)
     cv::Canny(m_foreground, m_foreground, 1, 3);
+    CHECK_END(5)
 
+    if (skl) {
     std::list<Point2D> pixels;
     cv::MatIterator_<uchar> it, end;
     for (it = m_foreground.begin<uchar>(), end = m_foreground.end<uchar>(); it != end; it++)
         if (*it == (uchar)255) {
             pixels.push_back(Point2D(it.pos().x, it.pos().y));
         }
+    skeletonization(pixels);
+    }
 
-    bool skl = skeletonization(pixels);
+koniec:
 
     cv::cvtColor(m_foreground, m_foreground, cv::COLOR_GRAY2BGR);
-    return skl;
+    return true;
 }
+
+#undef CHECK_END
 
 void Skeletonization::thresholding(cv::Mat& frame, int threshold, bool highPass)
 {

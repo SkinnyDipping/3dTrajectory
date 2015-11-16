@@ -43,11 +43,17 @@ public:
     std::pair<Point2D, Point2D> getFeet();
 
     /**
+     * @brief getUsers
+     * @return skeletons in frame
+     */
+    std::vector<User> &getUsers();
+
+    /**
      * @brief apply apply skeletonization to frame
      * @param frame
      * @return true, if all went well
      */
-    void apply(cv::Mat& frame, int mode);
+    void apply(cv::Mat& frame, int mode = 6);
 
 private:
     /**
@@ -97,6 +103,8 @@ private:
     /// [0] - skeleton center
     /// other joint are not classified
     std::vector<Point2D> m_joints;
+
+    std::vector<User> m_users;
 
     p1d::Persistence1D p1d_program;
 

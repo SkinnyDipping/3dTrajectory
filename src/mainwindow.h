@@ -67,7 +67,7 @@ private:
     bool sequencePreviewOn;
     bool analysisOn;
 
-    std::vector<Point3D> m_trajectory;
+    std::vector<Point3DRGB> m_trajectory;
 
     //TEMP
     cv::Mat m_transformationMatrix;

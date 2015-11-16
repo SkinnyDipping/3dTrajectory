@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
     DataContainer::instance().setCloud("/home/michal/3dTrajectory/data/cloud/scan_064.xyz");
     QApplication app(argc, argv);
-    DataContainer::instance().loadSequence("/home/michal/3dTrajectory/data/seq/4.mp4");
+    DataContainer::instance().loadSequence("/home/michal/3dTrajectory/data/seq/5.mp4");
 
     app.setApplicationName("3dTrajectory");
 #ifndef QT_NO_OPENGL

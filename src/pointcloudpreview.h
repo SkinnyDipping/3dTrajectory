@@ -34,7 +34,7 @@ public:
      *
      * Point cloud is loaded from DataContainer
      */
-    void renderCloud(std::vector<Point3D>& selected_points);
+    void renderCloud(std::vector<Point3DRGB>& selected_points);
 
     /**
      * @brief renderFrame Render frame in point cloud window

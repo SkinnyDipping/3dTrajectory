@@ -65,7 +65,7 @@ void MainWindow::on_performCasting_clicked()
 
 void MainWindow::on_loadCloud_clicked()
 {
-    std::vector<Point3D> _ = std::vector<Point3D>();
+    std::vector<Point3DRGB> _ = std::vector<Point3DRGB>();
     //    _.push_back(Point3D(0,0,0));
     pointCloudPreview->renderCloud(_);
 }
@@ -181,19 +181,27 @@ void MainWindow::toggleSequencePreview()
                 break;
             }
 
-            skeletonization->apply(frame, decodePreviewMode(modeSelectionBox->currentText().toStdString()));
-            sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
-
             if (analysisOn)
             {
+                skeletonization->apply(frame);
                 Point2D point = skeletonization->getFeet().first;
                 if (point.x < 0 || point.y < 0 )
                     continue;
                 std::vector<Point3D> trajectory_points = Caster::instance().getPoint(point);
                 for (Point3D p : trajectory_points) {
-                    m_trajectory.push_back(p);
+                    int r,g,b;
+                    r=0;
+                    g=255;
+                    b=255;
+                    m_trajectory.push_back(Point3DRGB(p.x,p.y,p.z,r,g,b));
                 }
+
                 pointCloudPreview->renderCloud(m_trajectory);
+                sequencePreview->viewFrame(frame);
+
+            } else {
+                skeletonization->apply(frame, decodePreviewMode(modeSelectionBox->currentText().toStdString()));
+                sequencePreview->viewFrame(skeletonization->getForeground(), true, skeletonization->getJoints());
             }
 
             cv::waitKey(66);
@@ -207,7 +215,7 @@ void MainWindow::rewindSequence() {
 
 void MainWindow::setTrajectory()
 {
-    m_trajectory.push_back(Point3D(0,0,0));
+    m_trajectory.push_back(Point3DRGB(0,0,0,0,0,255));
 }
 
 int MainWindow::decodePreviewMode(std::string mode) {

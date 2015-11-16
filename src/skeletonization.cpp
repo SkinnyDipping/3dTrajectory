@@ -1,6 +1,7 @@
 #include "skeletonization.h"
 
-Skeletonization::Skeletonization(cv::Size frameResolution)
+Skeletonization::Skeletonization(cv::Size frameResolution) :
+    m_users()
 {
     m_foreground = cv::Mat::zeros(frameResolution, CV_8U);
     m_cvMOG2 = cv::createBackgroundSubtractorMOG2();
@@ -29,7 +30,31 @@ std::pair<Point2D, Point2D> Skeletonization::getFeet()
         if (j.y > _1.y)
             _1 = j;
     }
+    qDebug() << "getFeet(): "<< _1;
     return std::pair<Point2D, Point2D>(_1, _2);
+}
+
+std::vector<User>& Skeletonization::getUsers() {
+    m_users.clear();
+
+    //TEMP
+    Point2D _1 = m_joints[0];
+    for (Point2D j : m_joints) {
+        if (j.y > _1.y)
+            _1 = j;
+    }
+    User usr;
+    usr.foot = _1;
+    usr.idx = 2;
+    m_users.push_back(usr);
+
+    User usr2;
+    usr2.foot = m_joints[0];
+    usr2.idx=0;
+    m_users.push_back(usr2);
+    //TEMP
+
+    return m_users;
 }
 
 Skeletonization::~Skeletonization()

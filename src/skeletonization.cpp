@@ -37,7 +37,7 @@ std::pair<Point2D, Point2D> Skeletonization::getFeet()
 std::vector<User>& Skeletonization::getUsers() {
     m_users.clear();
 
-    //TEMP
+    // ******************* TEMP
     Point2D _1 = m_joints[0];
     for (Point2D j : m_joints) {
         if (j.y > _1.y)
@@ -52,7 +52,7 @@ std::vector<User>& Skeletonization::getUsers() {
     usr2.foot = m_joints[0];
     usr2.idx=0;
     m_users.push_back(usr2);
-    //TEMP
+    // ******************  TEMP
 
     return m_users;
 }

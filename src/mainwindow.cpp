@@ -184,15 +184,18 @@ void MainWindow::toggleSequencePreview()
             if (analysisOn)
             {
                 skeletonization->apply(frame);
-                Point2D point = skeletonization->getFeet().first;
-                if (point.x < 0 || point.y < 0 )
+                std::vector<User> users = skeletonization->getUsers();
+                User usr = users[0];
+                int usr_idx = usr.idx;
+                Point2D usr_point = usr.foot;
+                if (usr_point.x < 0 || usr_point.y < 0 )
                     continue;
-                std::vector<Point3D> trajectory_points = Caster::instance().getPoint(point);
+                std::vector<Point3D> trajectory_points = Caster::instance().getPoint(usr_point);
                 for (Point3D p : trajectory_points) {
                     int r,g,b;
                     r=0;
-                    g=255;
-                    b=255;
+                    g=((usr_idx+1)%2)*255;
+                    b=usr_idx*255;
                     m_trajectory.push_back(Point3DRGB(p.x,p.y,p.z,r,g,b));
                 }
 

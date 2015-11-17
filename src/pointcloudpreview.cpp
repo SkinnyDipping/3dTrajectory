@@ -274,6 +274,15 @@ void PointCloudPreview::loadCloudShaders()
         close();
 }
 
+void PointCloudPreview::loadTrajectoryShaders() {
+    if (!trajectoryProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_trajectory.glsl"))
+        close();
+    if (!trajectoryProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_trajectory.glsl"))
+        close();
+    if (!trajectoryProgram.link())
+        close();
+}
+
 void PointCloudPreview::loadFrameShaders()
 {
     if (!frameProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_iframe.glsl"))
@@ -357,14 +366,19 @@ void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program)
     if(trajectory_buffer.size() == 0 || !trajectory_buffer.isCreated())
         return;
 
+    trajectoryProgram.bind();
+
     // Drawing (selecting) additional points
     program->setAttributeBuffer(color_location, GL_FLOAT, 3*sizeof(float), 3, sizeof(Point3DRGB));
     program->setAttributeBuffer(position_location, GL_FLOAT, 0, 3, sizeof(Point3DRGB));
     program->enableAttributeArray(position_location);
     program->enableAttributeArray(color_location);
 
-    glPointSize(10);
-    glDrawArrays(GL_POINTS, 0, trajectory_buffer.size()/sizeof(Point3DRGB));
+    //    glPointSize(10);
+    glLineWidth(10);
+    //    glDrawArrays(GL_POINTS, 0, trajectory_buffer.size()/sizeof(Point3DRGB));
+    glDisable(GL_DEPTH_TEST);
+    glDrawArrays(GL_LINE_STRIP, 0, trajectory_buffer.size()/sizeof(Point3DRGB));
 
     program->disableAttributeArray(position_location);
     program->disableAttributeArray(color_location);

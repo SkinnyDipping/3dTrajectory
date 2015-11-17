@@ -70,6 +70,7 @@ protected:
 
 private:
     void loadCloudShaders();
+    void loadTrajectoryShaders();
     void initPointCloudBuffer();
     void drawPointCloud(QOpenGLShaderProgram *cloudProgram);
 
@@ -84,7 +85,7 @@ private:
     void drawCloudNotAvailableScreen(QOpenGLShaderProgram *program);
 
 private:
-    QOpenGLShaderProgram cloudProgram, frameProgram, colorizedProgram;
+    QOpenGLShaderProgram cloudProgram, frameProgram, colorizedProgram, trajectoryProgram;
     QOpenGLBuffer pointcloud_buffer, trajectory_buffer, frame_buffer;
 
     GLuint textureID;

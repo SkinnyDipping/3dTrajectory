@@ -12,5 +12,7 @@
 	<file>f_colorized.glsl</file>
 	<file>v_joints.glsl</file>
 	<file>f_joints.glsl</file>
+	<file>v_trajectory.glsl</file>
+	<file>f_trajectory.glsl</file>
     </qresource>
 </RCC>

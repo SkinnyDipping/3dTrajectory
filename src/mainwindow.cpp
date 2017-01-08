@@ -6,14 +6,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    initialize_ui();
+
     pointCloudPreview = new PointCloudPreview(this);
     sequencePreview = new SequencePreview(this);
-    distinctForeground = ui->toggleForeground;
     modeSelectionBox = ui->modeSelectionBox;
     ui->horizontalLayout->addWidget(sequencePreview);
     ui->horizontalLayout->addWidget(pointCloudPreview);
     ui->horizontalLayout->setSizeConstraint(QLayout::SetMaximumSize);
-    m_sequencePath = ui->sequencePath;
 
     cvMOG2 = cv::createBackgroundSubtractorMOG2(500, 16, true);
     skeletonization = new Skeletonization(cv::Size(720,400));
@@ -28,21 +29,22 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_startSequencePreview_clicked()
+void MainWindow::on_playButton_clicked()
 {
     sequencePreviewOn = !sequencePreviewOn;
     if (sequencePreviewOn)
-        ui->startSequencePreview->setText("Pause");
+        ui->playButton->setText("Pause");
     else
-        ui->startSequencePreview->setText("Play");
+        ui->playButton->setText("Play");
     toggleSequencePreview();
 }
 
-void MainWindow::on_rewindSequencePreview_clicked()
+void MainWindow::on_rewindButton_clicked()
 {
     rewindSequence();
 }
 
+/*
 void MainWindow::on_performCasting_clicked()
 {
     float scale = 0.3;
@@ -62,8 +64,9 @@ void MainWindow::on_performCasting_clicked()
 
     pointCloudPreview->renderFrame(matrix);
 }
+*/
 
-void MainWindow::on_loadCloud_clicked()
+void MainWindow::on_loadCloudButton_clicked()
 {
     std::vector<Point3DRGB> _ = std::vector<Point3DRGB>();
     //    _.push_back(Point3D(0,0,0));
@@ -73,12 +76,12 @@ void MainWindow::on_loadCloud_clicked()
 void MainWindow::on_analyzeButton_clicked()
 {
     analysisOn = true;
-    on_startSequencePreview_clicked();
+    on_playButton_clicked();
     setTrajectory();
     //    pointCloudPreview->renderCloud(m_trajectory);
 }
 
-void MainWindow::on_casterCast_clicked()
+void MainWindow::on_castButton_clicked()
 {
     qDebug()<<"Casting..";
 
@@ -161,12 +164,6 @@ void MainWindow::on_casterCast_clicked()
 
 }
 
-void MainWindow::on_loadSequenceButton_clicked() {
-    qDebug() << "Load sequence from: "<<m_sequencePath->text();
-    DataContainer::instance().loadSequence(m_sequencePath->text().toStdString());
-    qDebug() << "Sequence loaded";
-}
-
 void MainWindow::toggleSequencePreview()
 {
     if (sequencePreviewOn) {
@@ -176,7 +173,7 @@ void MainWindow::toggleSequencePreview()
             if (frame.empty()) {
                 // end of preview
                 sequencePreviewOn = false;
-                ui->startSequencePreview->setText("Play");
+                ui->playButton->setText("Play");
                 rewindSequence();
                 break;
             }
@@ -243,3 +240,53 @@ void MainWindow::debug(cv::Mat_<double> m) {
         for (int y=0; y<m.cols; y++)
             qDebug() << m(y, x);
 }
+
+void MainWindow::initialize_ui() {
+    gradient_main_background = QLinearGradient(0,0,0,ui->widget->height());
+    gradient_main_background.setColorAt(0, color_main_backrground_1);
+    gradient_main_background.setColorAt(1, color_main_backrground_2);
+
+    palette_main_background.setBrush(QPalette::Base, gradient_main_background);
+    palette_main_background.setBrush(QPalette::Highlight, gradient_main_background);
+    palette_main_background.setBrush(QPalette::Background, gradient_main_background);
+    palette_sec_background.setBrush(QPalette::Base, color_light_background);
+    palette_sec_background.setBrush(QPalette::Highlight, color_light_background);
+    palette_sec_background.setBrush(QPalette::Background, color_light_background);
+    palette_total_background.setBrush(QPalette::Base, color_dark_background);
+    palette_total_background.setBrush(QPalette::Highlight, color_dark_background);
+    palette_total_background.setBrush(QPalette::Window, color_dark_background);
+    ui->widget->setPalette(palette_main_background);
+    ui->widget->show();
+    ui->widget2->setPalette(palette_sec_background);
+    ui->widget3->setPalette(palette_total_background);
+
+    std::string style_sheet = "QPushButton { color: #C9C2BB; font-family: roboto; font-size: 23px;} "
+                              "QPushButton:pressed { color: #C4AD3A; background-color: #252525; }";
+
+    std::string style_sheet_label = "QLabel { font-family:roboto; font-size:23px; }";
+
+    ui->playButton->setStyleSheet(QString::fromStdString(style_sheet));
+    ui->rewindButton->setStyleSheet(QString::fromStdString(style_sheet));
+    ui->castButton->setStyleSheet(QString::fromStdString(style_sheet));
+    ui->loadCloudButton->setStyleSheet(QString::fromStdString(style_sheet));
+    ui->analyzeButton->setStyleSheet(QString::fromStdString(style_sheet));
+
+    ui->label->setStyleSheet(QString::fromStdString(style_sheet_label));
+    ui->label_2->setStyleSheet(QString::fromStdString(style_sheet_label));
+
+    ui->label_3->setStyleSheet("QLabel { font-family:roboto; font-size:30px; color: #C9C2BB;}");
+
+
+
+
+//    ui->playButton->setStyleSheet("QPushButton:pressed { background-color: #C9C2BB; }");
+//    ui->rewindButton->setStyleSheet("QPushButton:pressed { background-color: #C9C2BB; }");
+//    ui->loadCloudButton->setStyleSheet("QPushButton:pressed { background-color: #C9C2BB; }");
+//    ui->analyzeButton->setStyleSheet("QPushButton:pressed { background-color: #C9C2BB; }");
+//    ui->castButton->setStyleSheet("QPushButton:pressed { background-color: #C9C2BB; }");
+
+
+    this->setPalette(palette_total_background);
+    this->setAutoFillBackground(true);
+}
+

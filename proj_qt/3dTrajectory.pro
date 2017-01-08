@@ -59,4 +59,5 @@ DISTFILES += \
 RESOURCES += \
     ../res/textures/textures.qrc \
     ../res/shaders/shaders.qrc \
-    ../res/fonts/fonts.qrc
+    ../res/fonts/fonts.qrc \
+    ../res/stylesheets/stylesheets.qrc

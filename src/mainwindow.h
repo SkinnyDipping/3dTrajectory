@@ -49,6 +49,8 @@ private:
 
     void initialize_ui();
 
+    std::string file2string(std::string file);
+
     //TEMP
     void debug(cv::Mat_<double> m);
 

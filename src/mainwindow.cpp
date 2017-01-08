@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <exception>
+
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainWindow)
@@ -276,17 +278,24 @@ void MainWindow::initialize_ui() {
 
     ui->label_3->setStyleSheet("QLabel { font-family:roboto; font-size:30px; color: #C9C2BB;}");
 
+    auto box_ss = file2string(":/stylesheets/qcombobox.qss");
+    ui->modeSelectionBox->setStyleSheet(box_ss.c_str());
 
-
-
-//    ui->playButton->setStyleSheet("QPushButton:pressed { background-color: #C9C2BB; }");
-//    ui->rewindButton->setStyleSheet("QPushButton:pressed { background-color: #C9C2BB; }");
-//    ui->loadCloudButton->setStyleSheet("QPushButton:pressed { background-color: #C9C2BB; }");
-//    ui->analyzeButton->setStyleSheet("QPushButton:pressed { background-color: #C9C2BB; }");
-//    ui->castButton->setStyleSheet("QPushButton:pressed { background-color: #C9C2BB; }");
-
-
-    this->setPalette(palette_total_background);
-    this->setAutoFillBackground(true);
 }
 
+std::string MainWindow::file2string(std::string filename) {
+
+
+    QFile file(filename.c_str());
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            throw std::exception();
+
+    std::stringstream ss;
+    QTextStream in(&file);
+    QString line = in.readLine();
+    while (!line.isNull()) {
+        ss << line.toStdString();
+        line = in.readLine();
+    }
+    return ss.str();
+}

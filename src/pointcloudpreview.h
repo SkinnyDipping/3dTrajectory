@@ -81,14 +81,17 @@ private:
     void loadColorizedShaders();
     void drawColorizedPointCloud(QOpenGLShaderProgram *program);
 
+    void loadAvatarShaders();
+    void drawAvatar(QOpenGLShaderProgram *program);
+
     void initCloudNotAvailableScreen();
     void drawCloudNotAvailableScreen(QOpenGLShaderProgram *program);
 
 private:
-    QOpenGLShaderProgram cloudProgram, frameProgram, colorizedProgram, trajectoryProgram;
+    QOpenGLShaderProgram cloudProgram, frameProgram, colorizedProgram, trajectoryProgram, avatarProgram;
     QOpenGLBuffer pointcloud_buffer, trajectory_buffer, frame_buffer;
 
-    GLuint textureID;
+    GLuint textureID, avatarTexture;
 
     /// Point in which mouse was pressed and released
     QPoint pressed_point, release_point;
@@ -107,7 +110,7 @@ private:
     QMatrix4x4 castMatrix;
     QMatrix4x4 m_initialMVP;
 
-    bool cloudPreviewOn, framePreviewOn, colorizedPreviewOn;
+    bool cloudPreviewOn, framePreviewOn, colorizedPreviewOn, avatarOn;
 
     /// For colorized preview
     QVector4D referencePlane;

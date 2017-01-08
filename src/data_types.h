@@ -104,5 +104,10 @@ struct User {
     int idx;
 };
 
+struct Avatar {
+    cv::Mat avatar;
+    cv::Rect roi;
+};
+
 #endif // DATA_TYPES_H
 

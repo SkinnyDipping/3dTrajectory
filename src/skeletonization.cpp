@@ -1,5 +1,7 @@
 #include "skeletonization.h"
 
+#include "datacontainer.h"
+
 Skeletonization::Skeletonization(cv::Size frameResolution) :
     m_users()
 {
@@ -65,6 +67,8 @@ Skeletonization::~Skeletonization()
 
 void Skeletonization::apply(cv::Mat &frame, int mode)
 {
+    cv::Mat dupa;
+
     m_foreground = frame;
     bool skl = true;
     if (mode != 6) skl = false;
@@ -76,6 +80,7 @@ void Skeletonization::apply(cv::Mat &frame, int mode)
     cv::medianBlur(m_foreground, m_foreground, 3);
     CHECK_END(3);
     cv::erode(m_foreground, m_foreground, m_morph_kernel, cv::Point(-1,-1), 1);
+    DataContainer::instance().assignAvatar(m_foreground);
     cv::dilate(m_foreground, m_foreground, m_morph_kernel, cv::Point(-1, -1), 4);
     CHECK_END(4);
     cv::Canny(m_foreground, m_foreground, 1, 3);

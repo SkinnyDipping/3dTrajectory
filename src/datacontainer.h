@@ -63,6 +63,9 @@ public:
      */
     Point2D getRGBResolution();
 
+    cv::Mat getAvatar();
+    void assignAvatar(cv::Mat foreground);
+
 
 
     void setCloud(PointCloud);
@@ -91,6 +94,7 @@ private:
     cv::VideoCapture sequence;
     cv::Mat sequenceFrame;
     cv::Mat foregroundFrame;
+    cv::Mat avatar;
     std::vector<cv::Mat> framesPoll;
     int sequenceFPS;
 

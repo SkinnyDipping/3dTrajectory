@@ -30,6 +30,30 @@ PointCloudRGB& DataContainer::getRGBCloud() {
     return point_cloud_RGB;
 }
 
+cv::Mat DataContainer::getAvatar() {
+    return avatar;
+}
+
+void DataContainer::assignAvatar(cv::Mat foreground) {
+    avatar=cv::Mat();
+    framesPoll[currentFrameIndex].copyTo(avatar, foreground);
+    qDebug()<<"TYPE "<<avatar.type()<<endl<<CV_8UC3<<endl;
+    unsigned char* avatar_img = (unsigned char*) avatar.data;
+    cv::Point upperleft, lowerright;
+    for (int y=0; y<avatar.rows; y++)
+        for (int x=0; x<avatar.cols; x++) {
+            if (avatar_img[3*(y*avatar.cols+x)] != 0) {
+                upperleft.x = upperleft.x > x ? x : upperleft.x;
+                upperleft.y = upperleft.y > y ? y : upperleft.y;
+                lowerright.x = lowerright.x < x ? x : lowerright.x;
+                lowerright.y = lowerright.y < y ? y : lowerright.y;
+            }
+        }
+//    cv::Rect roi = cv::Rect
+//    Avatar av = {avatar, roi};
+    cv::imshow("dupa", avatar);
+}
+
 void DataContainer::loadSequence(std::string filePath) {
     framesPoll.clear();
     cv::VideoCapture video(filePath);

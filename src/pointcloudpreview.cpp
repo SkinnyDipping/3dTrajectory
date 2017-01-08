@@ -9,6 +9,7 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
     cloudPreviewOn = false;
     framePreviewOn = false;
     colorizedPreviewOn = false;
+    avatarOn = false;
 
 #ifdef INITIAL_MVP_ZERO
     rotationAngleX = 0.0f;
@@ -254,7 +255,15 @@ void PointCloudPreview::paintGL()
         colorizedProgram.release();
     }
 
-    if (!(cloudPreviewOn || framePreviewOn || colorizedPreviewOn)) {
+    if(avatarOn) {
+        avatarProgram.bind();
+
+        drawAvatar(&avatarProgram);
+
+        avatarProgram.release();
+    }
+
+    if (!(cloudPreviewOn || framePreviewOn || colorizedPreviewOn || avatarOn)) {
         drawCloudNotAvailableScreen(&cloudNAProgram);
     }
 }
@@ -300,6 +309,15 @@ void PointCloudPreview::loadColorizedShaders()
     if (!colorizedProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_colorized.glsl"))
         close();
     if (!colorizedProgram.link())
+        close();
+}
+
+void PointCloudPreview::loadAvatarShaders() {
+    if (!avatarProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_colorized.glsl"))
+        close();
+    if (!avatarProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_colorized.glsl"))
+        close();
+    if (!avatarProgram.link())
         close();
 }
 
@@ -447,6 +465,10 @@ void PointCloudPreview::drawColorizedPointCloud(QOpenGLShaderProgram *program)
     glDrawArrays(GL_POINTS, 0, DataContainer::instance().getCloud().size());
 
     program->disableAttributeArray(location_pointCoordinates);
+}
+
+void PointCloudPreview::drawAvatar(QOpenGLShaderProgram *program) {
+
 }
 
 //TODO: implement

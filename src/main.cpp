@@ -3,6 +3,7 @@
 #include <QSurfaceFormat>
 #include <QLabel>
 #include <QDebug>
+#include <QFontDatabase>
 
 #include <opencv2/opencv.hpp>
 #include "opencv2/videoio.hpp"
@@ -23,8 +24,10 @@ int main(int argc, char *argv[])
     DataContainer::instance().loadSequence("/home/michal/3dTrajectory/data/seq/5.mp4");
 
     app.setApplicationName("3dTrajectory");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto-Regular.ttf");
 #ifndef QT_NO_OPENGL
     MainWindow widget;
+    widget.setPalette(app.palette());
     widget.show();
 #else
     QLabel note("OpenGL Support required");

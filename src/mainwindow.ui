@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1280</width>
-    <height>636</height>
+    <width>1200</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,81 +19,98 @@
   <property name="windowTitle">
    <string>3dTrajectory</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="horizontalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>1261</width>
-     <height>371</height>
+     <x>170</x>
+     <y>190</y>
+     <width>1021</width>
+     <height>271</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="spacing">
      <number>6</number>
     </property>
+    <property name="sizeConstraint">
+     <enum>QLayout::SetNoConstraint</enum>
+    </property>
     <property name="leftMargin">
      <number>0</number>
     </property>
    </layout>
   </widget>
-  <widget class="QPushButton" name="loadCloud">
+  <widget class="QPushButton" name="loadCloudButton">
    <property name="geometry">
     <rect>
-     <x>680</x>
-     <y>400</y>
-     <width>101</width>
-     <height>31</height>
+     <x>1040</x>
+     <y>540</y>
+     <width>131</width>
+     <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>17</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>Load Cloud</string>
    </property>
-  </widget>
-  <widget class="QPushButton" name="performCasting">
-   <property name="geometry">
-    <rect>
-     <x>570</x>
-     <y>400</y>
-     <width>101</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Cast</string>
+   <property name="flat">
+    <bool>true</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="startSequencePreview">
+  <widget class="QPushButton" name="playButton">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>400</y>
+     <x>490</x>
+     <y>540</y>
      <width>101</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>17</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>Play</string>
    </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
   </widget>
-  <widget class="QPushButton" name="rewindSequencePreview">
+  <widget class="QPushButton" name="rewindButton">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>400</y>
+     <x>160</x>
+     <y>540</y>
      <width>101</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>17</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>Rewind</string>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QComboBox" name="modeSelectionBox">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>400</y>
+     <x>10</x>
+     <y>10</y>
      <width>141</width>
      <height>31</height>
     </rect>
@@ -137,113 +154,279 @@
     </property>
    </item>
   </widget>
-  <widget class="QPushButton" name="casterCast">
+  <widget class="QPushButton" name="castButton">
    <property name="geometry">
     <rect>
-     <x>640</x>
-     <y>570</y>
-     <width>141</width>
-     <height>31</height>
+     <x>770</x>
+     <y>540</y>
+     <width>101</width>
+     <height>41</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>17</pointsize>
+    </font>
+   </property>
    <property name="text">
-    <string>Go with cast()</string>
+    <string>Cast</string>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="analyzeButton">
    <property name="geometry">
     <rect>
-     <x>640</x>
-     <y>440</y>
-     <width>141</width>
-     <height>121</height>
+     <x>630</x>
+     <y>540</y>
+     <width>101</width>
+     <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>17</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>Analize</string>
    </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
   </widget>
-  <widget class="QFrame" name="frame">
+  <widget class="QListWidget" name="widget">
    <property name="geometry">
     <rect>
-     <x>790</x>
-     <y>420</y>
-     <width>471</width>
-     <height>171</height>
+     <x>160</x>
+     <y>0</y>
+     <width>1040</width>
+     <height>523</height>
     </rect>
    </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
+  </widget>
+  <widget class="QListWidget" name="widget2">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>130</y>
+     <width>1041</width>
+     <height>351</height>
+    </rect>
    </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
+  </widget>
+  <widget class="QListWidget" name="widget3">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1200</width>
+     <height>600</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(37, 37, 37);</string>
    </property>
   </widget>
   <widget class="Line" name="line">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>600</y>
-     <width>1261</width>
-     <height>20</height>
+     <x>0</x>
+     <y>522</y>
+     <width>1200</width>
+     <height>2</height>
     </rect>
+   </property>
+   <property name="palette">
+    <palette>
+     <active>
+      <colorrole role="Button">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>0</blue>
+        </color>
+       </brush>
+      </colorrole>
+      <colorrole role="Base">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>0</blue>
+        </color>
+       </brush>
+      </colorrole>
+      <colorrole role="Window">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>0</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </active>
+     <inactive>
+      <colorrole role="Button">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>0</blue>
+        </color>
+       </brush>
+      </colorrole>
+      <colorrole role="Base">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>0</blue>
+        </color>
+       </brush>
+      </colorrole>
+      <colorrole role="Window">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>0</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </inactive>
+     <disabled>
+      <colorrole role="Button">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>0</blue>
+        </color>
+       </brush>
+      </colorrole>
+      <colorrole role="Base">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>0</blue>
+        </color>
+       </brush>
+      </colorrole>
+      <colorrole role="Window">
+       <brush brushstyle="SolidPattern">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>0</blue>
+        </color>
+       </brush>
+      </colorrole>
+     </disabled>
+    </palette>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(0, 0, 0);</string>
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
    </property>
   </widget>
-  <widget class="QToolButton" name="toolButton">
+  <widget class="Line" name="line_2">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>0</y>
+     <width>2</width>
+     <height>522</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(0, 0, 0);</string>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>470</y>
-     <width>31</width>
-     <height>25</height>
+     <y>145</y>
+     <width>211</width>
+     <height>31</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Comic Sans MS</family>
+     <pointsize>17</pointsize>
+    </font>
+   </property>
    <property name="text">
-    <string>...</string>
+    <string>Sequence</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="toggleForeground">
+  <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>440</y>
-     <width>151</width>
-     <height>22</height>
+     <x>700</x>
+     <y>145</y>
+     <width>91</width>
+     <height>31</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Comic Sans MS</family>
+     <pointsize>17</pointsize>
+    </font>
+   </property>
    <property name="text">
-    <string>Show foreground</string>
+    <string>Cloud</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="loadSequenceButton">
+  <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>560</y>
-     <width>121</width>
-     <height>27</height>
+     <x>200</x>
+     <y>30</y>
+     <width>791</width>
+     <height>61</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Load Sequence</string>
+   <property name="font">
+    <font>
+     <family>Comic Sans MS</family>
+     <pointsize>26</pointsize>
+    </font>
    </property>
-  </widget>
-  <widget class="QLineEdit" name="sequencePath">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>560</y>
-     <width>331</width>
-     <height>27</height>
-    </rect>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(201, 194, 187);</string>
    </property>
    <property name="text">
-    <string>/home/michal/3dTrajectory/data/seq/5.mp4</string>
+    <string>Determining object's 3D motion trajectory</string>
    </property>
   </widget>
+  <zorder>widget3</zorder>
+  <zorder>widget</zorder>
+  <zorder>widget2</zorder>
+  <zorder>horizontalLayoutWidget</zorder>
+  <zorder>loadCloudButton</zorder>
+  <zorder>playButton</zorder>
+  <zorder>rewindButton</zorder>
+  <zorder>modeSelectionBox</zorder>
+  <zorder>castButton</zorder>
+  <zorder>analyzeButton</zorder>
+  <zorder>line</zorder>
+  <zorder>line_2</zorder>
+  <zorder>label</zorder>
+  <zorder>label_2</zorder>
+  <zorder>label_3</zorder>
  </widget>
  <resources/>
  <connections/>

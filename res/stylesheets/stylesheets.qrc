@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/stylesheets">
+        <file>qcombobox.qss</file>
+    </qresource>
+</RCC>

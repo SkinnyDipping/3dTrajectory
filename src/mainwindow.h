@@ -30,21 +30,26 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
-    void on_startSequencePreview_clicked();
-    void on_rewindSequencePreview_clicked();
-    void on_performCasting_clicked();
-    void on_loadCloud_clicked();
-    void on_analyzeButton_clicked();
-    void on_casterCast_clicked();
-    void on_loadSequenceButton_clicked();
+    void setPalette(QPalette p) {
+        palette_main_background = p;
+    }
 
+private slots:
+    void on_playButton_clicked();
+    void on_rewindButton_clicked();
+    void on_castButton_clicked();
+    void on_loadCloudButton_clicked();
+    void on_analyzeButton_clicked();
 private:
     void toggleSequencePreview();
     void rewindSequence();
     int decodePreviewMode(std::string mode);
 
     void setTrajectory();
+
+    void initialize_ui();
+
+    std::string file2string(std::string file);
 
     //TEMP
     void debug(cv::Mat_<double> m);
@@ -60,8 +65,6 @@ private:
 //    Caster m_caster;
 
     QPushButton *loadSequence, *loadPointCloud;
-    QCheckBox *distinctForeground;
-    QLineEdit *m_sequencePath;
     QComboBox *modeSelectionBox;
 
     bool sequencePreviewOn;
@@ -71,6 +74,20 @@ private:
 
     //TEMP
     cv::Mat m_transformationMatrix;
+
+    QColor color_main_backrground_1 = QColor(31, 61, 77);
+    QColor color_main_backrground_2 = QColor(62,62,72);
+    QColor color_dark_background = QColor(37,37,37);
+    QColor color_light_background = QColor(201,194,187);
+    QColor color_dark_text = QColor(37,37,37);
+    QColor color_light_text = QColor(201,194,187);
+
+    QLinearGradient gradient_main_background;
+
+    QPalette palette_main_background;
+    QPalette palette_sec_background;
+    QPalette palette_total_background;
+
 };
 
 #endif // MAINWINDOW_H

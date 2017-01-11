@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/textures">
-        <file>cloud_na.png</file>
+        <file>cloud_na.jpg</file>
         <file>szal.png</file>
-	<file>sequence_na.png</file>
+	<file>sequence_na.jpg</file>
     </qresource>
 </RCC>

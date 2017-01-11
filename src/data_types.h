@@ -107,6 +107,7 @@ struct User {
 struct Avatar {
     cv::Mat avatar;
     cv::Rect roi;
+    cv::Point trajectory_point;
 };
 
 #endif // DATA_TYPES_H

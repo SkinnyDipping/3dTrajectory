@@ -7,7 +7,7 @@ SequencePreview::SequencePreview(QWidget *parent)
 {
     m_playbackOn = false;
     m_renderJoints = false;
-    image = QImage(":/textures/cloud_na.png");
+    image = QImage(":/textures/sequence_na.jpg");
     frame = cv::imread("/home/michal/3dTrajectory/res/nos.png");
 }
 

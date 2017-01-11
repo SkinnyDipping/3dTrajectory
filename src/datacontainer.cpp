@@ -30,16 +30,18 @@ PointCloudRGB& DataContainer::getRGBCloud() {
     return point_cloud_RGB;
 }
 
-cv::Mat DataContainer::getAvatar() {
+Avatar &DataContainer::getAvatar() {
     return avatar;
 }
 
 void DataContainer::assignAvatar(cv::Mat foreground) {
-    avatar=cv::Mat();
+    using namespace cv;
+    Mat avatar=cv::Mat();
+    if (currentFrameIndex >= framesPoll.size()) return;
     framesPoll[currentFrameIndex].copyTo(avatar, foreground);
-    qDebug()<<"TYPE "<<avatar.type()<<endl<<CV_8UC3<<endl;
     unsigned char* avatar_img = (unsigned char*) avatar.data;
-    cv::Point upperleft, lowerright;
+    cv::Point upperleft = {getRGBResolution().x, getRGBResolution().y};
+    cv::Point lowerright;
     for (int y=0; y<avatar.rows; y++)
         for (int x=0; x<avatar.cols; x++) {
             if (avatar_img[3*(y*avatar.cols+x)] != 0) {
@@ -49,9 +51,12 @@ void DataContainer::assignAvatar(cv::Mat foreground) {
                 lowerright.y = lowerright.y < y ? y : lowerright.y;
             }
         }
-//    cv::Rect roi = cv::Rect
-//    Avatar av = {avatar, roi};
-    cv::imshow("dupa", avatar);
+    cv::Rect roi = cv::Rect(upperleft, lowerright);
+    this->avatar = {cv::Mat(roi.size(), CV_8UC4), roi, cv::Point(0,0)};
+    Mat avatar_cut = cv::Mat(avatar, roi);
+    this->avatar.avatar = avatar_cut;
+//    rectangle(this->avatar.avatar, this->avatar.roi, Scalar(255),3);
+    cv::imshow("dupa", this->avatar.avatar);
 }
 
 void DataContainer::loadSequence(std::string filePath) {

@@ -34,7 +34,7 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
 
     initialZoom = 100;
 
-    cloudNAimage = QImage(":/textures/cloud_na.png");
+    cloudNAimage = QImage(":/textures/cloud_na.jpg");
 
     float mvp[] = {-1.81066,0,0,3.44025,0,2.41421,0,-13.0368,0,0,1.00013,-124.217,0,0,1,-124};
     m_initialMVP = QMatrix4x4(mvp);

@@ -118,6 +118,9 @@
    <property name="currentText">
     <string>Preview</string>
    </property>
+   <property name="frame">
+    <bool>false</bool>
+   </property>
    <item>
     <property name="text">
      <string>Preview</string>

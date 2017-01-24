@@ -65,6 +65,7 @@ public:
 
     Avatar& getAvatar();
     void assignAvatar(cv::Mat foreground);
+    void assignAvatar(cv::Point trajectory_point);
 
 
 

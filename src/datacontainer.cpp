@@ -52,11 +52,18 @@ void DataContainer::assignAvatar(cv::Mat foreground) {
             }
         }
     cv::Rect roi = cv::Rect(upperleft, lowerright);
+
     this->avatar = {cv::Mat(roi.size(), CV_8UC4), roi, cv::Point(0,0)};
     Mat avatar_cut = cv::Mat(avatar, roi);
     this->avatar.avatar = avatar_cut;
-//    rectangle(this->avatar.avatar, this->avatar.roi, Scalar(255),3);
-    cv::imshow("dupa", this->avatar.avatar);
+
+//    this->avatar = {avatar, roi, cv::Point(0,0)};
+}
+
+void DataContainer::assignAvatar(cv::Point trajectory_point) {
+    using namespace cv;
+    auto pt = trajectory_point - this->avatar.roi.tl();
+    this->avatar.trajectory_point=pt;
 }
 
 void DataContainer::loadSequence(std::string filePath) {

@@ -69,6 +69,7 @@ private:
 
     bool sequencePreviewOn;
     bool analysisOn;
+    bool avatarOn;
 
     std::vector<Point3DRGB> m_trajectory;
 

@@ -11,6 +11,8 @@ PointCloudPreview::PointCloudPreview(QWidget *parent)
     colorizedPreviewOn = false;
     avatarOn = false;
 
+    trajectory_point = QVector3D(0,0,0);
+
 #ifdef INITIAL_MVP_ZERO
     rotationAngleX = 0.0f;
     rotationAngleY = 0.0f;
@@ -48,6 +50,23 @@ PointCloudPreview::~PointCloudPreview()
 void PointCloudPreview::renderCloud(std::vector<Point3DRGB> &selected_points) {
     cloudPreviewOn = true;
     colorizedPreviewOn = false;
+    avatarOn = false;
+
+    trajectory_buffer.bind();
+    trajectory_buffer.allocate(&selected_points[0], selected_points.size()*sizeof(Point3DRGB));
+
+    update();
+}
+
+void PointCloudPreview::renderCloud(std::vector<Point3DRGB> &selected_points, const Avatar &avatar) {
+    cloudPreviewOn = true;
+    colorizedPreviewOn = false;
+    avatarOn = true;
+
+    if (selected_points.size() != 0) {
+        auto pt = selected_points.back();
+        trajectory_point = QVector3D(pt.x, pt.y, pt.z);
+    }
 
     trajectory_buffer.bind();
     trajectory_buffer.allocate(&selected_points[0], selected_points.size()*sizeof(Point3DRGB));
@@ -157,6 +176,7 @@ void PointCloudPreview::initializeGL()
     loadCloudShaders();
     loadFrameShaders();
     loadColorizedShaders();
+    loadAvatarShaders();
 
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
@@ -167,6 +187,7 @@ void PointCloudPreview::initializeGL()
     initPointCloudBuffer();
     initFrameBuffer();
     initCloudNotAvailableScreen();
+    initAvatarBuffer();
 }
 
 void PointCloudPreview::resizeGL(int w, int h)
@@ -258,6 +279,12 @@ void PointCloudPreview::paintGL()
     if(avatarOn) {
         avatarProgram.bind();
 
+        avatarProgram.setUniformValue("u_trajectory_point", trajectory_point);
+        avatarProgram.setUniformValue("u_rotoid", vecCentroid);
+        avatarProgram.setUniformValue("mvp_matrix", mvpMatrix);
+        avatarProgram.setUniformValue("u_rotation", rotationMatrix);
+
+        calculateAvatarPosition();
         drawAvatar(&avatarProgram);
 
         avatarProgram.release();
@@ -313,9 +340,9 @@ void PointCloudPreview::loadColorizedShaders()
 }
 
 void PointCloudPreview::loadAvatarShaders() {
-    if (!avatarProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_colorized.glsl"))
+    if (!avatarProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/v_avatar.glsl"))
         close();
-    if (!avatarProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_colorized.glsl"))
+    if (!avatarProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/f_avatar.glsl"))
         close();
     if (!avatarProgram.link())
         close();
@@ -353,6 +380,16 @@ void PointCloudPreview::initFrameBuffer()
     //        for (int i=0; i<100; i++)
     //            qDebug()<<((float *)im_ptr)[i];
     //    }
+}
+
+void PointCloudPreview::initAvatarBuffer() {
+    float rectangle[] = {-1.0, -1.0, 0.0,
+                         1.0, -1.0, 0.0,
+                         1.0,  1.0, 0.0,
+                         -1.0,  1.0, 0.0};
+    avatar_buffer.create();
+    avatar_buffer.bind();
+    avatar_buffer.allocate(rectangle, 4*3*sizeof(float));
 }
 
 void PointCloudPreview::drawPointCloud(QOpenGLShaderProgram *program)
@@ -469,6 +506,53 @@ void PointCloudPreview::drawColorizedPointCloud(QOpenGLShaderProgram *program)
 
 void PointCloudPreview::drawAvatar(QOpenGLShaderProgram *program) {
 
+    program->bind();
+
+    avatar_buffer.bind();
+
+    auto loc_avatar_corners = program->attributeLocation("a_avatar_corners");
+    program->setAttributeBuffer(loc_avatar_corners, GL_FLOAT, 0, 2);
+    program->enableAttributeArray(loc_avatar_corners);
+
+    glPointSize(10);
+    glDrawArrays(GL_POINTS, 0, 4);
+
+    program->disableAttributeArray(loc_avatar_corners);
+
+}
+
+void PointCloudPreview::calculateAvatarPosition() {
+    auto tlx = DataContainer::instance().getAvatar().roi.tl().x;
+    auto tly = DataContainer::instance().getAvatar().roi.tl().y;
+    auto brx = DataContainer::instance().getAvatar().roi.br().x;
+    auto bry = DataContainer::instance().getAvatar().roi.br().y;
+    auto roiw = DataContainer::instance().getAvatar().roi.size().width;
+    auto roih = DataContainer::instance().getAvatar().roi.size().height;
+    auto resx = DataContainer::instance().getReferenceFrame().cols;
+    auto resy = DataContainer::instance().getReferenceFrame().rows;
+    auto tlx2 = 2.0f*tlx/resx;
+    auto tly2 = 2.0f*tly/resy;
+    auto brx2 = 2.0f*brx/resx;
+    auto bry2 = 2.0f*bry/resy;
+    auto x = 2.0f*roiw/resx;
+    auto y = 2.0f*roih/resy;
+//    float x = 1.0;
+//    float y = 1.0;
+//    float rectangle[] = { tlx2, tly2, 0.0,
+//                          brx2, tly2, 0.0,
+//                          brx2, bry2, 0.0,
+//                          tlx2, bry2, 0.0};
+    float rectangle[] = { 0.0, 0.0,
+                          x, 0.0,
+                          x, -y,
+                          0.0, -y};
+//    float rectangle[] = {-1.0, -1.0, 0.0,
+//                         1.0, -1.0, 0.0,
+//                         1.0,  1.0, 0.0,
+//                         -1.0,  1.0, 0.0};
+
+    avatar_buffer.bind();
+    avatar_buffer.allocate(rectangle, 4*2*sizeof(float));
 }
 
 //TODO: implement
@@ -537,3 +621,5 @@ void PointCloudPreview::drawCloudNotAvailableScreen(QOpenGLShaderProgram *progra
     program->disableAttributeArray(VBOlocation);
     program->disableAttributeArray(textureCoordinateLocation);
 }
+
+

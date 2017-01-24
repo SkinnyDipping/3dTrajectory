@@ -415,6 +415,19 @@
     <string>Determining object's 3D motion trajectory</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="checkBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>60</y>
+     <width>97</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Avatar</string>
+   </property>
+  </widget>
   <zorder>widget3</zorder>
   <zorder>widget</zorder>
   <zorder>widget2</zorder>
@@ -430,6 +443,7 @@
   <zorder>label</zorder>
   <zorder>label_2</zorder>
   <zorder>label_3</zorder>
+  <zorder>checkBox</zorder>
  </widget>
  <resources/>
  <connections/>

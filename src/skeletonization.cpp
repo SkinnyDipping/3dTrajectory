@@ -36,6 +36,15 @@ std::pair<Point2D, Point2D> Skeletonization::getFeet()
     return std::pair<Point2D, Point2D>(_1, _2);
 }
 
+cv::Point Skeletonization::getFoot() {
+    Point2D _1 = m_joints[0];
+    for (Point2D j : m_joints) {
+        if (j.y > _1.y)
+            _1 = j;
+    }
+    return {_1.x, _1.y};
+}
+
 std::vector<User>& Skeletonization::getUsers() {
     m_users.clear();
 
@@ -95,8 +104,14 @@ void Skeletonization::apply(cv::Mat &frame, int mode)
             }
         skeletonization(pixels);
     }
+    DataContainer::instance().assignAvatar(getFoot());
 
 koniec:
+    cv::Mat show;
+    DataContainer::instance().getAvatar().avatar.copyTo(show);
+    cv::circle(show, DataContainer::instance().getAvatar().trajectory_point,10,cv::Scalar(255));
+    cv::imshow("dupa", show);
+
     if(mode != 0)
         cv::cvtColor(m_foreground, m_foreground, cv::COLOR_GRAY2BGR);
 }

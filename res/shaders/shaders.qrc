@@ -14,5 +14,7 @@
 	<file>f_joints.glsl</file>
 	<file>v_trajectory.glsl</file>
 	<file>f_trajectory.glsl</file>
+	<file>f_avatar.glsl</file>
+	<file>v_avatar.glsl</file>
     </qresource>
 </RCC>

@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     sequencePreviewOn = false;
     analysisOn = false;
+    avatarOn = true;
 
 }
 
@@ -198,7 +199,10 @@ void MainWindow::toggleSequencePreview()
                     m_trajectory.push_back(Point3DRGB(p.x,p.y,p.z,r,g,b));
                 }
 
-                pointCloudPreview->renderCloud(m_trajectory);
+                if (avatarOn)
+                    pointCloudPreview->renderCloud(m_trajectory, DataContainer::instance().getAvatar());
+                else
+                    pointCloudPreview->renderCloud(m_trajectory);
                 sequencePreview->viewFrame(frame);
 
             } else {

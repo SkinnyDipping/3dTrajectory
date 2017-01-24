@@ -37,6 +37,15 @@ public:
     void renderCloud(std::vector<Point3DRGB>& selected_points);
 
     /**
+     * @brief renderCloud Render point cloud AND avatar
+     * @param selected_points
+     * @param avatar
+     *
+     * Point cloud is loaded from DataContttainer
+     */
+    void renderCloud(std::vector<Point3DRGB> &selected_points, const Avatar &avatar);
+
+    /**
      * @brief renderFrame Render frame in point cloud window
      *
      * Render frame in point cloud window. Apply optional transformation
@@ -82,14 +91,16 @@ private:
     void drawColorizedPointCloud(QOpenGLShaderProgram *program);
 
     void loadAvatarShaders();
+    void initAvatarBuffer();
     void drawAvatar(QOpenGLShaderProgram *program);
+    void calculateAvatarPosition();
 
     void initCloudNotAvailableScreen();
     void drawCloudNotAvailableScreen(QOpenGLShaderProgram *program);
 
 private:
     QOpenGLShaderProgram cloudProgram, frameProgram, colorizedProgram, trajectoryProgram, avatarProgram;
-    QOpenGLBuffer pointcloud_buffer, trajectory_buffer, frame_buffer;
+    QOpenGLBuffer pointcloud_buffer, trajectory_buffer, frame_buffer, avatar_buffer;
 
     GLuint textureID, avatarTexture;
 
@@ -114,6 +125,8 @@ private:
 
     /// For colorized preview
     QVector4D referencePlane;
+
+    QVector3D trajectory_point;
 
     /// If cloud is not available:
     QImage cloudNAimage;

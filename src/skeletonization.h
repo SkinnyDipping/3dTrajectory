@@ -89,6 +89,12 @@ private:
      */
     bool skeletonization(std::list<Point2D> &pixels);
 
+    /**
+     * @brief getFoot get foot that is the trajectory point
+     * @return
+     */
+    cv::Point getFoot();
+
 private:
     /// segmented image
     cv::Mat m_foreground;
